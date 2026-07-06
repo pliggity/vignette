@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=Karla:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#f9f3ec}@keyframes wrFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}</style>
+</helmet>
+<div style="min-height:100vh; background:#f9f3ec; color:#4a3f38; font-family:'Karla',sans-serif">
+<div style="max-width:1160px; margin:0 auto; padding:30px 40px 60px; display:flex; flex-direction:column; gap:24px">
+  <input type="file" accept="image/*" ref="{{ fileRef }}" onChange="{{ onFilePicked }}" style="display:none">
+  <input type="file" accept="application/json" ref="{{ importRef }}" onChange="{{ onImportPicked }}" style="display:none">
+
+  <sc-if value="{{ archiveOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeArchive }}" style="position:fixed; inset:0; background:rgba(61,51,44,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
+      <div onClick="{{ stopClick }}" style="background:#fff; border-radius:20px; width:520px; max-height:80vh; overflow:auto; padding:24px; display:flex; flex-direction:column; gap:14px; box-shadow:0 24px 70px rgba(40,30,20,.35)">
+        <div style="display:flex; align-items:center; gap:10px">
+          <div style="font-family:'DM Serif Display',serif; font-size:21px; color:#3d332c; flex:1">archive</div>
+          <div onClick="{{ closeArchive }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#f9f3ec; color:#7d6f63; display:flex; align-items:center; justify-content:center; font-size:14px; user-select:none" style-hover="background:#f0e5d8">×</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <sc-for list="{{ archivedList }}" as="ar" hint-placeholder-count="2">
+            <div style="display:flex; align-items:center; gap:12px; background:#f9f3ec; border-radius:12px; padding:9px">
+              <div style="width:52px; height:52px; border-radius:8px; background:{{ ar.photoBg }}; flex:none; position:relative; overflow:hidden">
+                <sc-if value="{{ ar.hasImg }}" hint-placeholder-val="{{ false }}"><div style="{{ ar.imgCss }}"></div></sc-if>
+              </div>
+              <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px">
+                <span style="font-size:13px; font-weight:700; color:#4a3f38; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ ar.name }}</span>
+                <span style="font-size:11px; color:#b3a294">{{ ar.store }}</span>
+              </div>
+              <div onClick="{{ ar.restore }}" style="cursor:pointer; flex:none; font-size:12px; font-weight:700; background:#4a3f38; color:#f9f3ec; padding:7px 13px; border-radius:999px; user-select:none" style-hover="filter:brightness(1.1)">restore</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ archiveEmpty }}" hint-placeholder-val="{{ true }}">
+            <span style="font-size:12.5px; color:#b3a294; padding:8px 2px">nothing archived</span>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ customOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ cancelCustom }}" style="position:fixed; inset:0; background:rgba(61,51,44,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
+      <div onClick="{{ stopClick }}" style="background:#fff; border-radius:20px; width:440px; max-height:86vh; overflow:auto; padding:24px; display:flex; flex-direction:column; gap:16px; box-shadow:0 24px 70px rgba(40,30,20,.35)">
+        <div style="font-family:'DM Serif Display',serif; font-size:21px; color:#3d332c">new custom tile</div>
+        <div onClick="{{ pickDraftImage }}" onDragOver="{{ dragOver }}" onDrop="{{ dropDraftImage }}" style="cursor:pointer; height:190px; border-radius:12px; background:{{ draftBg }}; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center" style-hover="filter:brightness(.97)">
+          <sc-if value="{{ draftHasImg }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ draftImgCss }}"></div>
+          </sc-if>
+          <sc-if value="{{ draftNoImg }}" hint-placeholder-val="{{ true }}">
+            <span style="font-family:ui-monospace,monospace; font-size:10.5px; color:#a4917f; text-align:center; padding:0 20px">click, drop, or paste (⌘V) a photo here</span>
+          </sc-if>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:5px">
+          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">NAME</span>
+          <input value="{{ draftName }}" onChange="{{ draftSetName }}" placeholder="e.g. hallway floor tile" style="font-family:'Karla',sans-serif; font-size:14px; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:10px; padding:11px 14px">
+        </div>
+        <div style="display:flex; flex-direction:column; gap:7px">
+          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">FOLDER</span>
+          <div style="display:flex; gap:7px; flex-wrap:wrap">
+            <sc-for list="{{ draftFolders }}" as="df" hint-placeholder-count="3">
+              <div onClick="{{ df.pick }}" style="cursor:pointer; font-size:12px; font-weight:{{ df.weight }}; background:{{ df.bg }}; color:{{ df.color }}; padding:7px 14px; border-radius:999px; user-select:none">{{ df.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div onClick="{{ draftToggleOwned }}" style="cursor:pointer; display:flex; align-items:center; gap:9px; user-select:none">
+          <div style="width:19px; height:19px; border-radius:99px; background:{{ draftOwnBg }}; color:#f9f3ec; box-shadow:inset 0 0 0 1.5px {{ draftOwnRing }}; font-size:11px; display:flex; align-items:center; justify-content:center">{{ draftOwnMark }}</div>
+          <span style="font-size:13px; font-weight:600; color:#7d6f63">i already own this</span>
+        </div>
+        <div style="display:flex; gap:10px">
+          <input value="{{ draftStore }}" onChange="{{ draftSetStore }}" placeholder="store (optional)" style="flex:1; min-width:0; font-family:'Karla',sans-serif; font-size:13px; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:10px; padding:10px 13px">
+          <input value="{{ draftPrice }}" onChange="{{ draftSetPrice }}" placeholder="$ (optional)" style="width:110px; font-family:'Karla',sans-serif; font-size:13px; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:10px; padding:10px 13px">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:2px">
+          <div onClick="{{ saveCustom }}" style="cursor:pointer; flex:1; text-align:center; font-size:13px; font-weight:700; background:{{ accent }}; color:#fff; padding:12px 0; border-radius:999px; user-select:none" style-hover="filter:brightness(1.06)">add tile</div>
+          <div onClick="{{ cancelCustom }}" style="cursor:pointer; font-size:13px; font-weight:700; color:#b3a294; padding:12px 18px; border-radius:999px; user-select:none" style-hover="background:#f9f3ec">cancel</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ viewOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeView }}" style="position:fixed; inset:0; background:rgba(61,51,44,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
+      <div onClick="{{ stopClick }}" style="background:#fff; border-radius:20px; max-width:900px; width:100%; max-height:86vh; display:flex; overflow:hidden; box-shadow:0 24px 70px rgba(40,30,20,.35)">
+        <div style="flex:1.3; min-width:0; background:{{ viewBg }}; position:relative; min-height:460px">
+          <sc-if value="{{ viewHasImg }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ viewImgCss }}"></div>
+          </sc-if>
+          <sc-if value="{{ viewNoImg }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:ui-monospace,monospace; font-size:11px; color:#a4917f">no photo yet — drop one on the tile</div>
+          </sc-if>
+        </div>
+        <div style="width:320px; flex:none; padding:26px 26px 22px; display:flex; flex-direction:column; gap:16px; overflow:auto">
+          <div style="display:flex; align-items:flex-start; gap:10px">
+            <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+              <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">TILE DESCRIPTION</span>
+              <input value="{{ viewName }}" onChange="{{ viewRename }}" style="font-family: 'DM Serif Display',serif; font-size: 22px; color: #3d332c; background: transparent; border: none; outline: none; border-bottom: 1.5px dashed transparent; padding: 0; width: 100%" style-focus="border-bottom:1.5px dashed #dcc9bd">
+            </div>
+            <div onClick="{{ closeView }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#f9f3ec; color:#7d6f63; display:flex; align-items:center; justify-content:center; font-size:14px; flex:none; user-select:none" style-hover="background:#f0e5d8">×</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <span style="font-size:12.5px; color:#b3a294">{{ viewStore }}</span>
+            <span style="font-size: 12.5px; font-weight: 700; background: {{ accentSoft }}; color: {{ accentDeep }}; padding: 3px 10px; border-radius: 999px">{{ viewPrice }}</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px">
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">LINK</span>
+            <div style="display:flex; align-items:center; gap:8px">
+              <input value="{{ viewUrl }}" onChange="{{ viewSetUrl }}" placeholder="paste a shop link…" style="flex:1; min-width:0; font-size:12.5px; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:8px; padding:8px 11px">
+              <sc-if value="{{ viewHasUrl }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ viewUrl }}" target="_blank" rel="noopener" title="open link" style="flex:none; width:32px; height:32px; border-radius:8px; background:#fff; color:{{ accentDeep }}; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:0 1px 3px rgba(90,70,50,.07)">↗</a>
+              </sc-if>
+            </div>
+          </div>
+          <div onClick="{{ viewToggleOwned }}" style="cursor:pointer; display:flex; align-items:center; gap:9px; user-select:none">
+            <div style="width:19px; height:19px; border-radius:6px; background:{{ viewOwnBg }}; color:#f9f3ec; box-shadow:inset 0 0 0 1.5px {{ viewOwnRing }}; font-size:11px; display:flex; align-items:center; justify-content:center">{{ viewOwnMark }}</div>
+            <span style="font-size:13px; font-weight:600; color:#7d6f63">i own this</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:7px">
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">ON BOARDS</span>
+            <div style="display:flex; flex-wrap:wrap; gap:7px">
+              <sc-for list="{{ viewBoards }}" as="vb" hint-placeholder-count="2">
+                <div onClick="{{ vb.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:7px; font-size:12px; font-weight:{{ vb.weight }}; background:{{ vb.bg }}; color:{{ vb.color }}; padding:7px 12px; border-radius:999px; user-select:none">
+                  <span style="width:14px; height:14px; border-radius:99px; box-shadow:inset 0 0 0 1.5px {{ vb.ringColor }}; background:{{ vb.dotBg }}; display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff">{{ vb.mark }}</span>{{ vb.name }}
+                </div>
+              </sc-for>
+              <sc-if value="{{ viewNoBoards }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:11.5px; color:#b3a294; padding:6px 2px">no boards yet</span>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:7px">
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">TAGS</span>
+            <div style="display:flex; flex-wrap:wrap; gap:7px; align-items:center">
+              <sc-for list="{{ viewTags }}" as="vt" hint-placeholder-count="2">
+                <div onClick="{{ vt.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:6px; font-size:12px; font-weight:{{ vt.weight }}; background:{{ vt.bg }}; color:{{ vt.color }}; padding:6px 11px; border-radius:999px; user-select:none">
+                  <span style="width:9px; height:9px; border-radius:99px; background:{{ vt.dot }}"></span>{{ vt.label }}
+                </div>
+              </sc-for>
+              <div onClick="{{ openTagCreator }}" style="cursor:pointer; font-size:12px; font-weight:700; color:{{ accentDeep }}; padding:6px 11px; border-radius:999px; border:1.5px dashed #dcc9bd; user-select:none" style-hover="background:#f9f3ec">+ new tag</div>
+            </div>
+            <sc-if value="{{ tagCreatorOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:8px; background:#f9f3ec; border-radius:12px; padding:10px 12px; margin-top:2px">
+                <input value="{{ tagDraftName }}" onChange="{{ tagDraftSetName }}" onKeyDown="{{ tagDraftKey }}" placeholder="tag name…" style="font-family:'Karla',sans-serif; font-size:12.5px; color:#4a3f38; background:#fff; border:none; outline:none; border-radius:8px; padding:8px 11px">
+                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center">
+                  <sc-for list="{{ tagColorOptions }}" as="tc" hint-placeholder-count="6">
+                    <div onClick="{{ tc.pick }}" title="{{ tc.color }}" style="cursor:pointer; width:22px; height:22px; border-radius:99px; background:{{ tc.color }}; box-shadow:0 0 0 2px #f9f3ec, 0 0 0 3px {{ tc.ring }}; user-select:none"></div>
+                  </sc-for>
+                  <div onClick="{{ pickCustomTagColor }}" title="custom color: {{ tagDraftColor }}" style="cursor:pointer; width:22px; height:22px; border-radius:99px; background:{{ tagDraftColorSwatch }}; box-shadow:0 0 0 2px #f9f3ec, 0 0 0 3px {{ customColorRing }}; display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; user-select:none">{{ customColorMark }}</div>
+                  <input type="color" ref="{{ tagColorRef }}" onChange="{{ onTagColorPicked }}" style="position:absolute; width:0; height:0; opacity:0; border:none; padding:0">
+                </div>
+                <div style="display:flex; gap:8px">
+                  <div onClick="{{ saveTagDraft }}" style="cursor:pointer; font-size:12px; font-weight:700; background:#4a3f38; color:#f9f3ec; padding:7px 14px; border-radius:999px; user-select:none">create &amp; add</div>
+                  <div onClick="{{ closeTagCreator }}" style="cursor:pointer; font-size:12px; color:#b3a294; padding:7px 10px; border-radius:999px; user-select:none" style-hover="background:#f0e5d8">cancel</div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; flex:1">
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">NOTES · ONLY VISIBLE HERE</span>
+            <textarea value="{{ viewNotes }}" onChange="{{ viewSetNotes }}" placeholder="size, dupes to compare, where it'd go…" style="font-family:'Karla',sans-serif; font-size:13px; line-height:1.55; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:12px; padding:12px 14px; resize:none; min-height:130px; flex:1"></textarea>
+          </div>
+          <div onClick="{{ viewArchive }}" style="cursor:pointer; text-align:center; font-size:12px; font-weight:600; color:#c17a5f; padding:9px 0; border-radius:999px; user-select:none" style-hover="background:#f9f3ec">remove from library</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- header -->
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:20px">
+    <div style="font-family:'DM Serif Display',serif; font-size:27px; color:#3d332c; flex:none">wishroom <span style="color:{{ accent }}">✿</span></div>
+    <div style="display:flex; gap:10px; align-items:center">
+      <input value="{{ link }}" onChange="{{ onLinkChange }}" onKeyDown="{{ onLinkKey }}" placeholder="Paste a shop link…" style="font-family:'Karla',sans-serif; font-size:13px; color:#4a3f38; background:#fff; border:none; outline:none; border-radius:999px; padding:11px 18px; width:250px; min-width:120px; flex-shrink:1; box-shadow:0 1px 3px rgba(90,70,50,.07)">
+      <div onClick="{{ saveLink }}" style="cursor:pointer; font-size:13px; font-weight:700; background:{{ accent }}; color:#fff; padding:11px 20px; border-radius:999px; user-select:none" style-hover="filter:brightness(1.06)">Save it</div>
+      <div onClick="{{ openCustom }}" title="add anything — including things you already own, no link needed" style="cursor:pointer; white-space:nowrap; flex:none; font-size:13px; font-weight:700; background:#fff; color:#7d6f63; padding:11px 18px; border-radius:999px; user-select:none; box-shadow:0 1px 3px rgba(90,70,50,.07)" style-hover="color:#4a3f38">+ custom tile</div>
+    </div>
+  </div>
+
+  <!-- ================= LIBRARY VIEW ================= -->
+  <sc-if value="{{ inLibrary }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex; flex-direction:column; gap:24px; animation:wrFade .25s ease">
+
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+      <sc-for list="{{ folders }}" as="f" hint-placeholder-count="4">
+        <div onClick="{{ f.pick }}" style="cursor:pointer; font-size:12.5px; font-weight:{{ f.weight }}; background:{{ f.bg }}; color:{{ f.color }}; padding:9px 17px; border-radius:999px; user-select:none; box-shadow:0 1px 3px rgba(90,70,50,.05)" style-hover="transform:translateY(-1px)">{{ f.label }}</div>
+      </sc-for>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:16px">
+        <sc-if value="{{ hasArchived }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ openArchive }}" style="cursor:pointer; font-size:12px; color:#b3a294; user-select:none" style-hover="color:#7d6f63">archive ({{ archivedCount }})</div>
+        </sc-if>
+        <div onClick="{{ exportData }}" title="download all your data as a file" style="cursor:pointer; font-size:12px; color:#b3a294; user-select:none" style-hover="color:#7d6f63">export</div>
+        <div onClick="{{ startImport }}" title="load a previously exported file" style="cursor:pointer; font-size:12px; color:#b3a294; user-select:none" style-hover="color:#7d6f63">import</div>
+        <div style="font-size:12px; color:#b3a294">{{ folderTotal }} in open wishes</div>
+      </div>
+    </div>
+
+    <sc-if value="{{ hasTags }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; gap:7px; align-items:center; flex-wrap:wrap; margin-top:-12px">
+        <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#c4b5a5">FILTER BY TAG</span>
+        <sc-for list="{{ tagFilters }}" as="tf" hint-placeholder-count="3">
+          <div onClick="{{ tf.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:{{ tf.weight }}; background:{{ tf.bg }}; color:{{ tf.color }}; padding:5px 11px; border-radius:999px; user-select:none">
+            <span style="width:8px; height:8px; border-radius:99px; background:{{ tf.dot }}"></span>{{ tf.label }}
+          </div>
+        </sc-for>
+        <sc-if value="{{ hasActiveTagFilter }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ clearTagFilters }}" style="cursor:pointer; font-size:11.5px; color:#b3a294; padding:5px 8px; user-select:none" style-hover="color:#7d6f63">clear</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; align-items:start">
+      <sc-for list="{{ items }}" as="item" hint-placeholder-count="8">
+        <div style="background:#fff; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:7px; animation:wrFade .25s ease" style-hover="box-shadow:0 6px 18px rgba(90,70,50,.10); transform:translateY(-2px)">
+          <div onClick="{{ item.pickImage }}" onDragOver="{{ dragOver }}" onDrop="{{ item.drop }}" onMouseEnter="{{ item.hover }}" title="drop, paste, or click to add a photo" style="cursor:pointer; height:{{ item.photoH }}; aspect-ratio:{{ item.photoAr }}; border-radius:12px; background:{{ item.photoBg }}; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden">
+            <sc-if value="{{ item.hasImg }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ item.imgCss }}"></div>
+            </sc-if>
+            <sc-if value="{{ item.noImg }}" hint-placeholder-val="{{ true }}">
+              <span style="font-family:ui-monospace,monospace; font-size:10px; color:#a4917f; text-align:center; padding:0 14px">{{ item.photoLabel }}</span>
+            </sc-if>
+            <sc-if value="{{ item.sale }}" hint-placeholder-val="{{ false }}">
+              <span style="position:absolute; bottom:8px; left:8px; font-size:10px; font-weight:700; background:{{ accent }}; color:#fff; padding:3px 9px; border-radius:999px">on sale ↓</span>
+            </sc-if>
+            <div onClick="{{ item.inspect }}" title="inspect item" style="cursor:pointer; position:absolute; top:8px; left:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">🔍</div>
+            <sc-if value="{{ item.hasUrl }}" hint-placeholder-val="{{ false }}">
+              <a href="{{ item.url }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#4a3f38; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
+            </sc-if>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:0 3px 2px">
+            <sc-if value="{{ item.hasTags }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; gap:3px; flex:none">
+                <sc-for list="{{ item.tagDots }}" as="td" hint-placeholder-count="2">
+                  <span style="width:7px; height:7px; border-radius:99px; background:{{ td }}"></span>
+                </sc-for>
+              </div>
+            </sc-if>
+            <span style="flex:1; min-width:0; font-family:ui-monospace,monospace; font-size:9.5px; color:#7d6f63">{{ item.chip }}</span>
+            <div onClick="{{ item.toggle }}" title="i own this — click to toggle" style="cursor:pointer; flex:none; width:17px; height:17px; border-radius:99px; background:{{ item.ownBg }}; color:#f9f3ec; box-shadow:inset 0 0 0 1.5px {{ item.ownRing }}; font-size:10px; display:flex; align-items:center; justify-content:center; user-select:none" style-hover="transform:scale(1.15)">{{ item.ownLabel }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px; margin-top:6px">
+      <div style="display:flex; align-items:baseline; gap:10px">
+        <span style="font-family:'DM Serif Display',serif; font-size:20px; color:#3d332c">Your boards</span>
+        <span style="font-size:11.5px; color:#b3a294">mix items into a vibe — each board keeps its own palette</span>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px">
+        <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
+          <div onClick="{{ b.open }}" style="cursor:pointer; background:#fff; border-radius:18px; padding:12px; display:flex; gap:12px; align-items:center; user-select:none" style-hover="box-shadow:0 6px 18px rgba(90,70,50,.10); transform:translateY(-2px)">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; width:84px; flex:none">
+              <sc-for list="{{ b.cover }}" as="c" hint-placeholder-count="4">
+                <div style="height:40px; border-radius:6px; background:{{ c }}"></div>
+              </sc-for>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px; min-width:0">
+              <span style="font-size:13.5px; font-weight:700">{{ b.name }}</span>
+              <span style="font-size:11px; color:#b3a294">{{ b.meta }}</span>
+              <div style="display:flex; height:8px; width:110px; border-radius:99px; overflow:hidden; margin-top:2px">
+                <sc-for list="{{ b.palette }}" as="p" hint-placeholder-count="4">
+                  <div style="flex:{{ p.flex }}; background:{{ p.color }}"></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+        <div onClick="{{ newBoard }}" style="cursor:pointer; background:rgba(255,255,255,.55); border:1.5px dashed #dcc9bd; border-radius:18px; min-height:96px; display:flex; align-items:center; justify-content:center; font-size:13px; color:{{ accentDeep }}; font-weight:700; user-select:none" style-hover="background:#fff">+ new board</div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= BOARD VIEW ================= -->
+  <sc-if value="{{ inBoard }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex; flex-direction:column; gap:16px; animation:wrFade .25s ease">
+
+    <div style="display:flex; align-items:center; gap:14px">
+      <div onClick="{{ closeBoard }}" style="cursor:pointer; font-size:13px; font-weight:700; background:#fff; padding:9px 15px; border-radius:999px; user-select:none; box-shadow:0 1px 3px rgba(90,70,50,.07)" style-hover="transform:translateX(-2px)">← library</div>
+      <input value="{{ boardName }}" onChange="{{ renameBoard }}" title="click to rename" style="font-family:'DM Serif Display',serif; font-size:24px; color:#3d332c; background:transparent; border:none; outline:none; border-bottom:1.5px dashed transparent; padding:0 2px; min-width:60px; width:320px" style-focus="border-bottom:1.5px dashed #dcc9bd">
+      <div style="font-size:12px; color:#b3a294">{{ boardMeta }}</div>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:8px">
+        <div onClick="{{ toggleGridEdit }}" title="drag to reorder tiles, drag corner handle to resize" style="cursor:pointer; font-size:12.5px; font-weight:700; background:{{ gridEditBg }}; color:{{ gridEditColor }}; padding:10px 16px; border-radius:999px; user-select:none">{{ gridEditLabel }}</div>
+        <div onClick="{{ toggleTray }}" style="cursor:pointer; font-size:12.5px; font-weight:700; background:{{ accent }}; color:#fff; padding:10px 18px; border-radius:999px; user-select:none" style-hover="filter:brightness(1.06)">{{ trayLabel }}</div>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px">
+      <div onClick="{{ togglePaletteEditor }}" title="click to edit palette" style="cursor:pointer; display:flex; height:30px; flex:1; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(90,70,50,.07)" style-hover="box-shadow:0 2px 8px rgba(90,70,50,.18)">
+        <sc-for list="{{ boardPalette }}" as="p" hint-placeholder-count="5">
+          <div title="{{ p.color }}" style="flex:{{ p.flex }}; background:{{ p.color }}; transition:flex .3s ease"></div>
+        </sc-for>
+      </div>
+      <span style="font-family:ui-monospace,monospace; font-size:10px; color:#b3a294; flex:none">{{ paletteHint }}</span>
+    </div>
+
+    <sc-if value="{{ hasTags }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; gap:7px; align-items:center; flex-wrap:wrap">
+        <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#c4b5a5">FILTER BY TAG</span>
+        <sc-for list="{{ tagFilters }}" as="tf" hint-placeholder-count="3">
+          <div onClick="{{ tf.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:{{ tf.weight }}; background:{{ tf.bg }}; color:{{ tf.color }}; padding:5px 11px; border-radius:999px; user-select:none">
+            <span style="width:8px; height:8px; border-radius:99px; background:{{ tf.dot }}"></span>{{ tf.label }}
+          </div>
+        </sc-for>
+        <sc-if value="{{ hasActiveTagFilter }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ clearTagFilters }}" style="cursor:pointer; font-size:11.5px; color:#b3a294; padding:5px 8px; user-select:none" style-hover="color:#7d6f63">clear</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ paletteOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff; border-radius:16px; padding:14px 18px; display:flex; flex-direction:column; gap:14px; animation:wrFade .2s ease">
+        <div style="display:flex; align-items:center; gap:12px">
+          <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#b3a294">EDIT PALETTE — CLICK A DOT TO INCLUDE/EXCLUDE · DRAG DOTS TO REORDER · % TOTALS 100</span>
+          <div onClick="{{ resetPalette }}" style="cursor:pointer; margin-left:auto; font-size:11.5px; font-weight:700; color:#b3a294; padding:6px 10px; border-radius:999px; user-select:none" style-hover="background:#f9f3ec; color:#7d6f63">reset to auto</div>
+          <div onClick="{{ togglePaletteEditor }}" style="cursor:pointer; font-size:11.5px; font-weight:700; background:#4a3f38; color:#f9f3ec; padding:6px 14px; border-radius:999px; user-select:none">done</div>
+        </div>
+        <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start">
+          <sc-for list="{{ includedSwatches }}" as="sw" hint-placeholder-count="4">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
+              <div onClick="{{ sw.toggle }}" draggable="{{ true }}" onDragStart="{{ sw.dragStart }}" onDragEnter="{{ sw.dragEnter }}" onDragOver="{{ dragOver }}" onDrop="{{ sw.dropOn }}" title="{{ sw.color }} — click to toggle, drag to reorder" style="cursor:grab; width:36px; height:36px; border-radius:99px; background:{{ sw.color }}; box-shadow:0 0 0 2px #fff, 0 0 0 3.5px {{ sw.ring }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; text-shadow:0 1px 2px rgba(0,0,0,.5); user-select:none">{{ sw.mark }}</div>
+              <div style="display:flex; align-items:center; gap:2px">
+                <input value="{{ sw.pct }}" onChange="{{ sw.onPct }}" style="width:34px; text-align:center; font-size:11px; font-family:'Karla',sans-serif; color:#4a3f38; border:1px solid #eee5da; border-radius:6px; padding:3px 2px; outline:none; background:{{ sw.inputBg }}">
+                <span style="font-size:10px; color:#b3a294">%</span>
+              </div>
+            </div>
+          </sc-for>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
+            <div onClick="{{ pickColor }}" title="add a color" style="cursor:pointer; width:36px; height:36px; border-radius:99px; border:1.5px dashed #dcc9bd; color:#c99f8d; display:flex; align-items:center; justify-content:center; font-size:16px; user-select:none" style-hover="background:#f9f3ec">+</div>
+            <span style="font-size:10px; color:#b3a294">add</span>
+          </div>
+          <sc-if value="{{ hasEyeDropper }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
+              <div onClick="{{ eyeDrop }}" title="pick a color from anywhere on screen (e.g. your photo)" style="cursor:pointer; width:36px; height:36px; border-radius:99px; border:1.5px solid #eee5da; color:#7d6f63; display:flex; align-items:center; justify-content:center; font-size:15px; user-select:none" style-hover="background:#f9f3ec">⌖</div>
+              <span style="font-size:10px; color:#b3a294">eyedrop</span>
+            </div>
+          </sc-if>
+          <input type="color" ref="{{ colorRef }}" onChange="{{ onColorPicked }}" style="position:absolute; width:0; height:0; opacity:0; border:none; padding:0">
+        </div>
+        <sc-if value="{{ hasExcluded }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:10px; padding-top:10px; border-top:1px solid #f2ede4">
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#c4b5a5">EXCLUDED</span>
+            <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start">
+              <sc-for list="{{ excludedSwatches }}" as="sw" hint-placeholder-count="2">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
+                  <div onClick="{{ sw.toggle }}" draggable="{{ true }}" onDragStart="{{ sw.dragStart }}" onDragEnter="{{ sw.dragEnter }}" onDragOver="{{ dragOver }}" onDrop="{{ sw.dropOn }}" title="{{ sw.color }} — click to include, drag to reorder" style="cursor:grab; width:36px; height:36px; border-radius:99px; background:{{ sw.color }}; box-shadow:0 0 0 2px #fff, 0 0 0 3.5px {{ sw.ring }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; user-select:none"></div>
+                  <span style="font-size:10px; color:#c4b5a5">off</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ trayOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff; border-radius:16px; padding:14px 16px; display:flex; flex-direction:column; gap:10px; animation:wrFade .2s ease">
+        <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#b3a294">FROM YOUR LIBRARY — CLICK TO ADD</span>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <sc-for list="{{ trayItems }}" as="t" hint-placeholder-count="4">
+            <div onClick="{{ t.add }}" style="cursor:pointer; display:flex; align-items:center; gap:8px; background:#f9f3ec; border-radius:999px; padding:6px 13px 6px 6px; user-select:none" style-hover="background:{{ accentSoft }}">
+              <div style="width:26px; height:26px; border-radius:99px; background:{{ t.stripe }}; overflow:hidden; position:relative; flex:none">
+                <sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ t.imgCss }}"></div>
+                </sc-if>
+              </div>
+              <span style="font-size:12px; font-weight:600">{{ t.name }}</span>
+              <span style="font-size:11px; color:{{ accentDeep }}; font-weight:700">+</span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ trayEmpty }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:12px; color:#b3a294; padding:6px 4px">everything you've saved is already here ✓</span>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ boardEmpty }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ openTray }}" style="cursor:pointer; border:1.5px dashed #dcc9bd; border-radius:18px; min-height:220px; display:flex; align-items:center; justify-content:center; font-size:13.5px; color:{{ accentDeep }}; font-weight:700; user-select:none" style-hover="background:rgba(255,255,255,.6)">+ add your first items</div>
+    </sc-if>
+
+    <div style="position:relative; width:100%; height:{{ canvasHeight }}px; min-height:220px">
+      <sc-for list="{{ boardItems }}" as="it" hint-placeholder-count="5">
+        <div style="position:absolute; left:{{ it.xPx }}px; top:{{ it.yPx }}px; width:{{ it.wPx }}px; background:#fff; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:7px; box-shadow:{{ it.shadow }}; z-index:{{ it.z }}; transition:box-shadow .15s ease">
+          <div style="width:100%; height:{{ it.hPx }}px; border-radius:9px; background:{{ it.photoBg }}; position:relative; overflow:hidden; outline:{{ it.editOutline }}; outline-offset:-2px">
+            <sc-if value="{{ it.hasImg }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ it.imgCss }}"></div>
+            </sc-if>
+            <sc-if value="{{ it.showViewControls }}" hint-placeholder-val="{{ true }}">
+              <div onClick="{{ it.inspect }}" title="inspect item" style="cursor:pointer; position:absolute; top:8px; left:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">🔍</div>
+              <sc-if value="{{ it.hasUrl }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ it.url }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#4a3f38; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{ it.editing }}" hint-placeholder-val="{{ false }}">
+              <div onMouseDown="{{ it.moveStart }}" title="drag to move" style="position:absolute; top:8px; left:8px; width:24px; height:24px; border-radius:99px; background:rgba(74,63,56,.85); color:#f9f3ec; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:grab; user-select:none">⠿</div>
+              <div onMouseDown="{{ it.resizeStart }}" title="drag to resize" style="cursor:nwse-resize; position:absolute; bottom:0; right:0; width:26px; height:26px; border-radius:9px 0 9px 0; background:rgba(74,63,56,.85); display:flex; align-items:flex-end; justify-content:flex-end; padding:4px; user-select:none">
+                <svg width="10" height="10" viewBox="0 0 10 10"><path d="M9 1L1 9M9 5L5 9" stroke="#f9f3ec" stroke-width="1.4" stroke-linecap="round"></path></svg>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:0 3px 2px">
+            <sc-if value="{{ it.hasTags }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; gap:3px; flex:none">
+                <sc-for list="{{ it.tagDots }}" as="td" hint-placeholder-count="2">
+                  <span style="width:7px; height:7px; border-radius:99px; background:{{ td }}"></span>
+                </sc-for>
+              </div>
+            </sc-if>
+            <span style="flex:1; min-width:0; font-family:ui-monospace,monospace; font-size:9.5px; color:#7d6f63">{{ it.chip }}</span>
+            <div onClick="{{ it.toggle }}" title="i own this — click to toggle" style="cursor:pointer; flex:none; width:17px; height:17px; border-radius:99px; background:{{ it.ownBg }}; color:#f9f3ec; box-shadow:inset 0 0 0 1.5px {{ it.ownRing }}; font-size:10px; display:flex; align-items:center; justify-content:center; user-select:none" style-hover="transform:scale(1.15)">{{ it.ownLabel }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family:ui-monospace,monospace; font-size:10px; color:#c4b5a5">{{ gridHint }}</div>
+
+    <div style="display:flex; justify-content:center; padding-top:24px; border-top:1px solid rgba(0,0,0,.06); margin-top:8px">
+      <sc-if value="{{ confirmingDelete }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:center; gap:10px">
+          <span style="font-size:12px; color:#c17a5f">delete "{{ boardName }}"? items stay in your library.</span>
+          <div onClick="{{ confirmDeleteBoard }}" style="cursor:pointer; font-size:12px; font-weight:700; background:#c17a5f; color:#fff; padding:8px 14px; border-radius:999px; user-select:none">delete</div>
+          <div onClick="{{ cancelDeleteBoard }}" style="cursor:pointer; font-size:12px; font-weight:700; color:#b3a294; padding:8px 12px; border-radius:999px; user-select:none" style-hover="background:#f9f3ec">cancel</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ notConfirmingDelete }}" hint-placeholder-val="{{ true }}">
+        <div onClick="{{ askDeleteBoard }}" title="delete this board — items stay in your library" style="cursor:pointer; font-size:12px; font-weight:600; color:#c4b5a5; padding:8px 14px; border-radius:999px; user-select:none" style-hover="background:#f9f3ec; color:#c17a5f">delete board</div>
+      </sc-if>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accent&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#d9917f&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#d9917f&quot;, &quot;#c8a96a&quot;, &quot;#a8b0a4&quot;, &quot;#b08ba6&quot;], &quot;section&quot;: &quot;Look&quot; },
+  &quot;showPrices&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Look&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    folder: 'Home',
+    boardId: null,
+    trayOpen: false,
+    paletteOpen: false,
+    viewId: null,
+    custom: null,
+    archived: [],
+    archiveOpen: false,
+    tags: [],
+    activeTagFilters: [],
+    tagCreatorOpen: false,
+    tagDraft: { name: '', color: '#d9917f' },
+    confirmingDeleteBoard: false,
+    gridEditOpen: false,
+    link: '',
+    nextId: 100,
+    items: [
+      { id: 1, name: 'Linen duvet cover', store: 'Parachute', price: 140, folder: 'Home', tones: ['#e8e3d8', '#ded8ca'], span: 3, photo: 'duvet photo' },
+      { id: 2, name: 'Sage table lamp', store: 'Ferm Living', price: 89, folder: 'Home', tones: ['#dfe3dc', '#c8d1c4'], span: 2, photo: 'lamp photo' },
+      { id: 3, name: 'Oak side table', store: 'Hay', price: 210, folder: 'Home', tones: ['#e6e0d4', '#d5c9b4'], span: 2, photo: 'side table photo' },
+      { id: 4, name: 'Wool throw blanket', store: 'Tekla', price: 75, folder: 'Home', tones: ['#e2ddd3', '#cfc7b8'], span: 3, photo: 'throw photo' },
+      { id: 5, name: 'Pillar candle set', store: 'Areaware', price: 38, folder: 'Home', tones: ['#efe9df', '#e0d5c2'], span: 1, photo: 'candles photo' },
+      { id: 6, name: 'Stoneware vase', store: 'Toast', price: 32, folder: 'Home', tones: ['#ded9cf', '#c2b9a8'], span: 1, photo: 'vase photo' },
+      { id: 7, name: 'Dinner plates ×4', store: 'Our Place', price: 95, folder: 'Home', tones: ['#e9e2da', '#d8c8ba'], span: 2, photo: 'plates photo', sale: true },
+      { id: 8, name: 'Arched floor mirror', store: 'Urban Outfitters', price: 229, folder: 'Home', tones: ['#e4e1da', '#c9c4b8'], span: 3, photo: 'mirror photo' },
+      { id: 9, name: 'Mohair cardigan', store: '&amp; Other Stories', price: 129, folder: 'Clothing', tones: ['#f2e4dc', '#e3c6b8'], span: 2, photo: 'cardigan photo' },
+      { id: 10, name: 'Satin midi skirt', store: 'Aritzia', price: 68, folder: 'Clothing', tones: ['#e9e9e2', '#d3d3c4'], span: 2, photo: 'skirt photo', sale: true },
+      { id: 11, name: 'Mary-jane flats', store: 'Repetto', price: 295, folder: 'Clothing', tones: ['#eee7de', '#dbc9ae'], span: 2, photo: 'flats photo', owned: true },
+      { id: 12, name: 'E-reader', store: 'Kobo', price: 139, folder: 'Tech', tones: ['#e3e3e0', '#c6c6c0'], span: 1, photo: 'e-reader photo' },
+      { id: 13, name: 'Bookshelf speaker', store: 'Audioengine', price: 249, folder: 'Tech', tones: ['#e6e1d8', '#bdb2a0'], span: 2, photo: 'speaker photo' },
+      { id: 14, name: 'Point-and-shoot camera', store: 'Pentax', price: 179, folder: 'Tech', tones: ['#e8e5de', '#cac4b6'], span: 2, photo: 'camera photo' },
+      { id: 20, name: 'Maxwell sectional, right chaise 98"', store: 'Interior Define', price: 3495, folder: 'Home', tones: ['#ded6c8', '#c3b8a3'], span: 3, photo: 'your couch — send a screenshot', owned: true }
+    ],
+    boards: [
+      { id: 'b1', name: 'quiet bedroom reset', itemIds: [1, 2, 4, 5, 6] },
+      { id: 'b2', name: 'warm minimal desk', itemIds: [3, 12, 13] },
+      { id: 'b3', name: 'living room', itemIds: [20] }
+    ]
+  };
+
+  fileRef = React.createRef();
+  colorRef = React.createRef();
+  activeTileId = null;
+  CANVAS_W = 1040;
+  GAP = 14;
+  CAP_H = 34; // caption strip below each photo, counted for spacing/collision
+
+  // computes each tile's rect {x,y,w,h(photo)} — stored layout wins, else a tidy default flow
+  tileRects(board) {
+    const its = board.itemIds.map(id => this.state.items.find(x => x.id === id)).filter(Boolean);
+    const num = (v, f) => (typeof v === 'number' ? v : f);
+    let cx = 0, cy = 0, rowH = 0;
+    const out = {};
+    its.forEach(i => {
+      const ar = Number(this.tileAr(i)) || 1;
+      const lay = board.layout && board.layout[i.id];
+      const w = num(lay && lay.w, 260);
+      const h = num(lay && lay.h, Math.round(260 / ar));
+      let x, y;
+      if (lay && typeof lay.x === 'number' && typeof lay.y === 'number') {
+        x = lay.x; y = lay.y; // explicitly placed by the user
+      } else {
+        // flow into place, reserving this tile's real size so nothing overlaps
+        if (cx + w > this.CANVAS_W) { cx = 0; cy += rowH + this.GAP; rowH = 0; }
+        x = cx; y = cy;
+        cx += w + this.GAP;
+        rowH = Math.max(rowH, h + this.CAP_H);
+      }
+      out[i.id] = { x, y, w, h };
+    });
+    return out;
+  }
+
+  // true if the candidate rect (photo + caption) overlaps any other tile
+  overlapsOther(rect, itemId, rects) {
+    const a = { x: rect.x, y: rect.y, w: rect.w, h: rect.h + this.CAP_H };
+    for (const id in rects) {
+      if (String(id) === String(itemId)) continue;
+      const o = rects[id], ob = { x: o.x, y: o.y, w: o.w, h: o.h + this.CAP_H };
+      const sep = a.x + a.w <= ob.x || a.x >= ob.x + ob.w || a.y + a.h <= ob.y || a.y >= ob.y + ob.h;
+      if (!sep) return true;
+    }
+    return false;
+  }
+
+  commitLayout(boardId, itemId, rect) {
+    this.setState(st => ({
+      boards: st.boards.map(b => b.id !== boardId ? b : {
+        ...b, layout: { ...(b.layout || {}), [itemId]: { x: rect.x, y: rect.y, w: rect.w, h: rect.h } }
+      })
+    }));
+  }
+
+  startMove(boardId, itemId, e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const board = this.state.boards.find(b => b.id === boardId);
+    const rects = this.tileRects(board);
+    const start = rects[itemId];
+    this.activeTileId = itemId;
+    const sx = e.clientX, sy = e.clientY;
+    let lastGood = { ...start };
+    const onMove = (ev) => {
+      const nx = Math.max(0, Math.round(start.x + (ev.clientX - sx)));
+      const ny = Math.max(0, Math.round(start.y + (ev.clientY - sy)));
+      const cand = { x: nx, y: ny, w: start.w, h: start.h };
+      this.commitLayout(boardId, itemId, cand); // follow the cursor live
+      if (!this.overlapsOther(cand, itemId, rects)) lastGood = cand;
+    };
+    const onUp = () => {
+      this.activeTileId = null;
+      this.commitLayout(boardId, itemId, lastGood); // settle at last non-overlapping spot
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
+
+  startResize(boardId, itemId, e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const board = this.state.boards.find(b => b.id === boardId);
+    const rects = this.tileRects(board);
+    const start = rects[itemId];
+    this.activeTileId = itemId;
+    const sx = e.clientX, sy = e.clientY;
+    let lastGood = { ...start };
+    const onMove = (ev) => {
+      const w = Math.min(640, Math.max(110, Math.round(start.w + (ev.clientX - sx))));
+      const h = Math.min(640, Math.max(90, Math.round(start.h + (ev.clientY - sy))));
+      const cand = { x: start.x, y: start.y, w, h };
+      this.commitLayout(boardId, itemId, cand); // follow the cursor live
+      if (!this.overlapsOther(cand, itemId, rects)) lastGood = cand;
+    };
+    const onUp = () => {
+      this.activeTileId = null;
+      this.commitLayout(boardId, itemId, lastGood);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
+
+  effPalette(board, its) {
+    if (board && board.palette) {
+      const on = board.palette.filter(p => p.on);
+      if (!on.length) return [{ color: '#eceae5', flex: 1 }];
+      return on.map(p => ({ color: p.c, flex: Math.max(1, p.pct) }));
+    }
+    return this.palette(its);
+  }
+
+  // scale the enabled colors so their percentages sum to exactly 100.
+  // if fixedIdx is given, that entry keeps its value and the others share the rest.
+  normalizePal(pal, fixedIdx, fixedVal) {
+    const on = pal.map((p, i) => ({ p, i })).filter(x => x.p.on);
+    if (!on.length) return pal;
+    const out = [...pal];
+    if (fixedIdx != null && pal[fixedIdx] && pal[fixedIdx].on) {
+      const others = on.filter(x => x.i !== fixedIdx);
+      const rest = 100 - fixedVal;
+      const sum = others.reduce((a, x) => a + x.p.pct, 0) || 1;
+      let used = 0;
+      others.forEach((x, k) => {
+        const v = k === others.length - 1 ? Math.max(1, rest - used) : Math.max(1, Math.round((x.p.pct / sum) * rest));
+        used += v;
+        out[x.i] = { ...x.p, pct: v };
+      });
+      out[fixedIdx] = { ...pal[fixedIdx], pct: fixedVal };
+    } else {
+      const sum = on.reduce((a, x) => a + x.p.pct, 0) || 1;
+      let used = 0;
+      on.forEach((x, k) => {
+        const v = k === on.length - 1 ? Math.max(1, 100 - used) : Math.max(1, Math.round((x.p.pct / sum) * 100));
+        used += v;
+        out[x.i] = { ...x.p, pct: v };
+      });
+    }
+    return out;
+  }
+
+  editBoardPalette(boardId, fn) {
+    this.setState(st => ({ boards: st.boards.map(b => b.id === boardId ? { ...b, palette: fn(b.palette) } : b) }));
+  }
+
+  addPaletteColor(hex) {
+    const id = this.state.boardId;
+    if (!id || !hex) return;
+    this.editBoardPalette(id, pal => this.normalizePal([...(pal || []), { c: hex, pct: 15, on: true }]));
+  }
+  pendingImageItem = null;
+  hoverItem = null;
+
+  onPaste = (e) => {
+    const target = this.state.custom ? 'draft' : this.hoverItem;
+    if (target == null) return;
+    const f = [...(e.clipboardData?.items || [])].find(x => x.type.startsWith('image/'));
+    if (f) { e.preventDefault(); this.applyImage(target, f.getAsFile()); }
+  };
+
+  applyImage(itemId, file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, 640 / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const tones = this.extractTones(ctx, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        const bbox = this.contentBBox(ctx, canvas.width, canvas.height);
+        const ar = Math.round(((bbox ? bbox.w / bbox.h : canvas.width / canvas.height)) * 100) / 100;
+        if (itemId === 'draft') {
+          this.setState(st => st.custom ? { custom: { ...st.custom, img: dataUrl, ar, tones: tones || st.custom.tones } } : {});
+        } else {
+          this.setState(st => ({ items: st.items.map(x => x.id === itemId ? { ...x, img: dataUrl, ar, tones: tones || x.tones } : x) }));
+        }
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // finds the bounding box of "content" pixels vs. a plain studio backdrop,
+  // so tiles size to the actual product instead of the photo's padding
+  contentBBox(ctx, w, h) {
+    try {
+      const d = ctx.getImageData(0, 0, w, h).data;
+      const at = (x, y) => { const i = (y * w + x) * 4; return [d[i], d[i + 1], d[i + 2]]; };
+      const corners = [at(0, 0), at(w - 1, 0), at(0, h - 1), at(w - 1, h - 1)];
+      const bg = corners.reduce((a, c) => [a[0] + c[0] / 4, a[1] + c[1] / 4, a[2] + c[2] / 4], [0, 0, 0]);
+      const thresh = 20;
+      const step = Math.max(1, Math.floor(Math.min(w, h) / 220));
+      let minX = w, minY = h, maxX = 0, maxY = 0, found = false;
+      for (let y = 0; y < h; y += step) {
+        for (let x = 0; x < w; x += step) {
+          const i = (y * w + x) * 4;
+          if (Math.abs(d[i] - bg[0]) > thresh || Math.abs(d[i + 1] - bg[1]) > thresh || Math.abs(d[i + 2] - bg[2]) > thresh) {
+            found = true;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+      if (!found) return null;
+      const mx = Math.round(w * 0.1), my = Math.round(h * 0.1);
+      minX = Math.max(0, minX - mx); minY = Math.max(0, minY - my);
+      maxX = Math.min(w, maxX + mx); maxY = Math.min(h, maxY + my);
+      const bw = maxX - minX, bh = maxY - minY;
+      if (bw < w * 0.2 || bh < h * 0.2) return null; // guard against cropping to a speck
+      // only trust the crop when the backdrop padding was substantial — avoids
+      // nibbling real edges (e.g. a rug's border pattern) on already-tight photos
+      if ((bw * bh) / (w * h) > 0.78) return null;
+      return { w: bw, h: bh };
+    } catch (e) { return null; }
+  }
+
+  extractTones(ctx, w, h) {
+    try {
+      const d = ctx.getImageData(0, 0, w, h).data;
+      const buckets = {};
+      for (let i = 0; i < d.length; i += 16) {
+        const p = i / 4, px = p % w, py = Math.floor(p / w);
+        // weight the image center; studio backdrops live at the edges
+        const centerWt = (px > w * 0.2 && px < w * 0.8 && py > h * 0.2 && py < h * 0.8) ? 1.6 : 0.5;
+        const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
+        const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+        const l = (mx + mn) / 2;
+        if (l > 0.93 || l < 0.10) continue; // skip white backgrounds & deep shadows
+        const dl = mx - mn;
+        const sat = dl === 0 ? 0 : dl / (1 - Math.abs(2 * l - 1));
+        let hue = 0;
+        if (dl > 0) {
+          if (mx === r) hue = ((g - b) / dl + 6) % 6;
+          else if (mx === g) hue = (b - r) / dl + 2;
+          else hue = (r - g) / dl + 4;
+          hue *= 60;
+        }
+        const key = Math.round(hue / 30) + ',' + Math.round(l * 5) + ',' + Math.round(sat * 3);
+        const bk = buckets[key] || (buckets[key] = { n: 0, w: 0, r: 0, g: 0, b: 0, hue, l, sat });
+        // near-gray pixels (backdrops, shadows) barely count; saturated color dominates
+        const wt = (sat < 0.12 ? 0.05 : 0.4 + sat) * centerWt;
+        bk.n += wt; bk.w++;
+        bk.r += d[i]; bk.g += d[i + 1]; bk.b += d[i + 2];
+      }
+      const sorted = Object.values(buckets).sort((a, b) => b.n - a.n);
+      if (!sorted.length) return null;
+      // never let a near-gray bucket lead when real color exists
+      const colored = sorted.filter(bk => bk.sat > 0.15);
+      const pool = colored.length >= 2 ? colored : sorted;
+      const first = pool[0];
+      // second color must be visibly different in hue or lightness — and colored, if possible
+      const differs = bk => {
+        const dh = Math.abs(bk.hue - first.hue);
+        return Math.min(dh, 360 - dh) > 40 || Math.abs(bk.l - first.l) > 0.22;
+      };
+      const second = pool.slice(1).find(differs) || sorted.slice(1).find(differs) || pool[1] || sorted[1];
+      const toHex = bk => '#' + [bk.r, bk.g, bk.b].map(v => {
+        let x = Math.round(v / bk.w);
+        return x.toString(16).padStart(2, '0');
+      }).join('');
+      const top = second ? [toHex(first), toHex(second)] : [toHex(first), toHex(first)];
+      top.sort((a, b) => this.lightness(b) - this.lightness(a));
+      return top;
+    } catch (e) { return null; }
+  }
+
+  reprocessImages() {
+    this.state.items.forEach(it => {
+      if (!it.img) return;
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, 320 / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const tones = this.extractTones(ctx, canvas.width, canvas.height);
+        const bbox = this.contentBBox(ctx, canvas.width, canvas.height);
+        const ar = Math.round(((bbox ? bbox.w / bbox.h : img.width / img.height)) * 100) / 100;
+        this.setState(st => ({ items: st.items.map(x => x.id === it.id ? { ...x, ar, tones: tones || x.tones } : x) }));
+      };
+      img.src = it.img;
+    });
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('paste', this.onPaste);
+  }
+
+  componentDidMount() {
+    document.addEventListener('paste', this.onPaste);
+    try {
+      const raw = localStorage.getItem('wishroom-state-v1');
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved && Array.isArray(saved.items) && Array.isArray(saved.boards)) {
+          // migrations: seed items/boards added in chat that a saved state may predate
+          let items = saved.items, boards = saved.boards;
+          if (!items.some(i => i.id === 20)) {
+            items = [this.state.items.find(i => i.id === 20), ...items].filter(Boolean);
+          }
+          if (!boards.some(b => b.id === 'b3')) {
+            boards = [...boards, { id: 'b3', name: 'living room', itemIds: [20] }];
+          }
+          this.setState({ items, boards, nextId: saved.nextId || 100, archived: saved.archived || [], tags: saved.tags || [] }, () => this.reprocessImages());
+        }
+      }
+    } catch (e) { /* corrupted save — start fresh */ }
+  }
+
+  componentDidUpdate() {
+    try {
+      localStorage.setItem('wishroom-state-v1', JSON.stringify({
+        items: this.state.items,
+        boards: this.state.boards,
+        nextId: this.state.nextId,
+        archived: this.state.archived,
+        tags: this.state.tags
+      }));
+    } catch (e) { /* storage unavailable */ }
+  }
+
+  imgCss(item, fit) {
+    if (!item.img) return {};
+    return {
+      position: 'absolute', inset: 0, width: '100%', height: '100%',
+      background: 'url("' + item.img + '") center / ' + fit + ' no-repeat'
+    };
+  }
+
+  importRef = React.createRef();
+
+  exportData() {
+    const data = {
+      items: this.state.items,
+      boards: this.state.boards,
+      nextId: this.state.nextId,
+      archived: this.state.archived,
+      tags: this.state.tags
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const date = new Date().toISOString().slice(0, 10);
+    a.download = 'wishroom-export-' + date + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  importData(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!Array.isArray(data.items) || !Array.isArray(data.boards)) throw new Error('missing items/boards');
+        this.setState({
+          items: data.items,
+          boards: data.boards,
+          nextId: data.nextId || 100,
+          archived: data.archived || [],
+          tags: data.tags || []
+        }, () => this.reprocessImages());
+      } catch (e) {
+        window.alert('That file doesn\u2019t look like a wishroom export.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  tagColorRef = React.createRef();
+  TAG_PRESET_COLORS = ['#d9917f', '#c8a96a', '#a8b0a4', '#b08ba6', '#7d9bb0', '#4a3f38'];
+  isPresetTagColor(c) { return this.TAG_PRESET_COLORS.includes(c); }
+
+  saveTagDraft(vi) {
+    const name = this.state.tagDraft.name.trim();
+    if (!name || !vi) return;
+    const id = 'tag' + Date.now();
+    const color = this.state.tagDraft.color;
+    this.setState(st => ({
+      tags: [...st.tags, { id, name, color }],
+      tagCreatorOpen: false,
+      items: st.items.map(x => x.id === vi.id ? { ...x, tagIds: [...(x.tagIds || []), id] } : x)
+    }));
+  }
+
+  // the single source of truth for an item's tile shape — computed once from
+  // its stored aspect ratio and used identically in the library, boards, and tray
+  tileAr(item) {
+    return item.img && item.ar ? String(Math.min(1.8, Math.max(0.5, item.ar))) : 'auto';
+  }
+
+  stripe(tones) {
+    return 'repeating-linear-gradient(45deg,' + tones[0] + ',' + tones[0] + ' 7px,' + tones[1] + ' 7px,' + tones[1] + ' 14px)';
+  }
+
+  lightness(hex) {
+    return parseInt(hex.slice(1, 3), 16) + parseInt(hex.slice(3, 5), 16) + parseInt(hex.slice(5, 7), 16);
+  }
+
+  palette(boardItems) {
+    const seen = new Set();
+    const colors = [];
+    boardItems.forEach(i => {
+      // items with a real photo contribute both extracted colors
+      (i.img ? [i.tones[1], i.tones[0]] : [i.tones[1]]).forEach(c => {
+        if (!seen.has(c)) { seen.add(c); colors.push(c); }
+      });
+    });
+    colors.sort((a, b) => this.lightness(b) - this.lightness(a));
+    const weights = [3, 2.4, 2, 1.6, 1.3, 1, 1, 1];
+    const out = colors.slice(0, 7).map((c, i) => ({ color: c, flex: weights[i] || 1 }));
+    if (out.length) out.push({ color: '#4a3f38', flex: 0.7 });
+    else out.push({ color: '#eceae5', flex: 1 });
+    return out;
+  }
+
+  saveLinkNow() {
+    const raw = this.state.link.trim();
+    if (!raw) return;
+    const m = raw.match(/([a-z0-9-]+)\.(com|co|net|org|shop|store|io|us|uk)/i);
+    const store = m ? m[1].charAt(0).toUpperCase() + m[1].slice(1) : 'Saved link';
+    this.setState(s => ({
+      link: '',
+      nextId: s.nextId + 1,
+      items: [{ id: s.nextId, name: 'New find', store, price: null, url: raw, folder: s.folder === 'All' ? 'Home' : s.folder, tones: ['#eceae5', '#dcd8ce'], span: 2, photo: 'photo from link' }, ...s.items]
+    }));
+  }
+
+  renderVals() {
+    const accent = this.props.accent ?? '#d9917f';
+    const showPrices = this.props.showPrices ?? true;
+    const s = this.state;
+    const board = s.boards.find(b => b.id === s.boardId) || null;
+
+    const folders = ['All', 'Home', 'Clothing', 'Tech'].map(f => {
+      const n = f === 'All' ? s.items.length : s.items.filter(i => i.folder === f).length;
+      const active = s.folder === f;
+      return {
+        label: f + ' · ' + n,
+        bg: active ? '#4a3f38' : '#fff',
+        color: active ? '#f9f3ec' : '#7d6f63',
+        weight: active ? 700 : 500,
+        pick: () => this.setState({ folder: f })
+      };
+    });
+
+    const byFolder = s.folder === 'All' ? s.items : s.items.filter(i => i.folder === s.folder);
+    const filtered = s.activeTagFilters.length
+      ? byFolder.filter(i => (i.tagIds || []).some(tid => s.activeTagFilters.includes(tid)))
+      : byFolder;
+    const tagById = {};
+    s.tags.forEach(t => { tagById[t.id] = t; });
+    const items = filtered.map(i => ({
+      name: i.name,
+      hasTags: (i.tagIds || []).length > 0,
+      tagDots: (i.tagIds || []).map(tid => tagById[tid] && tagById[tid].color).filter(Boolean),
+      hasUrl: !!i.url,
+      url: i.url || '',
+      chip: i.name.toLowerCase() + ' · ' + i.store.toLowerCase() + (showPrices && i.price != null ? ' · $' + i.price : ''),
+      photoBg: i.img ? i.tones[0] : this.stripe(i.tones),
+      photoH: i.img && i.ar ? 'auto' : '168px',
+      photoAr: this.tileAr(i),
+      imgCss: this.imgCss(i, 'cover'),
+      hasImg: !!i.img,
+      noImg: !i.img,
+      photoLabel: i.photo,
+      hover: () => { this.hoverItem = i.id; },
+      pickImage: () => { this.pendingImageItem = i.id; this.fileRef.current && this.fileRef.current.click(); },
+      drop: e => {
+        e.preventDefault();
+        const f = [...(e.dataTransfer?.files || [])].find(x => x.type.startsWith('image/'));
+        this.applyImage(i.id, f);
+      },
+      sale: !!i.sale,
+      owned: !!i.owned,
+      ownLabel: i.owned ? '✓' : '',
+      ownBg: i.owned ? '#4a3f38' : 'rgba(255,255,255,.92)',
+      ownColor: '#f9f3ec',
+      ownRing: i.owned ? '#4a3f38' : '#c9b8a4',
+      toggle: e => { e.stopPropagation(); this.setState(st => ({ items: st.items.map(x => x.id === i.id ? { ...x, owned: !x.owned } : x) })); },
+      inspect: e => { e.stopPropagation(); this.setState({ viewId: i.id }); }
+    }));
+
+    const openTotal = filtered.filter(i => !i.owned && i.price != null).reduce((a, i) => a + i.price, 0);
+
+    const boards = s.boards.map(b => {
+      const its = b.itemIds.map(id => s.items.find(i => i.id === id)).filter(Boolean);
+      const total = its.reduce((a, i) => a + (i.price || 0), 0);
+      const cover = [0, 1, 2, 3].map(k => its[k] ? its[k].tones[k % 2] : '#f0ebe2');
+      return {
+        name: b.name,
+        meta: its.length + ' items · $' + total.toLocaleString(),
+        cover,
+        palette: this.effPalette(b, its),
+        open: () => this.setState({ boardId: b.id, trayOpen: false, paletteOpen: false, confirmingDeleteBoard: false, gridEditOpen: false })
+      };
+    });
+
+    let boardName = '', boardMeta = '', boardItems = [], trayItems = [], boardPalette = [], boardEmpty = false, swatches = [], boardCanvasHeight = 220;
+    if (board) {
+      const its = board.itemIds.map(id => s.items.find(i => i.id === id)).filter(Boolean);
+      const visibleIts = s.activeTagFilters.length
+        ? its.filter(i => (i.tagIds || []).some(tid => s.activeTagFilters.includes(tid)))
+        : its;
+      const total = its.reduce((a, i) => a + (i.price || 0), 0);
+      boardName = board.name;
+      boardMeta = its.length + ' items · $' + total.toLocaleString();
+      boardPalette = this.effPalette(board, its);
+      swatches = (board.palette || []).map((p, idx) => ({
+        color: p.c,
+        on: p.on,
+        ring: p.on ? p.c : 'transparent',
+        mark: p.on ? '✓' : '',
+        pct: p.on ? String(p.pct) : '–',
+        inputBg: p.on ? '#fff' : '#f6f2ec',
+        toggle: () => this.editBoardPalette(board.id, pal =>
+          this.normalizePal(pal.map((x, i) => i === idx ? { ...x, on: !x.on } : x))),
+        onPct: e => {
+          if (!p.on) return;
+          const v = Math.min(99, Math.max(1, parseInt(e.target.value, 10) || 1));
+          this.editBoardPalette(board.id, pal => this.normalizePal(
+            pal.map((x, i) => i === idx ? { ...x, pct: v } : x), idx, v));
+        },
+        dragStart: () => { this.dragSwatchIdx = idx; },
+        dragEnter: () => {
+          const from = this.dragSwatchIdx;
+          if (from == null || from === idx) return;
+          this.dragSwatchIdx = idx; // live: track the dot's new slot as it moves
+          this.editBoardPalette(board.id, pal => {
+            const out = [...pal];
+            const [moved] = out.splice(from, 1);
+            out.splice(idx, 0, moved);
+            return out;
+          });
+        },
+        dropOn: e => { e.preventDefault(); this.dragSwatchIdx = null; }
+      }));
+      boardEmpty = its.length === 0;
+      const rects = this.tileRects(board);
+      let maxBottom = 220;
+      Object.values(rects).forEach(r => { maxBottom = Math.max(maxBottom, r.y + r.h + this.CAP_H); });
+      boardCanvasHeight = maxBottom + 24;
+      boardItems = visibleIts.map((i, idx) => {
+        const r = rects[i.id];
+        return {
+          xPx: r.x,
+          yPx: r.y,
+          wPx: r.w,
+          hPx: r.h,
+          z: this.activeTileId === i.id ? 20 : (s.gridEditOpen ? 2 : 1),
+          shadow: this.activeTileId === i.id ? '0 12px 30px rgba(40,30,20,.28)' : '0 1px 3px rgba(90,70,50,.07)',
+          photoBg: i.img ? i.tones[0] : this.stripe(i.tones),
+          hasTags: (i.tagIds || []).length > 0,
+          tagDots: (i.tagIds || []).map(tid => tagById[tid] && tagById[tid].color).filter(Boolean),
+          editing: s.gridEditOpen,
+          editOutline: s.gridEditOpen ? '2px dashed #dcc9bd' : 'none',
+          showViewControls: !s.gridEditOpen,
+          moveStart: e => this.startMove(board.id, i.id, e),
+          resizeStart: e => this.startResize(board.id, i.id, e),
+          imgCss: this.imgCss(i, 'cover'),
+          hasImg: !!i.img,
+          hasUrl: !!i.url,
+          url: i.url || '',
+          chip: i.name.toLowerCase() + (i.price != null ? ' · $' + i.price : ''),
+          ownLabel: i.owned ? '✓' : '',
+          ownBg: i.owned ? '#4a3f38' : '#fff',
+          ownRing: i.owned ? '#4a3f38' : '#c9b8a4',
+          toggle: e => { e.stopPropagation(); this.setState(st => ({ items: st.items.map(x => x.id === i.id ? { ...x, owned: !x.owned } : x) })); },
+          inspect: e => { e.stopPropagation(); this.setState({ viewId: i.id }); },
+          remove: () => this.setState(st => ({ boards: st.boards.map(b => b.id === board.id ? { ...b, itemIds: b.itemIds.filter(x => x !== i.id) } : b) }))
+        };
+      });
+      trayItems = s.items.filter(i => !board.itemIds.includes(i.id)).map(i => ({
+        name: i.name,
+        stripe: this.stripe(i.tones),
+        imgCss: this.imgCss(i, 'cover'),
+        hasImg: !!i.img,
+        add: () => this.setState(st => ({ boards: st.boards.map(b => b.id === board.id ? { ...b, itemIds: [...b.itemIds, i.id] } : b) }))
+      }));
+    }
+
+    const vi = s.viewId != null ? s.items.find(i => i.id === s.viewId) : null;
+    const editItem = (id, patch) => this.setState(st => ({ items: st.items.map(x => x.id === id ? { ...x, ...patch } : x) }));
+
+    return {
+      viewOpen: !!vi,
+      viewHasImg: !!(vi && vi.img),
+      viewNoImg: !!(vi && !vi.img),
+      viewImgCss: vi ? this.imgCss(vi, 'contain') : {},
+      viewBg: vi ? (vi.img ? vi.tones[0] : this.stripe(vi.tones)) : '#fff',
+      viewName: vi ? vi.name : '',
+      viewRename: e => vi && editItem(vi.id, { name: e.target.value }),
+      viewStore: vi ? vi.store : '',
+      viewPrice: vi ? (vi.price == null ? (vi.owned ? '—' : 'price?') : '$' + vi.price) : '',
+      viewHasUrl: !!(vi && vi.url),
+      viewUrl: vi && vi.url ? vi.url : '',
+      viewSetUrl: e => vi && editItem(vi.id, { url: e.target.value }),
+      viewNotes: vi ? (vi.notes || '') : '',
+      viewSetNotes: e => vi && editItem(vi.id, { notes: e.target.value }),
+      viewOwnBg: vi && vi.owned ? '#4a3f38' : '#fff',
+      viewOwnRing: vi && vi.owned ? '#4a3f38' : '#c9b8a4',
+      viewOwnMark: vi && vi.owned ? '✓' : '',
+      viewToggleOwned: () => vi && editItem(vi.id, { owned: !vi.owned }),
+      viewTags: vi ? s.tags.map(t => {
+        const on = (vi.tagIds || []).includes(t.id);
+        return {
+          label: t.name,
+          dot: t.color,
+          weight: on ? 700 : 500,
+          bg: on ? t.color : '#f9f3ec',
+          color: on ? '#fff' : '#7d6f63',
+          toggle: () => editItem(vi.id, {
+            tagIds: on ? (vi.tagIds || []).filter(id => id !== t.id) : [...(vi.tagIds || []), t.id]
+          })
+        };
+      }) : [],
+      openTagCreator: () => this.setState({ tagCreatorOpen: true, tagDraft: { name: '', color: '#d9917f' } }),
+      closeTagCreator: () => this.setState({ tagCreatorOpen: false }),
+      tagCreatorOpen: s.tagCreatorOpen,
+      tagDraftName: s.tagDraft.name,
+      tagDraftSetName: e => this.setState(st => ({ tagDraft: { ...st.tagDraft, name: e.target.value } })),
+      tagDraftKey: e => { if (e.key === 'Enter') this.saveTagDraft(vi); },
+      tagColorOptions: ['#d9917f', '#c8a96a', '#a8b0a4', '#b08ba6', '#7d9bb0', '#4a3f38'].map(c => ({
+        color: c,
+        ring: s.tagDraft.color === c ? c : 'transparent',
+        pick: () => this.setState(st => ({ tagDraft: { ...st.tagDraft, color: c } }))
+      })),
+      tagDraftColor: s.tagDraft.color,
+      customColorRing: this.isPresetTagColor(s.tagDraft.color) ? 'transparent' : s.tagDraft.color,
+      tagDraftColorSwatch: this.isPresetTagColor(s.tagDraft.color) ? 'conic-gradient(from 0deg, #d9917f, #c8a96a, #a8b0a4, #b08ba6, #7d9bb0, #4a3f38, #d9917f)' : s.tagDraft.color,
+      customColorMark: this.isPresetTagColor(s.tagDraft.color) ? '+' : '',
+      tagColorRef: this.tagColorRef,
+      pickCustomTagColor: () => this.tagColorRef.current && this.tagColorRef.current.click(),
+      onTagColorPicked: e => this.setState(st => ({ tagDraft: { ...st.tagDraft, color: e.target.value } })),
+      saveTagDraft: () => this.saveTagDraft(vi),
+      viewBoards: vi ? s.boards.map(b => {
+        const on = b.itemIds.includes(vi.id);
+        return {
+          name: b.name,
+          weight: on ? 700 : 500,
+          bg: on ? '#4a3f38' : '#fff',
+          color: on ? '#f9f3ec' : '#7d6f63',
+          dotBg: on ? accent : 'transparent',
+          ringColor: on ? accent : '#c9b8a4',
+          mark: on ? '✓' : '',
+          toggle: () => this.setState(st => ({
+            boards: st.boards.map(x => x.id === b.id
+              ? { ...x, itemIds: on ? x.itemIds.filter(id => id !== vi.id) : [...x.itemIds, vi.id] }
+              : x)
+          }))
+        };
+      }) : [],
+      viewNoBoards: s.boards.length === 0,
+      viewArchive: () => {
+        if (!vi) return;
+        this.setState(st => ({
+          viewId: null,
+          items: st.items.filter(x => x.id !== vi.id),
+          archived: [...st.archived, vi],
+          boards: st.boards.map(b => ({ ...b, itemIds: b.itemIds.filter(id => id !== vi.id) }))
+        }));
+      },
+      closeView: () => this.setState({ viewId: null }),
+      hasArchived: s.archived.length > 0,
+      archivedCount: s.archived.length,
+      archiveOpen: s.archiveOpen,
+      openArchive: () => this.setState({ archiveOpen: true }),
+      closeArchive: () => this.setState({ archiveOpen: false }),
+      archiveEmpty: s.archived.length === 0,
+      archivedList: s.archived.map(a => ({
+        name: a.name,
+        store: a.store,
+        hasImg: !!a.img,
+        photoBg: a.img ? a.tones[0] : this.stripe(a.tones),
+        imgCss: a.img ? this.imgCss(a, 'cover') : {},
+        restore: () => this.setState(st => ({
+          archived: st.archived.filter(x => x.id !== a.id),
+          items: [a, ...st.items]
+        }))
+      })),
+      stopClick: e => e.stopPropagation(),
+      fileRef: this.fileRef,
+      importRef: this.importRef,
+      exportData: () => this.exportData(),
+      startImport: () => this.importRef.current && this.importRef.current.click(),
+      onImportPicked: e => {
+        const f = e.target.files && e.target.files[0];
+        this.importData(f);
+        e.target.value = '';
+      },
+      dragOver: e => e.preventDefault(),
+      onFilePicked: e => {
+        const f = e.target.files && e.target.files[0];
+        if (f && this.pendingImageItem != null) this.applyImage(this.pendingImageItem, f);
+        this.pendingImageItem = null;
+        e.target.value = '';
+      },
+      customOpen: !!s.custom,
+      openCustom: () => this.setState({ custom: { name: '', store: '', price: '', owned: true, folder: s.folder === 'All' ? 'Home' : s.folder, img: null, ar: null, tones: ['#eceae5', '#dcd8ce'] } }),
+      cancelCustom: () => this.setState({ custom: null }),
+      pickDraftImage: () => { this.pendingImageItem = 'draft'; this.fileRef.current && this.fileRef.current.click(); },
+      dropDraftImage: e => {
+        e.preventDefault();
+        const f = [...(e.dataTransfer?.files || [])].find(x => x.type.startsWith('image/'));
+        this.applyImage('draft', f);
+      },
+      draftBg: s.custom ? (s.custom.img ? s.custom.tones[0] : this.stripe(s.custom.tones)) : '#f9f3ec',
+      draftHasImg: !!(s.custom && s.custom.img),
+      draftNoImg: !!(s.custom && !s.custom.img),
+      draftImgCss: s.custom && s.custom.img ? this.imgCss(s.custom, 'contain') : {},
+      draftName: s.custom ? s.custom.name : '',
+      draftSetName: e => this.setState(st => ({ custom: { ...st.custom, name: e.target.value } })),
+      draftStore: s.custom ? s.custom.store : '',
+      draftSetStore: e => this.setState(st => ({ custom: { ...st.custom, store: e.target.value } })),
+      draftPrice: s.custom ? s.custom.price : '',
+      draftSetPrice: e => this.setState(st => ({ custom: { ...st.custom, price: e.target.value } })),
+      draftOwnBg: s.custom && s.custom.owned ? '#4a3f38' : '#fff',
+      draftOwnRing: s.custom && s.custom.owned ? '#4a3f38' : '#c9b8a4',
+      draftOwnMark: s.custom && s.custom.owned ? '✓' : '',
+      draftToggleOwned: () => this.setState(st => ({ custom: { ...st.custom, owned: !st.custom.owned } })),
+      draftFolders: ['Home', 'Clothing', 'Tech'].map(f => ({
+        label: f,
+        weight: s.custom && s.custom.folder === f ? 700 : 500,
+        bg: s.custom && s.custom.folder === f ? '#4a3f38' : '#f9f3ec',
+        color: s.custom && s.custom.folder === f ? '#f9f3ec' : '#7d6f63',
+        pick: () => this.setState(st => ({ custom: { ...st.custom, folder: f } }))
+      })),
+      saveCustom: () => {
+        const c = this.state.custom;
+        if (!c) return;
+        const price = parseFloat(String(c.price).replace(/[^0-9.]/g, ''));
+        this.setState(st => ({
+          custom: null,
+          nextId: st.nextId + 1,
+          items: [{
+            id: st.nextId,
+            name: c.name.trim() || 'untitled',
+            store: c.store.trim() || (c.owned ? 'already mine' : ''),
+            price: isNaN(price) ? null : price,
+            folder: c.folder, tones: c.tones, ar: c.ar, img: c.img,
+            span: 2, photo: 'add a photo', owned: c.owned
+          }, ...st.items]
+        }));
+      },
+      accent,
+      accentSoft: accent + '26',
+      accentDeep: accent,
+      priceVis: showPrices ? 'flex' : 'none',
+      link: s.link,
+      onLinkChange: e => this.setState({ link: e.target.value }),
+      onLinkKey: e => { if (e.key === 'Enter') this.saveLinkNow(); },
+      saveLink: () => this.saveLinkNow(),
+      inLibrary: !board,
+      inBoard: !!board,
+      folders,
+      items,
+      folderTotal: '$' + openTotal.toLocaleString(),
+      hasTags: s.tags.length > 0,
+      hasActiveTagFilter: s.activeTagFilters.length > 0,
+      clearTagFilters: () => this.setState({ activeTagFilters: [] }),
+      tagFilters: s.tags.map(t => {
+        const active = s.activeTagFilters.includes(t.id);
+        return {
+          label: t.name,
+          dot: t.color,
+          weight: active ? 700 : 500,
+          bg: active ? '#4a3f38' : '#fff',
+          color: active ? '#f9f3ec' : '#7d6f63',
+          toggle: () => this.setState(st => ({
+            activeTagFilters: st.activeTagFilters.includes(t.id)
+              ? st.activeTagFilters.filter(id => id !== t.id)
+              : [...st.activeTagFilters, t.id]
+          }))
+        };
+      }),
+      boards,
+      newBoard: () => {
+        const id = 'b' + Date.now();
+        this.setState(st => ({ boards: [...st.boards, { id, name: 'untitled board', itemIds: [] }], boardId: id, trayOpen: true }));
+      },
+      boardName, boardMeta, boardPalette, boardItems, boardEmpty, swatches,
+      includedSwatches: swatches.filter(sw => sw.on),
+      excludedSwatches: swatches.filter(sw => !sw.on),
+      hasExcluded: swatches.some(sw => !sw.on),
+      paletteOpen: s.paletteOpen && !!board,
+      paletteHint: board && board.palette ? 'custom palette — click to edit' : 'palette from your items — click to edit',
+      togglePaletteEditor: () => {
+        if (!board) return;
+        if (!s.paletteOpen && !board.palette) {
+          // seed the editor with the current auto palette, normalized to 100%
+          const auto = this.palette(board.itemIds.map(id => s.items.find(i => i.id === id)).filter(Boolean));
+          const tot = auto.reduce((a, p) => a + p.flex, 0);
+          const seeded = auto.map(p => ({ c: p.color, pct: Math.max(1, Math.round((p.flex / tot) * 100)), on: true }));
+          this.editBoardPalette(board.id, () => seeded);
+        }
+        this.setState(st => ({ paletteOpen: !st.paletteOpen }));
+      },
+      resetPalette: () => board && this.editBoardPalette(board.id, () => null),
+      renameBoard: e => this.setState(st => ({ boards: st.boards.map(b => b.id === board.id ? { ...b, name: e.target.value } : b) })),
+      colorRef: this.colorRef,
+      pickColor: () => this.colorRef.current && this.colorRef.current.click(),
+      onColorPicked: e => this.addPaletteColor(e.target.value),
+      hasEyeDropper: typeof window !== 'undefined' && 'EyeDropper' in window,
+      eyeDrop: async () => {
+        try {
+          const r = await new window.EyeDropper().open();
+          this.addPaletteColor(r.sRGBHex);
+        } catch (e) { /* user cancelled */ }
+      },
+      trayOpen: s.trayOpen,
+      trayEmpty: board ? trayItems.length === 0 : false,
+      trayItems,
+      trayLabel: s.trayOpen ? 'done adding' : '+ add items',
+      toggleTray: () => this.setState(st => ({ trayOpen: !st.trayOpen })),
+      openTray: () => this.setState({ trayOpen: true }),
+      closeBoard: () => this.setState({ boardId: null, trayOpen: false, paletteOpen: false, gridEditOpen: false }),
+      confirmingDelete: s.confirmingDeleteBoard,
+      notConfirmingDelete: !s.confirmingDeleteBoard,
+      askDeleteBoard: () => this.setState({ confirmingDeleteBoard: true }),
+      cancelDeleteBoard: () => this.setState({ confirmingDeleteBoard: false }),
+      confirmDeleteBoard: () => board && this.setState(st => ({
+        boards: st.boards.filter(b => b.id !== board.id),
+        boardId: null, trayOpen: false, paletteOpen: false, confirmingDeleteBoard: false
+      })),
+      gridEditOpen: s.gridEditOpen,
+      gridEditLabel: s.gridEditOpen ? 'done editing' : 'edit grid',
+      gridEditBg: s.gridEditOpen ? '#4a3f38' : '#fff',
+      gridEditColor: s.gridEditOpen ? '#f9f3ec' : '#7d6f63',
+      toggleGridEdit: () => this.setState(st => ({ gridEditOpen: !st.gridEditOpen })),
+      canvasHeight: boardCanvasHeight,
+      gridHint: s.gridEditOpen ? 'drag ⠿ to move a tile anywhere · drag the corner to resize · tiles won\u2019t overlap' : 'the palette strip re-mixes as you add and remove items'
+    };
+  }
+}
+
+</script>
+</body>
+</html>
