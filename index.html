@@ -1,8 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wishroom</title>
+<meta name="description" content="Your personal shopping wishlist and moodboard.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛍</text></svg>">
+<style>
+html,body{margin:0;background:#f9f3ec}
+#dc-loading{display:flex;align-items:center;justify-content:center;min-height:100vh;font:14px/1 system-ui,sans-serif;color:#c9b9ab;letter-spacing:.04em}
+body:has(#dc-root) #dc-loading{display:none}
+</style>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -1336,5 +1344,6 @@ class Component extends DCLogic {
 }
 
 </script>
+<div id="dc-loading">loading wishroom…</div>
 </body>
 </html>
