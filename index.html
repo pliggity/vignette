@@ -181,7 +181,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
             <div style="display:flex; align-items:center; gap:8px">
               <input value="{{ viewUrl }}" onChange="{{ viewSetUrl }}" placeholder="paste a shop link…" style="flex:1; min-width:0; font-size:12.5px; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:8px; padding:8px 11px">
               <sc-if value="{{ viewHasUrl }}" hint-placeholder-val="{{ false }}">
-                <a href="{{ viewUrl }}" target="_blank" rel="noopener" title="open link" style="flex:none; width:32px; height:32px; border-radius:8px; background:#fff; color:{{ accentDeep }}; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:0 1px 3px rgba(90,70,50,.07)">↗</a>
+                <a href="{{ viewUrlHref }}" target="_blank" rel="noopener" title="open link" style="flex:none; width:32px; height:32px; border-radius:8px; background:#fff; color:{{ accentDeep }}; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:0 1px 3px rgba(90,70,50,.07)">↗</a>
               </sc-if>
             </div>
           </div>
@@ -305,7 +305,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
             </sc-if>
             <div onClick="{{ item.inspect }}" title="inspect item" style="cursor:pointer; position:absolute; top:8px; left:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">🔍</div>
             <sc-if value="{{ item.hasUrl }}" hint-placeholder-val="{{ false }}">
-              <a href="{{ item.url }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#4a3f38; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
+              <a href="{{ item.urlHref }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#4a3f38; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
             </sc-if>
           </div>
           <div style="display:flex; align-items:center; gap:8px; padding:0 3px 2px">
@@ -471,7 +471,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
             <sc-if value="{{ it.showViewControls }}" hint-placeholder-val="{{ true }}">
               <div onClick="{{ it.inspect }}" title="inspect item" style="cursor:pointer; position:absolute; top:8px; left:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">🔍</div>
               <sc-if value="{{ it.hasUrl }}" hint-placeholder-val="{{ false }}">
-                <a href="{{ it.url }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#4a3f38; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
+                <a href="{{ it.urlHref }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#4a3f38; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
               </sc-if>
             </sc-if>
             <sc-if value="{{ it.editing }}" hint-placeholder-val="{{ false }}">
@@ -736,6 +736,22 @@ class Component extends DCLogic {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
+      this._processImageSrc(reader.result).then(({ imgSrc, ar, tones }) => {
+        if (itemId === 'draft') {
+          this.setState(st => st.custom ? { custom: { ...st.custom, img: imgSrc, ar, tones: tones || st.custom.tones } } : {});
+        } else {
+          this.setState(st => ({ items: st.items.map(x => x.id === itemId ? { ...x, img: imgSrc, ar, tones: tones || x.tones } : x) }));
+        }
+      }).catch(() => {});
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Loads an image src (data: URL only — never a cross-origin URL, which would
+  // taint the canvas), resizes it, extracts tones/aspect, uploads the JPEG to
+  // GitHub Releases, and resolves with the hosted URL (or base64 if upload fails).
+  _processImageSrc(src) {
+    return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
         const scale = Math.min(1, 640 / Math.max(img.width, img.height));
@@ -744,26 +760,22 @@ class Component extends DCLogic {
         canvas.height = Math.round(img.height * scale);
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const tones = this.extractTones(ctx, canvas.width, canvas.height);
-        const bbox = this.contentBBox(ctx, canvas.width, canvas.height);
-        const ar = Math.round(((bbox ? bbox.w / bbox.h : canvas.width / canvas.height)) * 100) / 100;
+        let tones = null, ar;
+        try {
+          tones = this.extractTones(ctx, canvas.width, canvas.height);
+          const bbox = this.contentBBox(ctx, canvas.width, canvas.height);
+          ar = Math.round(((bbox ? bbox.w / bbox.h : canvas.width / canvas.height)) * 100) / 100;
+        } catch { ar = Math.round((canvas.width / canvas.height) * 100) / 100; }
         canvas.toBlob(async (blob) => {
           let imgSrc;
-          try {
-            imgSrc = await this.uploadImage(blob);
-          } catch {
-            imgSrc = canvas.toDataURL('image/jpeg', 0.82);
-          }
-          if (itemId === 'draft') {
-            this.setState(st => st.custom ? { custom: { ...st.custom, img: imgSrc, ar, tones: tones || st.custom.tones } } : {});
-          } else {
-            this.setState(st => ({ items: st.items.map(x => x.id === itemId ? { ...x, img: imgSrc, ar, tones: tones || x.tones } : x) }));
-          }
+          try { imgSrc = await this.uploadImage(blob); }
+          catch { imgSrc = canvas.toDataURL('image/jpeg', 0.82); }
+          resolve({ imgSrc, ar, tones });
         }, 'image/jpeg', 0.82);
       };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
+      img.onerror = () => reject(new Error('image load failed'));
+      img.src = src;
+    });
   }
 
   _imagesReleaseId = null;
@@ -944,14 +956,34 @@ class Component extends DCLogic {
     window.addEventListener('beforeunload', this.flushSave);
     // A fresh OAuth redirect (?code=) always wins over a stored token — a
     // stale/expired token must never block re-authentication.
-    const code = new URLSearchParams(window.location.search).get('code');
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
     if (code) {
+      const returnedState = params.get('state');
+      const savedState = sessionStorage.getItem('wishroom-oauth-state');
+      sessionStorage.removeItem('wishroom-oauth-state');
       history.replaceState({}, '', window.location.pathname);
+      // Verify the CSRF state GitHub echoed back matches the one we issued.
+      if (!savedState || returnedState !== savedState) {
+        this.setState({ patError: 'Sign-in could not be verified — please try again.' });
+        return;
+      }
       this.exchangeCode(code);
       return;
     }
     const stored = localStorage.getItem('wishroom-pat');
     if (stored) this.loadFromGitHub(stored);
+  }
+
+  // Lazily mint + persist a per-session CSRF state token for the OAuth redirect.
+  _oauthState() {
+    let s = sessionStorage.getItem('wishroom-oauth-state');
+    if (!s) {
+      s = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2) + Date.now().toString(36);
+      sessionStorage.setItem('wishroom-oauth-state', s);
+    }
+    return s;
   }
 
   async exchangeCode(code) {
@@ -1038,38 +1070,62 @@ class Component extends DCLogic {
     }
   }
 
+  _saving = false;
+  _saveDirty = false;
+
   scheduleGithubSave() {
     clearTimeout(this._saveTimer);
     this.setState({ syncing: true });
     this._saveTimer = setTimeout(() => this.doGithubSave(), 1500);
   }
 
+  // Serialize saves: only one PUT in flight at a time. Changes made during a
+  // save set a dirty flag that triggers a follow-up, so nothing is lost and
+  // two overlapping PUTs can't race to a 409.
   async doGithubSave() {
-    const { pat, ghSha } = this.state;
-    if (!pat || !ghSha) {
-      this.setState({ syncing: false, saveError: `save skipped (pat:${!!pat} sha:${!!ghSha})` });
-      return;
-    }
+    if (!this.state.pat || !this.state.ghSha) { this.setState({ syncing: false, saveError: null }); return; }
+    if (this._saving) { this._saveDirty = true; return; }
+    this._saving = true;
     try {
-      const data = { items: this.state.items, boards: this.state.boards, nextId: this.state.nextId, archived: this.state.archived, tags: this.state.tags };
-      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-      const res = await fetch('https://api.github.com/repos/pliggity/wishroom/contents/data.json', {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'update wishroom', content: encoded, sha: ghSha })
-      });
-      if (res.ok) {
-        const result = await res.json();
-        this.setState({ syncing: false, saveError: null, ghSha: result.content.sha });
-      } else {
-        const errBody = await res.json().catch(() => ({}));
-        console.error('wishroom save failed', res.status, errBody);
-        this.setState({ syncing: false, saveError: `save failed (${res.status})` });
-      }
+      await this._putData(false);
     } catch (e) {
       console.error('wishroom save error', e);
       this.setState({ syncing: false, saveError: 'save failed' });
+    } finally {
+      this._saving = false;
+      if (this._saveDirty) { this._saveDirty = false; this.scheduleGithubSave(); }
     }
+  }
+
+  async _putData(isRetry) {
+    const pat = this.state.pat;
+    const data = { items: this.state.items, boards: this.state.boards, nextId: this.state.nextId, archived: this.state.archived, tags: this.state.tags };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    this.setState({ syncing: true });
+    const res = await fetch('https://api.github.com/repos/pliggity/wishroom/contents/data.json', {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'update wishroom', content: encoded, sha: this.state.ghSha })
+    });
+    if (res.ok) {
+      const result = await res.json();
+      this.setState({ syncing: false, saveError: null, ghSha: result.content.sha });
+      return;
+    }
+    // 409 = our sha is stale (another device/tab wrote). Refetch the latest sha
+    // and retry once — last write wins, which is fine for a single user.
+    if (res.status === 409 && !isRetry) {
+      const fresh = await fetch(`https://api.github.com/repos/pliggity/wishroom/contents/data.json?t=${Date.now()}`, {
+        headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json' }
+      }).then(r => r.ok ? r.json() : null).catch(() => null);
+      if (fresh && fresh.sha) {
+        this.setState({ ghSha: fresh.sha });
+        return this._putData(true);
+      }
+    }
+    const errBody = await res.json().catch(() => ({}));
+    console.error('wishroom save failed', res.status, errBody);
+    this.setState({ syncing: false, saveError: `save failed (${res.status})` });
   }
 
   signOut() {
@@ -1079,10 +1135,24 @@ class Component extends DCLogic {
 
   imgCss(item, fit) {
     if (!item.img) return {};
+    // strip anything that could break out of the url("...") wrapper and inject
+    // extra CSS — quotes, parens, backslashes, whitespace/newlines
+    const safe = String(item.img).replace(/["'()\\\s]/g, '');
+    if (!safe) return {};
     return {
       position: 'absolute', inset: 0, width: '100%', height: '100%',
-      background: 'url("' + item.img + '") center / ' + fit + ' no-repeat'
+      background: 'url("' + safe + '") center / ' + fit + ' no-repeat'
     };
+  }
+
+  // Returns a safe href, or '' — blocks javascript:/data:/etc. so a saved link
+  // can never execute script when clicked. Bare domains get https:// prepended.
+  _safeLink(u) {
+    if (!u) return '';
+    const s = String(u).trim();
+    if (/^https?:\/\//i.test(s)) return s;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return ''; // any other scheme -> reject
+    return s ? 'https://' + s : '';
   }
 
   importRef = React.createRef();
@@ -1176,30 +1246,41 @@ class Component extends DCLogic {
   }
 
   saveLinkNow() {
-    const raw = this.state.link.trim();
-    if (!raw) return;
-    const m = raw.match(/([a-z0-9-]+)\.(com|co|net|org|shop|store|io|us|uk)/i);
+    const url = this._safeLink(this.state.link.trim());
+    if (!url) { this.setState({ link: '' }); return; }
+    const m = url.match(/([a-z0-9-]+)\.(com|co|net|org|shop|store|io|us|uk)/i);
     const store = m ? m[1].charAt(0).toUpperCase() + m[1].slice(1) : '';
     const folder = this.state.folder === 'All' ? 'Home' : this.state.folder;
     this.setState({
       link: '',
-      custom: { name: '', store, price: '', owned: false, folder, img: null, ar: null, tones: ['#eceae5', '#dcd8ce'], url: raw, fetching: true }
+      custom: { name: '', store, price: '', owned: false, folder, img: null, ar: null, tones: ['#eceae5', '#dcd8ce'], url, fetching: true }
     });
-    this.fetchLinkMeta(raw);
+    this.fetchLinkMeta(url);
   }
 
   async fetchLinkMeta(url) {
     try {
       const res = await fetch('https://wishroom-oauth.pliggity.workers.dev/fetch-meta', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.state.pat}` },
         body: JSON.stringify({ url })
       });
       const data = await res.json();
+      // set the title immediately; the image is re-hosted (not hot-linked)
       this.setState(st => {
         if (!st.custom || st.custom.url !== url) return null;
-        return { custom: { ...st.custom, fetching: false, name: data.title || '', img: data.image || null } };
+        return { custom: { ...st.custom, fetching: !!data.imageData, name: data.title || '' } };
       });
+      if (data.imageData) {
+        try {
+          const { imgSrc, ar, tones } = await this._processImageSrc(data.imageData);
+          this.setState(st => (st.custom && st.custom.url === url)
+            ? { custom: { ...st.custom, fetching: false, img: imgSrc, ar, tones: tones || st.custom.tones } }
+            : null);
+        } catch {
+          this.setState(st => st.custom && st.custom.url === url ? { custom: { ...st.custom, fetching: false } } : null);
+        }
+      }
     } catch {
       this.setState(st => st.custom && st.custom.url === url ? { custom: { ...st.custom, fetching: false } } : null);
     }
@@ -1235,6 +1316,7 @@ class Component extends DCLogic {
       tagDots: (i.tagIds || []).map(tid => tagById[tid] && tagById[tid].color).filter(Boolean),
       hasUrl: !!i.url,
       url: i.url || '',
+      urlHref: this._safeLink(i.url),
       chip: i.name.toLowerCase() + ' · ' + i.store.toLowerCase() + (showPrices && i.price != null ? ' · $' + i.price : ''),
       photoBg: i.img ? i.tones[0] : this.stripe(i.tones),
       photoH: i.img && i.ar ? 'auto' : '168px',
@@ -1340,6 +1422,7 @@ class Component extends DCLogic {
           hasImg: !!i.img,
           hasUrl: !!i.url,
           url: i.url || '',
+          urlHref: this._safeLink(i.url),
           chip: i.name.toLowerCase() + (i.price != null ? ' · $' + i.price : ''),
           ownLabel: i.owned ? '✓' : '',
           ownBg: i.owned ? '#4a3f38' : '#fff',
@@ -1376,6 +1459,7 @@ class Component extends DCLogic {
       viewPrice: vi ? (vi.price == null ? (vi.owned ? '—' : 'price?') : '$' + vi.price) : '',
       viewHasUrl: !!(vi && vi.url),
       viewUrl: vi && vi.url ? vi.url : '',
+      viewUrlHref: vi ? this._safeLink(vi.url) : '',
       viewSetUrl: e => vi && editItem(vi.id, { url: e.target.value }),
       viewNotes: vi ? (vi.notes || '') : '',
       viewSetNotes: e => vi && editItem(vi.id, { notes: e.target.value }),
@@ -1619,7 +1703,7 @@ class Component extends DCLogic {
       authLoading: s.authLoading,
       syncing: s.syncing,
       saveErrorMsg: s.saveError || '',
-      githubAuthUrl: 'https://github.com/login/oauth/authorize?client_id=Ov23lijpZJuBnpW8mbVl&scope=public_repo',
+      githubAuthUrl: 'https://github.com/login/oauth/authorize?client_id=Ov23lijpZJuBnpW8mbVl&scope=public_repo&state=' + this._oauthState(),
       signOut: () => this.signOut()
     };
   }
