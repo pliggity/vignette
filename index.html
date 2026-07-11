@@ -941,11 +941,27 @@ class Component extends DCLogic {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const DATA = ['items', 'boards', 'nextId', 'archived', 'tags'];
-    if (this._loaded && this.state.pat && DATA.some(k => this.state[k] !== prevState[k])) {
+  // NOTE: the Claude Design runtime calls componentDidUpdate with prevProps
+  // only — there is NO prevState argument. We track the last-saved data
+  // snapshot on the instance instead and diff against that.
+  componentDidUpdate() {
+    if (!this._loaded || !this.state.pat || !this._prevData) return;
+    const s = this.state;
+    const changed =
+      this._prevData.items !== s.items ||
+      this._prevData.boards !== s.boards ||
+      this._prevData.nextId !== s.nextId ||
+      this._prevData.archived !== s.archived ||
+      this._prevData.tags !== s.tags;
+    if (changed) {
+      this._prevData = { items: s.items, boards: s.boards, nextId: s.nextId, archived: s.archived, tags: s.tags };
       this.scheduleGithubSave();
     }
+  }
+
+  _snapshotData() {
+    const s = this.state;
+    this._prevData = { items: s.items, boards: s.boards, nextId: s.nextId, archived: s.archived, tags: s.tags };
   }
 
   async loadFromGitHub(pat) {
@@ -970,7 +986,7 @@ class Component extends DCLogic {
         patch.archived = data.archived || [];
         patch.tags = data.tags || [];
       }
-      this.setState(patch, () => { this._loaded = true; this.reprocessImages(); this.migrateImages(); });
+      this.setState(patch, () => { this._loaded = true; this._snapshotData(); this.reprocessImages(); this.migrateImages(); });
     } catch (e) {
       this.setState({ patError: 'Failed to connect to GitHub.', authLoading: false });
     }
