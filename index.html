@@ -952,7 +952,7 @@ class Component extends DCLogic {
     this._loaded = false;
     try {
       const res = await fetch(`https://api.github.com/repos/pliggity/wishroom/contents/data.json?t=${Date.now()}`, {
-        headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json', 'Cache-Control': 'no-cache' }
+        headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json' }
       });
       if (!res.ok) {
         this.setState({ patError: res.status === 401 ? 'Invalid token.' : `GitHub error ${res.status}.` });
