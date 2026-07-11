@@ -38,9 +38,10 @@ body:has(#dc-root) #dc-loading{display:none}
   .wr-board-list{grid-template-columns:1fr !important}
   .wr-board-head{flex-wrap:wrap !important}
   .wr-board-name{width:100% !important;flex:1 1 100% !important;order:1}
-  /* freeform board canvas is a desktop tool (mouse drag); on mobile keep it
-     from blowing out the page — scroll it horizontally within its own box */
-  .wr-board-canvas{overflow-x:auto !important;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+  /* board canvas is zoomable; the viewport scrolls horizontally when zoomed in
+     past the screen. Use "fit" to see the whole board and arrange without
+     fighting page scroll. */
+  .wr-board-viewport{overscroll-behavior:contain}
   /* keep iOS from zooming in when an input gains focus */
   .wr-shell input,.wr-shell textarea,.wr-modal input,.wr-modal textarea,.wr-view-panel input,.wr-view-panel textarea{font-size:16px !important}
 }
@@ -444,7 +445,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
         <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start">
           <sc-for list="{{ includedSwatches }}" as="sw" hint-placeholder-count="4">
             <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
-              <div onClick="{{ sw.toggle }}" draggable="{{ true }}" onDragStart="{{ sw.dragStart }}" onDragEnter="{{ sw.dragEnter }}" onDragOver="{{ dragOver }}" onDrop="{{ sw.dropOn }}" title="{{ sw.color }} — click to toggle, drag to reorder" style="cursor:grab; width:36px; height:36px; border-radius:99px; background:{{ sw.color }}; box-shadow:0 0 0 2px #fff, 0 0 0 3.5px {{ sw.ring }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; text-shadow:0 1px 2px rgba(0,0,0,.5); user-select:none">{{ sw.mark }}</div>
+              <div onClick="{{ sw.toggle }}" onPointerDown="{{ sw.ptrDown }}" data-swatch="{{ sw.idx }}" title="{{ sw.color }} — tap to toggle, drag to reorder" style="cursor:grab; width:36px; height:36px; border-radius:99px; background:{{ sw.color }}; box-shadow:0 0 0 2px #fff, 0 0 0 3.5px {{ sw.ring }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; text-shadow:0 1px 2px rgba(0,0,0,.5); user-select:none; touch-action:none">{{ sw.mark }}</div>
               <div style="display:flex; align-items:center; gap:2px">
                 <input value="{{ sw.pct }}" onChange="{{ sw.onPct }}" style="width:34px; text-align:center; font-size:11px; font-family:'Karla',sans-serif; color:#4a3f38; border:1px solid #eee5da; border-radius:6px; padding:3px 2px; outline:none; background:{{ sw.inputBg }}">
                 <span style="font-size:10px; color:#b3a294">%</span>
@@ -469,7 +470,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
             <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start">
               <sc-for list="{{ excludedSwatches }}" as="sw" hint-placeholder-count="2">
                 <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
-                  <div onClick="{{ sw.toggle }}" draggable="{{ true }}" onDragStart="{{ sw.dragStart }}" onDragEnter="{{ sw.dragEnter }}" onDragOver="{{ dragOver }}" onDrop="{{ sw.dropOn }}" title="{{ sw.color }} — click to include, drag to reorder" style="cursor:grab; width:36px; height:36px; border-radius:99px; background:{{ sw.color }}; box-shadow:0 0 0 2px #fff, 0 0 0 3.5px {{ sw.ring }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; user-select:none"></div>
+                  <div onClick="{{ sw.toggle }}" onPointerDown="{{ sw.ptrDown }}" data-swatch="{{ sw.idx }}" title="{{ sw.color }} — tap to include, drag to reorder" style="cursor:grab; width:36px; height:36px; border-radius:99px; background:{{ sw.color }}; box-shadow:0 0 0 2px #fff, 0 0 0 3.5px {{ sw.ring }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; user-select:none; touch-action:none"></div>
                   <span style="font-size:10px; color:#c4b5a5">off</span>
                 </div>
               </sc-for>
@@ -505,8 +506,20 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
       <div onClick="{{ openTray }}" style="cursor:pointer; border:1.5px dashed #dcc9bd; border-radius:18px; min-height:220px; display:flex; align-items:center; justify-content:center; font-size:13.5px; color:{{ accentDeep }}; font-weight:700; user-select:none" style-hover="background:rgba(255,255,255,.6)">+ add your first items</div>
     </sc-if>
 
-    <div class="wr-board-canvas" style="position:relative; width:100%; height:{{ canvasHeight }}px; min-height:220px">
-      <sc-for list="{{ boardItems }}" as="it" hint-placeholder-count="5">
+    <sc-if value="{{ gridEditOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; align-items:center; gap:9px">
+        <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#b3a294">ZOOM</span>
+        <div onClick="{{ zoomOut }}" title="zoom out" style="cursor:pointer; width:30px; height:30px; border-radius:99px; background:#fff; box-shadow:0 1px 3px rgba(90,70,50,.1); display:flex; align-items:center; justify-content:center; font-size:19px; color:#7d6f63; user-select:none" style-hover="background:#f9f3ec">−</div>
+        <span style="font-size:12px; font-weight:700; color:#7d6f63; min-width:42px; text-align:center">{{ boardZoomPct }}</span>
+        <div onClick="{{ zoomIn }}" title="zoom in" style="cursor:pointer; width:30px; height:30px; border-radius:99px; background:#fff; box-shadow:0 1px 3px rgba(90,70,50,.1); display:flex; align-items:center; justify-content:center; font-size:17px; color:#7d6f63; user-select:none" style-hover="background:#f9f3ec">+</div>
+        <div onClick="{{ fitBoard }}" title="fit the whole board to the screen" style="cursor:pointer; font-size:11.5px; font-weight:700; background:#fff; color:#7d6f63; padding:7px 13px; border-radius:999px; box-shadow:0 1px 3px rgba(90,70,50,.1); user-select:none" style-hover="background:#f9f3ec">fit</div>
+      </div>
+    </sc-if>
+
+    <div class="wr-board-viewport" ref="{{ boardViewportRef }}" style="position:relative; overflow:auto; -webkit-overflow-scrolling:touch">
+      <div style="position:relative; width:{{ boardScaledW }}px; height:{{ boardScaledH }}px">
+        <div class="wr-board-canvas" style="position:absolute; top:0; left:0; width:{{ boardCanvasW }}px; height:{{ canvasHeight }}px; min-height:220px; transform:scale({{ boardZoom }}); transform-origin:top left">
+          <sc-for list="{{ boardItems }}" as="it" hint-placeholder-count="5">
         <div data-tile="{{ it.id }}" style="position:absolute; left:{{ it.xPx }}px; top:{{ it.yPx }}px; width:{{ it.wPx }}px; background:#fff; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:7px; box-shadow:{{ it.shadow }}; z-index:{{ it.z }}; transition:box-shadow .15s ease">
           <div style="width:100%; height:{{ it.hPx }}px; border-radius:9px; background:{{ it.photoBg }}; position:relative; overflow:hidden; outline:{{ it.editOutline }}; outline-offset:-2px">
             <sc-if value="{{ it.hasImg }}" hint-placeholder-val="{{ false }}">
@@ -537,7 +550,9 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
             <div onClick="{{ it.toggle }}" title="i own this — click to toggle" style="cursor:pointer; flex:none; width:17px; height:17px; border-radius:99px; background:{{ it.ownBg }}; color:#f9f3ec; box-shadow:inset 0 0 0 1.5px {{ it.ownRing }}; font-size:10px; display:flex; align-items:center; justify-content:center; user-select:none" style-hover="transform:scale(1.15)">{{ it.ownLabel }}</div>
           </div>
         </div>
-      </sc-for>
+          </sc-for>
+        </div>
+      </div>
     </div>
 
     <div style="font-family:ui-monospace,monospace; font-size:10px; color:#c4b5a5">{{ gridHint }}</div>
@@ -588,6 +603,7 @@ class Component extends DCLogic {
     tagDraft: { name: '', color: '#d9917f' },
     confirmingDeleteBoard: false,
     gridEditOpen: false,
+    boardZoom: 1,
     link: '',
     nextId: 100,
     items: [
@@ -616,10 +632,30 @@ class Component extends DCLogic {
 
   fileRef = React.createRef();
   colorRef = React.createRef();
+  boardViewportRef = React.createRef();
   activeTileId = null;
   CANVAS_W = 1040;
   GAP = 14;
   CAP_H = 34; // caption strip below each photo, counted for spacing/collision
+  MIN_ZOOM = 0.3;
+  MAX_ZOOM = 1;
+  ZOOM_STEP = 0.1;
+  // cap how far tiles can spread vertically so a board can cluster but never
+  // becomes a giant sparse canvas — grows with the number of tiles
+  boardMaxH(board) {
+    const n = board ? board.itemIds.length : 0;
+    return Math.max(700, n * 190);
+  }
+  zoomBoardBy(delta) {
+    this.setState(st => ({ boardZoom: Math.round(Math.min(this.MAX_ZOOM, Math.max(this.MIN_ZOOM, (st.boardZoom || 1) + delta)) * 100) / 100 }));
+  }
+  fitBoard() {
+    const vp = this.boardViewportRef.current;
+    const w = vp ? vp.clientWidth : 0;
+    if (!w) return;
+    const z = Math.min(this.MAX_ZOOM, Math.max(this.MIN_ZOOM, w / this.CANVAS_W));
+    this.setState({ boardZoom: Math.round(z * 100) / 100 });
+  }
 
   // computes each tile's rect {x,y,w,h(photo)} — stored layout wins, else a tidy default flow
   tileRects(board) {
@@ -680,12 +716,16 @@ class Component extends DCLogic {
     const rects = this.tileRects(board);
     const start = rects[itemId];
     const sx = e.clientX, sy = e.clientY, pointerId = e.pointerId;
+    const zoom = this.state.boardZoom || 1;
+    const maxX = Math.max(0, this.CANVAS_W - start.w);
+    const maxY = Math.max(0, this.boardMaxH(board) - start.h);
     let lastGood = { ...start };
     if (tile) { tile.style.zIndex = '30'; tile.style.transition = 'none'; tile.style.boxShadow = '0 12px 30px rgba(40,30,20,.28)'; }
     try { handle.setPointerCapture(pointerId); } catch {}
     const onMove = (ev) => {
-      const nx = Math.max(0, Math.round(start.x + (ev.clientX - sx)));
-      const ny = Math.max(0, Math.round(start.y + (ev.clientY - sy)));
+      // divide the screen-space delta by zoom to get canvas-space movement
+      const nx = Math.min(maxX, Math.max(0, Math.round(start.x + (ev.clientX - sx) / zoom)));
+      const ny = Math.min(maxY, Math.max(0, Math.round(start.y + (ev.clientY - sy) / zoom)));
       if (tile) { tile.style.left = nx + 'px'; tile.style.top = ny + 'px'; }
       const cand = { x: nx, y: ny, w: start.w, h: start.h };
       if (!this.overlapsOther(cand, itemId, rects)) lastGood = cand;
@@ -712,12 +752,14 @@ class Component extends DCLogic {
     const rects = this.tileRects(board);
     const start = rects[itemId];
     const sx = e.clientX, sy = e.clientY, pointerId = e.pointerId;
+    const zoom = this.state.boardZoom || 1;
+    const maxW = Math.min(640, this.CANVAS_W - start.x);
     let lastGood = { ...start };
     if (tile) { tile.style.zIndex = '30'; tile.style.transition = 'none'; tile.style.boxShadow = '0 12px 30px rgba(40,30,20,.28)'; }
     try { handle.setPointerCapture(pointerId); } catch {}
     const onMove = (ev) => {
-      const w = Math.min(640, Math.max(110, Math.round(start.w + (ev.clientX - sx))));
-      const h = Math.min(640, Math.max(90, Math.round(start.h + (ev.clientY - sy))));
+      const w = Math.min(maxW, Math.max(110, Math.round(start.w + (ev.clientX - sx) / zoom)));
+      const h = Math.min(640, Math.max(90, Math.round(start.h + (ev.clientY - sy) / zoom)));
       if (tile) tile.style.width = w + 'px';
       if (photo) photo.style.height = h + 'px';
       const cand = { x: start.x, y: start.y, w, h };
@@ -733,6 +775,44 @@ class Component extends DCLogic {
     handle.addEventListener('pointermove', onMove);
     handle.addEventListener('pointerup', onUp);
     handle.addEventListener('pointercancel', onUp);
+  }
+
+  // Palette swatch reordering via Pointer Events (works on touch + mouse).
+  // Listeners live on window so they survive the re-render each reorder causes;
+  // elementFromPoint locates the swatch under the finger by its data-swatch idx.
+  // A tap (no movement) falls through to onClick -> toggle.
+  startSwatchDrag(boardId, idx, e) {
+    const sx = e.clientX, sy = e.clientY;
+    this.dragSwatchIdx = idx;
+    let dragging = false;
+    const onMove = (ev) => {
+      if (!dragging && Math.abs(ev.clientX - sx) < 6 && Math.abs(ev.clientY - sy) < 6) return;
+      dragging = true;
+      const el = document.elementFromPoint(ev.clientX, ev.clientY);
+      const target = el && el.closest && el.closest('[data-swatch]');
+      if (!target) return;
+      const overIdx = parseInt(target.getAttribute('data-swatch'), 10);
+      const from = this.dragSwatchIdx;
+      if (isNaN(overIdx) || from == null || from === overIdx) return;
+      this.dragSwatchIdx = overIdx; // track the dot's new slot as it moves
+      this.editBoardPalette(boardId, pal => {
+        const out = [...pal];
+        const [moved] = out.splice(from, 1);
+        out.splice(overIdx, 0, moved);
+        return out;
+      });
+    };
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      this.dragSwatchIdx = null;
+      // suppress the click that follows a drag so it doesn't also toggle
+      if (dragging) { this._suppressSwatchClick = true; setTimeout(() => { this._suppressSwatchClick = false; }, 60); }
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
   }
 
   effPalette(board, its) {
@@ -1467,7 +1547,7 @@ class Component extends DCLogic {
         meta: its.length + ' items · $' + total.toLocaleString(),
         cover,
         palette: this.effPalette(b, its),
-        open: () => this.setState({ boardId: b.id, trayOpen: false, paletteOpen: false, confirmingDeleteBoard: false, gridEditOpen: false })
+        open: () => this.setState({ boardId: b.id, trayOpen: false, paletteOpen: false, confirmingDeleteBoard: false, gridEditOpen: false, boardZoom: 1 })
       };
     });
 
@@ -1482,33 +1562,25 @@ class Component extends DCLogic {
       boardMeta = its.length + ' items · $' + total.toLocaleString();
       boardPalette = this.effPalette(board, its);
       swatches = (board.palette || []).map((p, idx) => ({
+        idx,
         color: p.c,
         on: p.on,
         ring: p.on ? p.c : 'transparent',
         mark: p.on ? '✓' : '',
         pct: p.on ? String(p.pct) : '–',
         inputBg: p.on ? '#fff' : '#f6f2ec',
-        toggle: () => this.editBoardPalette(board.id, pal =>
-          this.normalizePal(pal.map((x, i) => i === idx ? { ...x, on: !x.on } : x))),
+        toggle: () => {
+          if (this._suppressSwatchClick) return; // a drag just ended — not a tap
+          this.editBoardPalette(board.id, pal =>
+            this.normalizePal(pal.map((x, i) => i === idx ? { ...x, on: !x.on } : x)));
+        },
         onPct: e => {
           if (!p.on) return;
           const v = Math.min(99, Math.max(1, parseInt(e.target.value, 10) || 1));
           this.editBoardPalette(board.id, pal => this.normalizePal(
             pal.map((x, i) => i === idx ? { ...x, pct: v } : x), idx, v));
         },
-        dragStart: () => { this.dragSwatchIdx = idx; },
-        dragEnter: () => {
-          const from = this.dragSwatchIdx;
-          if (from == null || from === idx) return;
-          this.dragSwatchIdx = idx; // live: track the dot's new slot as it moves
-          this.editBoardPalette(board.id, pal => {
-            const out = [...pal];
-            const [moved] = out.splice(from, 1);
-            out.splice(idx, 0, moved);
-            return out;
-          });
-        },
-        dropOn: e => { e.preventDefault(); this.dragSwatchIdx = null; }
+        ptrDown: e => this.startSwatchDrag(board.id, idx, e)
       }));
       boardEmpty = its.length === 0;
       const rects = this.tileRects(board);
@@ -1831,7 +1903,7 @@ class Component extends DCLogic {
       trayLabel: s.trayOpen ? 'done adding' : '+ add items',
       toggleTray: () => this.setState(st => ({ trayOpen: !st.trayOpen })),
       openTray: () => this.setState({ trayOpen: true }),
-      closeBoard: () => this.setState({ boardId: null, trayOpen: false, paletteOpen: false, gridEditOpen: false }),
+      closeBoard: () => this.setState({ boardId: null, trayOpen: false, paletteOpen: false, gridEditOpen: false, boardZoom: 1 }),
       confirmingDelete: s.confirmingDeleteBoard,
       notConfirmingDelete: !s.confirmingDeleteBoard,
       askDeleteBoard: () => this.setState({ confirmingDeleteBoard: true }),
@@ -1844,8 +1916,22 @@ class Component extends DCLogic {
       gridEditLabel: s.gridEditOpen ? 'done editing' : 'edit grid',
       gridEditBg: s.gridEditOpen ? '#4a3f38' : '#fff',
       gridEditColor: s.gridEditOpen ? '#f9f3ec' : '#7d6f63',
-      toggleGridEdit: () => this.setState(st => ({ gridEditOpen: !st.gridEditOpen })),
+      toggleGridEdit: () => {
+        const opening = !this.state.gridEditOpen;
+        this.setState({ gridEditOpen: opening, ...(opening ? {} : { boardZoom: 1 }) }, () => {
+          if (opening && window.innerWidth <= 640) this.fitBoard();
+        });
+      },
       canvasHeight: boardCanvasHeight,
+      boardZoom: s.boardZoom || 1,
+      boardZoomPct: Math.round((s.boardZoom || 1) * 100) + '%',
+      boardCanvasW: this.CANVAS_W,
+      boardScaledW: Math.round(this.CANVAS_W * (s.boardZoom || 1)),
+      boardScaledH: Math.round(boardCanvasHeight * (s.boardZoom || 1)),
+      boardViewportRef: this.boardViewportRef,
+      zoomIn: () => this.zoomBoardBy(this.ZOOM_STEP),
+      zoomOut: () => this.zoomBoardBy(-this.ZOOM_STEP),
+      fitBoard: () => this.fitBoard(),
       gridHint: s.gridEditOpen ? 'drag ⠿ to move a tile anywhere · drag the corner to resize · tiles won\u2019t overlap' : 'the palette strip re-mixes as you add and remove items',
       pat: s.pat,
       patError: s.patError,
