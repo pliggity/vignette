@@ -507,7 +507,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 
     <div class="wr-board-canvas" style="position:relative; width:100%; height:{{ canvasHeight }}px; min-height:220px">
       <sc-for list="{{ boardItems }}" as="it" hint-placeholder-count="5">
-        <div style="position:absolute; left:{{ it.xPx }}px; top:{{ it.yPx }}px; width:{{ it.wPx }}px; background:#fff; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:7px; box-shadow:{{ it.shadow }}; z-index:{{ it.z }}; transition:box-shadow .15s ease">
+        <div data-tile="{{ it.id }}" style="position:absolute; left:{{ it.xPx }}px; top:{{ it.yPx }}px; width:{{ it.wPx }}px; background:#fff; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:7px; box-shadow:{{ it.shadow }}; z-index:{{ it.z }}; transition:box-shadow .15s ease">
           <div style="width:100%; height:{{ it.hPx }}px; border-radius:9px; background:{{ it.photoBg }}; position:relative; overflow:hidden; outline:{{ it.editOutline }}; outline-offset:-2px">
             <sc-if value="{{ it.hasImg }}" hint-placeholder-val="{{ false }}">
               <div style="{{ it.imgCss }}"></div>
@@ -667,60 +667,72 @@ class Component extends DCLogic {
     }));
   }
 
+  // Drag via Pointer Events. We update the tile's DOM directly during the drag
+  // (NO setState) so the element is never re-rendered mid-gesture — that would
+  // break the pointer's implicit touch capture and freeze the drag on mobile.
+  // A single commitLayout on release settles the final position into state.
   startMove(boardId, itemId, e) {
     e.preventDefault();
     e.stopPropagation();
+    const handle = e.currentTarget;
+    const tile = handle.closest('[data-tile]');
     const board = this.state.boards.find(b => b.id === boardId);
     const rects = this.tileRects(board);
     const start = rects[itemId];
-    this.activeTileId = itemId;
-    const sx = e.clientX, sy = e.clientY;
+    const sx = e.clientX, sy = e.clientY, pointerId = e.pointerId;
     let lastGood = { ...start };
+    if (tile) { tile.style.zIndex = '30'; tile.style.transition = 'none'; tile.style.boxShadow = '0 12px 30px rgba(40,30,20,.28)'; }
+    try { handle.setPointerCapture(pointerId); } catch {}
     const onMove = (ev) => {
       const nx = Math.max(0, Math.round(start.x + (ev.clientX - sx)));
       const ny = Math.max(0, Math.round(start.y + (ev.clientY - sy)));
+      if (tile) { tile.style.left = nx + 'px'; tile.style.top = ny + 'px'; }
       const cand = { x: nx, y: ny, w: start.w, h: start.h };
-      this.commitLayout(boardId, itemId, cand); // follow the cursor live
       if (!this.overlapsOther(cand, itemId, rects)) lastGood = cand;
     };
     const onUp = () => {
-      this.activeTileId = null;
+      handle.removeEventListener('pointermove', onMove);
+      handle.removeEventListener('pointerup', onUp);
+      handle.removeEventListener('pointercancel', onUp);
+      try { handle.releasePointerCapture(pointerId); } catch {}
       this.commitLayout(boardId, itemId, lastGood); // settle at last non-overlapping spot
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onUp);
     };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
+    handle.addEventListener('pointermove', onMove);
+    handle.addEventListener('pointerup', onUp);
+    handle.addEventListener('pointercancel', onUp);
   }
 
   startResize(boardId, itemId, e) {
     e.preventDefault();
     e.stopPropagation();
+    const handle = e.currentTarget;
+    const tile = handle.closest('[data-tile]');
+    const photo = tile && tile.firstElementChild;
     const board = this.state.boards.find(b => b.id === boardId);
     const rects = this.tileRects(board);
     const start = rects[itemId];
-    this.activeTileId = itemId;
-    const sx = e.clientX, sy = e.clientY;
+    const sx = e.clientX, sy = e.clientY, pointerId = e.pointerId;
     let lastGood = { ...start };
+    if (tile) { tile.style.zIndex = '30'; tile.style.transition = 'none'; tile.style.boxShadow = '0 12px 30px rgba(40,30,20,.28)'; }
+    try { handle.setPointerCapture(pointerId); } catch {}
     const onMove = (ev) => {
       const w = Math.min(640, Math.max(110, Math.round(start.w + (ev.clientX - sx))));
       const h = Math.min(640, Math.max(90, Math.round(start.h + (ev.clientY - sy))));
+      if (tile) tile.style.width = w + 'px';
+      if (photo) photo.style.height = h + 'px';
       const cand = { x: start.x, y: start.y, w, h };
-      this.commitLayout(boardId, itemId, cand); // follow the cursor live
       if (!this.overlapsOther(cand, itemId, rects)) lastGood = cand;
     };
     const onUp = () => {
-      this.activeTileId = null;
+      handle.removeEventListener('pointermove', onMove);
+      handle.removeEventListener('pointerup', onUp);
+      handle.removeEventListener('pointercancel', onUp);
+      try { handle.releasePointerCapture(pointerId); } catch {}
       this.commitLayout(boardId, itemId, lastGood);
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onUp);
     };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
+    handle.addEventListener('pointermove', onMove);
+    handle.addEventListener('pointerup', onUp);
+    handle.addEventListener('pointercancel', onUp);
   }
 
   effPalette(board, its) {
@@ -1506,6 +1518,7 @@ class Component extends DCLogic {
       boardItems = visibleIts.map((i, idx) => {
         const r = rects[i.id];
         return {
+          id: i.id,
           xPx: r.x,
           yPx: r.y,
           wPx: r.w,
