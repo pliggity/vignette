@@ -1,13 +1,13 @@
 {
-  "name": "Wishroom",
-  "short_name": "Wishroom",
-  "description": "A consumerism mind map — your personal shopping wishlist and moodboard.",
+  "name": "Vignette",
+  "short_name": "Vignette",
+  "description": "A personal shopping moodboard.",
   "start_url": "/wishroom/",
   "scope": "/wishroom/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f9f3ec",
-  "theme_color": "#f9f3ec",
+  "background_color": "#F7F7F5",
+  "theme_color": "#F7F7F5",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },

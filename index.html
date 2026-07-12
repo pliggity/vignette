@@ -1,24 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wishroom</title>
-<meta name="description" content="A consumerism mind map — your personal shopping wishlist and moodboard.">
-<meta name="theme-color" content="#f9f3ec">
+<title>Vignette</title>
+<meta name="description" content="A personal shopping moodboard.">
+<meta name="theme-color" content="#F7F7F5">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Wishroom">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%8D%3C/text%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-title" content="Vignette">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23F7F7F5'/%3E%3Ctext y='.92em' x='6' font-family='Georgia,serif' font-size='86' fill='%23232326'%3EV%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <link rel="manifest" href="./manifest.webmanifest">
 <style>
-html,body{margin:0;background:#f9f3ec;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
-#dc-loading{display:flex;align-items:center;justify-content:center;min-height:100vh;font:14px/1 system-ui,sans-serif;color:#c9b9ab;letter-spacing:.04em}
+html,body{margin:0;background:#F7F7F5;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+#dc-loading{display:flex;align-items:center;justify-content:center;min-height:100vh;font:14px/1 system-ui,sans-serif;color:#AFAAA5;letter-spacing:.04em}
 body:has(#dc-root) #dc-loading{display:none}
+</style>
+<script src="./support.js"></script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})})}
+</script>
+</head>
+<body>
+<div id="dc-loading">Vignette</div>
+<x-dc>
 
-/* ---- mobile mode ---- */
+<helmet data-dc-atomics="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F7F7F5}
+@keyframes wrFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (max-width:900px){
   .wr-grid{grid-template-columns:repeat(3,1fr) !important}
 }
@@ -28,53 +42,35 @@ body:has(#dc-root) #dc-loading{display:none}
   .wr-actions{flex-wrap:wrap !important}
   .wr-link-input{width:100% !important;flex:1 1 100% !important;order:-1}
   .wr-grid{grid-template-columns:repeat(2,1fr) !important;gap:11px !important}
-  /* modals become bottom sheets */
   .wr-overlay{padding:0 !important;align-items:flex-end !important}
   .wr-modal{width:100% !important;max-width:100% !important;max-height:90vh !important;border-radius:20px 20px 0 0 !important}
   .wr-view-modal{flex-direction:column !important;width:100% !important;max-width:100% !important;max-height:90vh !important;overflow:auto !important;border-radius:20px 20px 0 0 !important}
   .wr-view-media{flex:none !important;min-height:0 !important;height:200px !important}
   .wr-view-panel{width:100% !important;box-sizing:border-box}
-  .wr-login-card{width:auto !important;max-width:calc(100vw - 32px) !important}
   .wr-board-list{grid-template-columns:1fr !important}
   .wr-board-head{flex-wrap:wrap !important}
   .wr-board-name{width:100% !important;flex:1 1 100% !important;order:1}
-  /* board canvas is zoomable; the viewport scrolls horizontally when zoomed in
-     past the screen. Use "fit" to see the whole board and arrange without
-     fighting page scroll. */
   .wr-board-viewport{overscroll-behavior:contain}
-  /* keep iOS from zooming in when an input gains focus */
-  .wr-shell input,.wr-shell textarea,.wr-modal input,.wr-modal textarea,.wr-view-panel input,.wr-view-panel textarea{font-size:16px !important}
+  .wr-shell input,.wr-shell textarea{font-size:16px !important}
 }
 </style>
-<script src="./support.js"></script>
-<script>
-if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})})}
-</script>
-</head>
-<body>
-<x-dc>
-<helmet data-dc-atomics="">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=Karla:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-<style>body{margin:0;background:#f9f3ec}@keyframes wrFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}</style>
 </helmet>
-<div style="min-height:100vh; background:#f9f3ec; color:#4a3f38; font-family:'Karla',sans-serif">
+<div style="min-height:100vh; background:#F7F7F5; color:#232326; font-family:'Inter',sans-serif; position:relative">
+<div style="position:fixed; inset:0; pointer-events:none; z-index:40; box-shadow:inset 0 0 170px rgba(35,35,38,.34), inset 0 0 55px rgba(35,35,38,.14)"></div>
 <sc-if value="{{ !pat }}" hint-placeholder-val="{{ false }}">
   <div style="display:flex; align-items:center; justify-content:center; min-height:100vh">
-    <div class="wr-login-card" style="background:#fff; border-radius:20px; padding:40px 36px; width:340px; box-shadow:0 12px 48px rgba(60,40,20,.13); display:flex; flex-direction:column; gap:20px; align-items:center; text-align:center">
-      <div style="display:flex; flex-direction:column; gap:6px; align-items:center">
-        <div style="font-family:'DM Serif Display',serif; font-size:30px; color:#3d332c">wishroom <span style="color:#d9917f">✿</span></div>
-        <div style="font-size:13px; color:#b3a294">a consumerism mind map</div>
-      </div>
+    <div class="wr-login-card" style="background:#fff; border-radius:12px; padding:44px 40px; width:330px; box-shadow:0 12px 48px rgba(35,35,38,.12); display:flex; flex-direction:column; gap:22px; align-items:center; text-align:center">
+      <div style="font-family:'Fraunces',serif; font-weight:250; font-size:34px; color:#232326; font-variation-settings:'opsz' 90; display:flex; align-items:baseline"><span style="font-weight:400; font-size:42px; font-variation-settings:'opsz' 144; margin-right:-3px">V</span><span style="position:relative; top:-1px">ignette</span></div>
+      <div style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:#AFAAA5; margin-top:-10px">a personal shopping moodboard</div>
       <sc-if value="{{ authLoading }}" hint-placeholder-val="{{ false }}">
-        <div style="font-size:13px; color:#b3a294; font-style:italic; padding:8px 0">signing in…</div>
+        <div style="font-family:'Fraunces',serif; font-style:italic; font-size:13px; color:#9B9793; padding:8px 0">signing in…</div>
       </sc-if>
       <sc-if value="{{ !authLoading }}" hint-placeholder-val="{{ true }}">
         <sc-if value="{{ !!patError }}" hint-placeholder-val="{{ false }}">
-          <div style="font-size:12px; color:#c17a5f">{{ patError }}</div>
+          <div style="font-size:12px; color:#9A6B72">{{ patError }}</div>
         </sc-if>
-        <a href="{{ githubAuthUrl }}" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#24292f; color:#fff; text-decoration:none; padding:13px 24px; border-radius:10px; font-size:14px; font-weight:600; user-select:none; width:100%; box-sizing:border-box" style-hover="background:#1a1f24">
-          <svg viewBox="0 0 16 16" style="width:18px;height:18px;fill:currentColor;flex:none"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        <a href="{{ githubAuthUrl }}" style="display:flex; align-items:center; justify-content:center; gap:10px; box-sizing:border-box; width:100%; background:#232326; color:#fff; text-decoration:none; padding:13px 20px; border:1px solid #232326; border-radius:2px; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; user-select:none" style-hover="outline:1px solid #726F6C; outline-offset:-5px; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">
+          <svg viewBox="0 0 16 16" style="width:17px;height:17px;fill:currentColor;flex:none"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
           Sign in with GitHub
         </a>
       </sc-if>
@@ -87,27 +83,28 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
   <input type="file" accept="application/json" ref="{{ importRef }}" onChange="{{ onImportPicked }}" style="display:none">
 
   <sc-if value="{{ archiveOpen }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closeArchive }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(61,51,44,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
+    <div onClick="{{ closeArchive }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(35,35,38,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
       <div onClick="{{ stopClick }}" class="wr-modal" style="background:#fff; border-radius:20px; width:520px; max-height:80vh; overflow:auto; padding:24px; display:flex; flex-direction:column; gap:14px; box-shadow:0 24px 70px rgba(40,30,20,.35)">
         <div style="display:flex; align-items:center; gap:10px">
-          <div style="font-family:'DM Serif Display',serif; font-size:21px; color:#3d332c; flex:1">archive</div>
-          <div onClick="{{ closeArchive }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#f9f3ec; color:#7d6f63; display:flex; align-items:center; justify-content:center; font-size:14px; user-select:none" style-hover="background:#f0e5d8">×</div>
+          <div style="font-family:'Fraunces',serif; font-size:21px; color:#232326; flex:1">archive</div>
+          <div onClick="{{ closeArchive }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#F7F7F5; color:#726F6C; display:flex; align-items:center; justify-content:center; font-size:14px; user-select:none" style-hover="background:#EAE8E4">×</div>
         </div>
         <div style="display:flex; flex-direction:column; gap:8px">
           <sc-for list="{{ archivedList }}" as="ar" hint-placeholder-count="2">
-            <div style="display:flex; align-items:center; gap:12px; background:#f9f3ec; border-radius:12px; padding:9px">
+            <div style="display:flex; align-items:center; gap:12px; background:#F7F7F5; border-radius:12px; padding:9px">
               <div style="width:52px; height:52px; border-radius:8px; background:{{ ar.photoBg }}; flex:none; position:relative; overflow:hidden">
                 <sc-if value="{{ ar.hasImg }}" hint-placeholder-val="{{ false }}"><div style="{{ ar.imgCss }}"></div></sc-if>
               </div>
               <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px">
-                <span style="font-size:13px; font-weight:700; color:#4a3f38; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ ar.name }}</span>
-                <span style="font-size:11px; color:#b3a294">{{ ar.store }}</span>
+                <span style="font-size:13px; font-weight:700; color:#232326; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ ar.name }}</span>
+                <span style="font-size:11px; color:#9B9793">{{ ar.store }}</span>
               </div>
-              <div onClick="{{ ar.restore }}" style="cursor:pointer; flex:none; font-size:12px; font-weight:700; background:#4a3f38; color:#f9f3ec; padding:7px 13px; border-radius:999px; user-select:none" style-hover="filter:brightness(1.1)">restore</div>
+              <div onClick="{{ ar.restore }}" style="cursor:pointer; flex:none; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#232326; padding:7px 13px; border:1px solid #232326; border-radius:2px; user-select:none" style-hover="background:#232326; color:#fff; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">restore</div>
+              <div onClick="{{ ar.destroy }}" title="permanently delete" style="cursor:pointer; flex:none; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#9A6B72; padding:7px 13px; border:1px solid #9A6B72; border-radius:2px; user-select:none" style-hover="background:#9A6B72; color:#fff; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">delete</div>
             </div>
           </sc-for>
           <sc-if value="{{ archiveEmpty }}" hint-placeholder-val="{{ true }}">
-            <span style="font-size:12.5px; color:#b3a294; padding:8px 2px">nothing archived</span>
+            <span style="font-size:12.5px; color:#9B9793; padding:8px 2px">nothing archived</span>
           </sc-if>
         </div>
       </div>
@@ -115,23 +112,23 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
   </sc-if>
 
   <sc-if value="{{ customOpen }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ cancelCustom }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(61,51,44,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
+    <div onClick="{{ cancelCustom }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(35,35,38,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
       <div onClick="{{ stopClick }}" class="wr-modal" style="background:#fff; border-radius:20px; width:440px; max-height:86vh; overflow:auto; padding:24px; display:flex; flex-direction:column; gap:16px; box-shadow:0 24px 70px rgba(40,30,20,.35)">
-        <div style="font-family:'DM Serif Display',serif; font-size:21px; color:#3d332c">{{ draftTitle }}</div>
+        <div style="font-family:'Fraunces',serif; font-size:21px; color:#232326">{{ draftTitle }}</div>
         <div onClick="{{ pickDraftImage }}" onDragOver="{{ dragOver }}" onDrop="{{ dropDraftImage }}" style="cursor:pointer; height:190px; border-radius:12px; background:{{ draftBg }}; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center" style-hover="filter:brightness(.97)">
           <sc-if value="{{ draftHasImg }}" hint-placeholder-val="{{ false }}">
             <div style="{{ draftImgCss }}"></div>
           </sc-if>
           <sc-if value="{{ draftNoImg }}" hint-placeholder-val="{{ true }}">
-            <span style="font-family:ui-monospace,monospace; font-size:10.5px; color:#a4917f; text-align:center; padding:0 20px">{{ draftImgHint }}</span>
+            <span style="font-family:ui-monospace,monospace; font-size:10.5px; color:#9B9793; text-align:center; padding:0 20px">{{ draftImgHint }}</span>
           </sc-if>
         </div>
         <div style="display:flex; flex-direction:column; gap:5px">
-          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">NAME</span>
-          <input value="{{ draftName }}" onChange="{{ draftSetName }}" placeholder="e.g. hallway floor tile" style="font-family:'Karla',sans-serif; font-size:14px; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:10px; padding:11px 14px">
+          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">NAME</span>
+          <input value="{{ draftName }}" onChange="{{ draftSetName }}" placeholder="e.g. hallway floor tile" style="font-family:'Inter',sans-serif; font-size:14px; color:#232326; background:#F7F7F5; border:none; outline:none; border-radius:10px; padding:11px 14px">
         </div>
         <div style="display:flex; flex-direction:column; gap:7px">
-          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">FOLDER</span>
+          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">FOLDER</span>
           <div style="display:flex; gap:7px; flex-wrap:wrap">
             <sc-for list="{{ draftFolders }}" as="df" hint-placeholder-count="3">
               <div onClick="{{ df.pick }}" style="cursor:pointer; font-size:12px; font-weight:{{ df.weight }}; background:{{ df.bg }}; color:{{ df.color }}; padding:7px 14px; border-radius:999px; user-select:none">{{ df.label }}</div>
@@ -139,15 +136,19 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
           </div>
         </div>
         <div onClick="{{ draftToggleOwned }}" style="cursor:pointer; display:flex; align-items:center; gap:9px; user-select:none">
-          <div style="width:19px; height:19px; border-radius:99px; background:{{ draftOwnBg }}; color:#f9f3ec; box-shadow:inset 0 0 0 1.5px {{ draftOwnRing }}; font-size:11px; display:flex; align-items:center; justify-content:center">{{ draftOwnMark }}</div>
-          <span style="font-size:13px; font-weight:600; color:#7d6f63">i already own this</span>
+          <div style="width:11px; height:11px; border-radius:0px; background:#fff; box-shadow:inset 0 0 0 1px {{ draftOwnRing }}; display:flex; align-items:center; justify-content:center">
+          <sc-if value="{{ draftOwned }}" hint-placeholder-val="{{ false }}">
+            <svg width="9" height="9" viewBox="0 0 12 10" fill="none" style="transform:rotate(-3deg)"><path d="M1.5 4.6C2.3 5.6 3.2 7 3.7 9.5C4.9 6.9 7.8 2.4 10.5 0.8" stroke="#8A8681" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </sc-if>
+        </div>
+          <span style="font-size:13px; font-weight:600; color:#726F6C">i already own this</span>
         </div>
         <div style="display:flex; gap:10px">
-          <input value="{{ draftStore }}" onChange="{{ draftSetStore }}" placeholder="store (optional)" style="flex:1; min-width:0; font-family:'Karla',sans-serif; font-size:13px; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:10px; padding:10px 13px">
-          <input value="{{ draftPrice }}" onChange="{{ draftSetPrice }}" placeholder="$ (optional)" style="width:110px; font-family:'Karla',sans-serif; font-size:13px; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:10px; padding:10px 13px">
+          <input value="{{ draftStore }}" onChange="{{ draftSetStore }}" placeholder="store (optional)" style="flex:1; min-width:0; font-family:'Inter',sans-serif; font-size:13px; color:#232326; background:#F7F7F5; border:none; outline:none; border-radius:10px; padding:10px 13px">
+          <input value="{{ draftPrice }}" onChange="{{ draftSetPrice }}" placeholder="$ (optional)" style="width:110px; font-family:'Inter',sans-serif; font-size:13px; color:#232326; background:#F7F7F5; border:none; outline:none; border-radius:10px; padding:10px 13px">
         </div>
         <div style="display:flex; flex-direction:column; gap:7px">
-          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">ADD TO BOARDS</span>
+          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">ADD TO VIGNETTES</span>
           <div style="display:flex; flex-wrap:wrap; gap:7px">
             <sc-for list="{{ draftBoardList }}" as="db" hint-placeholder-count="2">
               <div onClick="{{ db.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:7px; font-size:12px; font-weight:{{ db.weight }}; background:{{ db.bg }}; color:{{ db.color }}; padding:7px 12px; border-radius:999px; user-select:none">
@@ -155,23 +156,23 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
               </div>
             </sc-for>
             <sc-if value="{{ draftNoBoards }}" hint-placeholder-val="{{ false }}">
-              <span style="font-size:11.5px; color:#b3a294; padding:6px 2px">no boards yet — make one from the library</span>
+              <span style="font-size:11.5px; color:#9B9793; padding:6px 2px">no vignettes yet — make one from the library</span>
             </sc-if>
           </div>
         </div>
         <div style="display:flex; flex-direction:column; gap:7px">
-          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">TAGS</span>
+          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">TAGS</span>
           <div style="display:flex; flex-wrap:wrap; gap:7px; align-items:center">
             <sc-for list="{{ draftTagList }}" as="dt" hint-placeholder-count="2">
               <div onClick="{{ dt.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:6px; font-size:12px; font-weight:{{ dt.weight }}; background:{{ dt.bg }}; color:{{ dt.color }}; padding:6px 11px; border-radius:999px; user-select:none">
                 <span style="width:9px; height:9px; border-radius:99px; background:{{ dt.dot }}"></span>{{ dt.label }}
               </div>
             </sc-for>
-            <div onClick="{{ openTagCreator }}" style="cursor:pointer; font-size:12px; font-weight:700; color:{{ accentDeep }}; padding:6px 11px; border-radius:999px; border:1.5px dashed #dcc9bd; user-select:none" style-hover="background:#f9f3ec">+ new tag</div>
+            <div onClick="{{ openTagCreator }}" style="cursor:pointer; font-size:12px; font-weight:500; color:#232326; padding:6px 11px; border-radius:2px; border:1px dashed #232326; user-select:none" style-hover="background:#F7F7F5; font-family:'Fraunces',serif; font-style:italic; font-weight:400">+ new tag</div>
           </div>
           <sc-if value="{{ tagCreatorOpen }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex; flex-direction:column; gap:8px; background:#f9f3ec; border-radius:12px; padding:10px 12px; margin-top:2px">
-              <input value="{{ tagDraftName }}" onChange="{{ tagDraftSetName }}" onKeyDown="{{ tagDraftKey }}" placeholder="tag name…" style="font-family:'Karla',sans-serif; font-size:12.5px; color:#4a3f38; background:#fff; border:none; outline:none; border-radius:8px; padding:8px 11px">
+            <div style="display:flex; flex-direction:column; gap:8px; background:#F7F7F5; border-radius:12px; padding:10px 12px; margin-top:2px">
+              <input value="{{ tagDraftName }}" onChange="{{ tagDraftSetName }}" onKeyDown="{{ tagDraftKey }}" placeholder="tag name…" style="font-family:'Inter',sans-serif; font-size:12.5px; color:#232326; background:#fff; border:none; outline:none; border-radius:8px; padding:8px 11px">
               <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center">
                 <sc-for list="{{ tagColorOptions }}" as="tc" hint-placeholder-count="6">
                   <div onClick="{{ tc.pick }}" title="{{ tc.color }}" style="cursor:pointer; width:22px; height:22px; border-radius:99px; background:{{ tc.color }}; box-shadow:0 0 0 2px #f9f3ec, 0 0 0 3px {{ tc.ring }}; user-select:none"></div>
@@ -180,86 +181,93 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
                 <input type="color" ref="{{ tagColorRef }}" onChange="{{ onTagColorPicked }}" style="position:absolute; width:0; height:0; opacity:0; border:none; padding:0">
               </div>
               <div style="display:flex; gap:8px">
-                <div onClick="{{ saveTagDraft }}" style="cursor:pointer; font-size:12px; font-weight:700; background:#4a3f38; color:#f9f3ec; padding:7px 14px; border-radius:999px; user-select:none">create &amp; add</div>
-                <div onClick="{{ closeTagCreator }}" style="cursor:pointer; font-size:12px; color:#b3a294; padding:7px 10px; border-radius:999px; user-select:none" style-hover="background:#f0e5d8">cancel</div>
+                <div onClick="{{ saveTagDraft }}" style="cursor:pointer; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#232326; padding:7px 14px; border:1px solid #232326; border-radius:2px; user-select:none">create &amp; add</div>
+                <div onClick="{{ closeTagCreator }}" style="cursor:pointer; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:#9B9793; padding:7px 10px; border-radius:2px; user-select:none" style-hover="background:#EAE8E4">cancel</div>
               </div>
             </div>
           </sc-if>
         </div>
         <div style="display:flex; flex-direction:column; gap:6px">
-          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">NOTES</span>
-          <textarea value="{{ draftNotes }}" onChange="{{ draftSetNotes }}" placeholder="size, color, where it'd go…" style="font-family:'Karla',sans-serif; font-size:13px; line-height:1.5; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:12px; padding:11px 14px; resize:none; min-height:70px"></textarea>
+          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">NOTES</span>
+          <textarea value="{{ draftNotes }}" onChange="{{ draftSetNotes }}" placeholder="size, color, where it'd go…" style="font-family:'Inter',sans-serif; font-size:13px; line-height:1.5; color:#232326; background:#F7F7F5; border:none; outline:none; border-radius:12px; padding:11px 14px; resize:none; min-height:70px"></textarea>
         </div>
         <div style="display:flex; gap:10px; margin-top:2px">
-          <div onClick="{{ saveCustom }}" style="cursor:pointer; flex:1; text-align:center; font-size:13px; font-weight:700; background:{{ accent }}; color:#fff; padding:12px 0; border-radius:999px; user-select:none" style-hover="filter:brightness(1.06)">add tile</div>
-          <div onClick="{{ cancelCustom }}" style="cursor:pointer; font-size:13px; font-weight:700; color:#b3a294; padding:12px 18px; border-radius:999px; user-select:none" style-hover="background:#f9f3ec">cancel</div>
+          <div onClick="{{ saveCustom }}" style="cursor:pointer; flex:1; text-align:center; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#232326; padding:12px 0; border:1px solid #232326; border-radius:2px; user-select:none" style-hover="background:#232326; color:#fff">add tile</div>
+          <div onClick="{{ cancelCustom }}" style="cursor:pointer; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:#9B9793; padding:12px 18px; border-radius:2px; user-select:none" style-hover="background:#F7F7F5">cancel</div>
         </div>
       </div>
     </div>
   </sc-if>
 
   <sc-if value="{{ viewOpen }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closeView }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(61,51,44,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
+    <div onClick="{{ closeView }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(35,35,38,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
       <div onClick="{{ stopClick }}" class="wr-view-modal" style="background:#fff; border-radius:20px; max-width:900px; width:100%; max-height:86vh; display:flex; overflow:hidden; box-shadow:0 24px 70px rgba(40,30,20,.35)">
         <div class="wr-view-media" style="flex:1.3; min-width:0; background:{{ viewBg }}; position:relative; min-height:460px">
           <sc-if value="{{ viewHasImg }}" hint-placeholder-val="{{ false }}">
             <div style="{{ viewImgCss }}"></div>
           </sc-if>
           <sc-if value="{{ viewNoImg }}" hint-placeholder-val="{{ false }}">
-            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:ui-monospace,monospace; font-size:11px; color:#a4917f">no photo yet — drop one on the tile</div>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:ui-monospace,monospace; font-size:11px; color:#9B9793">no photo yet — drop one on the tile</div>
           </sc-if>
         </div>
         <div class="wr-view-panel" style="width:320px; flex:none; padding:26px 26px 22px; display:flex; flex-direction:column; gap:16px; overflow:auto">
           <div style="display:flex; align-items:flex-start; gap:10px">
             <div style="flex:1; display:flex; flex-direction:column; gap:4px">
-              <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">TILE DESCRIPTION</span>
-              <input value="{{ viewName }}" onChange="{{ viewRename }}" style="font-family: 'DM Serif Display',serif; font-size: 22px; color: #3d332c; background: transparent; border: none; outline: none; border-bottom: 1.5px dashed transparent; padding: 0; width: 100%" style-focus="border-bottom:1.5px dashed #dcc9bd">
+              <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">TILE DESCRIPTION</span>
+              <input value="{{ viewName }}" onChange="{{ viewRename }}" style="font-family: 'Fraunces',serif; font-size: 22px; color: #232326; background: transparent; border: none; outline: none; border-bottom: 1.5px dashed transparent; padding: 0; width: 100%" style-focus="border-bottom:1.5px dashed #DBD8D3">
             </div>
-            <div onClick="{{ closeView }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#f9f3ec; color:#7d6f63; display:flex; align-items:center; justify-content:center; font-size:14px; flex:none; user-select:none" style-hover="background:#f0e5d8">×</div>
+            <div onClick="{{ closeView }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#F7F7F5; color:#726F6C; display:flex; align-items:center; justify-content:center; font-size:14px; flex:none; user-select:none" style-hover="background:#EAE8E4">×</div>
           </div>
           <div style="display:flex; gap:8px; align-items:center">
-            <input value="{{ viewStore }}" onChange="{{ viewSetStore }}" placeholder="store" style="flex:1; min-width:0; font-family:'Karla',sans-serif; font-size:12.5px; color:#7d6f63; background:#f9f3ec; border:none; outline:none; border-radius:8px; padding:6px 10px" style-focus="background:#eeddd0">
-            <input value="{{ viewPriceRaw }}" onChange="{{ viewSetPrice }}" placeholder="price" style="width:76px; font-family:'Karla',sans-serif; font-size:12.5px; font-weight:700; background:{{ accentSoft }}; color:{{ accentDeep }}; border:none; outline:none; border-radius:999px; padding:5px 10px; text-align:center">
+            <input value="{{ viewStore }}" onChange="{{ viewSetStore }}" placeholder="store" style="flex:1; min-width:0; font-family:'Inter',sans-serif; font-size:12.5px; color:#726F6C; background:#F7F7F5; border:none; outline:none; border-radius:8px; padding:6px 10px" style-focus="background:#eeddd0">
+            <div style="position:relative; width:76px; flex:none">
+              <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-family:'Inter',sans-serif; font-size:12.5px; font-weight:400; color:#232326; pointer-events:none">$</span>
+              <input value="{{ viewPriceRaw }}" onChange="{{ viewSetPrice }}" placeholder="price" style="width:100%; box-sizing:border-box; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:400; background:#EAE8E4; color:#232326; border:none; outline:none; border-radius:999px; padding:5px 10px 5px 18px; text-align:center">
+            </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:5px">
-            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">LINK</span>
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">LINK</span>
             <div style="display:flex; align-items:center; gap:8px">
-              <input value="{{ viewUrl }}" onChange="{{ viewSetUrl }}" placeholder="paste a shop link…" style="flex:1; min-width:0; font-size:12.5px; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:8px; padding:8px 11px">
+              <input value="{{ viewUrl }}" onChange="{{ viewSetUrl }}" placeholder="paste a shop link…" style="flex:1; min-width:0; font-family:'Inter',sans-serif; font-style:italic; font-size:12.5px; color:#232326; background:#F7F7F5; border:none; outline:none; border-radius:8px; padding:8px 11px">
               <sc-if value="{{ viewHasUrl }}" hint-placeholder-val="{{ false }}">
-                <a href="{{ viewUrlHref }}" target="_blank" rel="noopener" title="open link" style="flex:none; width:32px; height:32px; border-radius:8px; background:#fff; color:{{ accentDeep }}; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:0 1px 3px rgba(90,70,50,.07)">↗</a>
+                <a href="{{ viewUrlHref }}" target="_blank" rel="noopener" title="open link" style="flex:none; width:32px; height:32px; border-radius:8px; background:#fff; color:#232326; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:0 1px 3px rgba(35,35,38,.07)">↗</a>
               </sc-if>
             </div>
           </div>
           <div onClick="{{ viewToggleOwned }}" style="cursor:pointer; display:flex; align-items:center; gap:9px; user-select:none">
-            <div style="width:19px; height:19px; border-radius:6px; background:{{ viewOwnBg }}; color:#f9f3ec; box-shadow:inset 0 0 0 1.5px {{ viewOwnRing }}; font-size:11px; display:flex; align-items:center; justify-content:center">{{ viewOwnMark }}</div>
-            <span style="font-size:13px; font-weight:600; color:#7d6f63">i own this</span>
+            <div style="width:11px; height:11px; border-radius:0px; background:#fff; box-shadow:inset 0 0 0 1px {{ viewOwnRing }}; display:flex; align-items:center; justify-content:center">
+              <sc-if value="{{ viewOwned }}" hint-placeholder-val="{{ false }}">
+                <svg width="9" height="9" viewBox="0 0 12 10" fill="none" style="transform:rotate(-3deg)"><path d="M1.5 4.6C2.3 5.6 3.2 7 3.7 9.5C4.9 6.9 7.8 2.4 10.5 0.8" stroke="#8A8681" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </sc-if>
+            </div>
+            <span style="font-family:{{ viewOwnFont }}; font-style:{{ viewOwnStyle }}; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:#9B9793">i own this</span>
           </div>
           <div style="display:flex; flex-direction:column; gap:7px">
-            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">ON BOARDS</span>
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">ON VIGNETTES</span>
             <div style="display:flex; flex-wrap:wrap; gap:7px">
               <sc-for list="{{ viewBoards }}" as="vb" hint-placeholder-count="2">
-                <div onClick="{{ vb.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:7px; font-size:12px; font-weight:{{ vb.weight }}; background:{{ vb.bg }}; color:{{ vb.color }}; padding:7px 12px; border-radius:999px; user-select:none">
+                <div onClick="{{ vb.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:7px; font-family:{{ vb.font }}; font-style:{{ vb.fstyle }}; font-size:12px; font-weight:{{ vb.weight }}; background:{{ vb.bg }}; color:{{ vb.color }}; padding:7px 12px; border-radius:999px; user-select:none">
                   <span style="width:14px; height:14px; border-radius:99px; box-shadow:inset 0 0 0 1.5px {{ vb.ringColor }}; background:{{ vb.dotBg }}; display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff">{{ vb.mark }}</span>{{ vb.name }}
                 </div>
               </sc-for>
               <sc-if value="{{ viewNoBoards }}" hint-placeholder-val="{{ false }}">
-                <span style="font-size:11.5px; color:#b3a294; padding:6px 2px">no boards yet</span>
+                <span style="font-size:11.5px; color:#9B9793; padding:6px 2px">no vignettes yet</span>
               </sc-if>
             </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:7px">
-            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">TAGS</span>
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">TAGS</span>
             <div style="display:flex; flex-wrap:wrap; gap:7px; align-items:center">
               <sc-for list="{{ viewTags }}" as="vt" hint-placeholder-count="2">
                 <div onClick="{{ vt.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:6px; font-size:12px; font-weight:{{ vt.weight }}; background:{{ vt.bg }}; color:{{ vt.color }}; padding:6px 11px; border-radius:999px; user-select:none">
                   <span style="width:9px; height:9px; border-radius:99px; background:{{ vt.dot }}"></span>{{ vt.label }}
                 </div>
               </sc-for>
-              <div onClick="{{ openTagCreator }}" style="cursor:pointer; font-size:12px; font-weight:700; color:{{ accentDeep }}; padding:6px 11px; border-radius:999px; border:1.5px dashed #dcc9bd; user-select:none" style-hover="background:#f9f3ec">+ new tag</div>
+              <div onClick="{{ openTagCreator }}" style="cursor:pointer; font-size:12px; font-weight:500; color:#232326; padding:6px 11px; border-radius:2px; border:1px dashed #232326; user-select:none" style-hover="background:#F7F7F5; font-family:'Fraunces',serif; font-style:italic; font-weight:400">+ new tag</div>
             </div>
             <sc-if value="{{ tagCreatorOpen }}" hint-placeholder-val="{{ false }}">
-              <div style="display:flex; flex-direction:column; gap:8px; background:#f9f3ec; border-radius:12px; padding:10px 12px; margin-top:2px">
-                <input value="{{ tagDraftName }}" onChange="{{ tagDraftSetName }}" onKeyDown="{{ tagDraftKey }}" placeholder="tag name…" style="font-family:'Karla',sans-serif; font-size:12.5px; color:#4a3f38; background:#fff; border:none; outline:none; border-radius:8px; padding:8px 11px">
+              <div style="display:flex; flex-direction:column; gap:8px; background:#F7F7F5; border-radius:12px; padding:10px 12px; margin-top:2px">
+                <input value="{{ tagDraftName }}" onChange="{{ tagDraftSetName }}" onKeyDown="{{ tagDraftKey }}" placeholder="tag name…" style="font-family:'Inter',sans-serif; font-size:12.5px; color:#232326; background:#fff; border:none; outline:none; border-radius:8px; padding:8px 11px">
                 <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center">
                   <sc-for list="{{ tagColorOptions }}" as="tc" hint-placeholder-count="6">
                     <div onClick="{{ tc.pick }}" title="{{ tc.color }}" style="cursor:pointer; width:22px; height:22px; border-radius:99px; background:{{ tc.color }}; box-shadow:0 0 0 2px #f9f3ec, 0 0 0 3px {{ tc.ring }}; user-select:none"></div>
@@ -268,17 +276,17 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
                   <input type="color" ref="{{ tagColorRef }}" onChange="{{ onTagColorPicked }}" style="position:absolute; width:0; height:0; opacity:0; border:none; padding:0">
                 </div>
                 <div style="display:flex; gap:8px">
-                  <div onClick="{{ saveTagDraft }}" style="cursor:pointer; font-size:12px; font-weight:700; background:#4a3f38; color:#f9f3ec; padding:7px 14px; border-radius:999px; user-select:none">create &amp; add</div>
-                  <div onClick="{{ closeTagCreator }}" style="cursor:pointer; font-size:12px; color:#b3a294; padding:7px 10px; border-radius:999px; user-select:none" style-hover="background:#f0e5d8">cancel</div>
+                  <div onClick="{{ saveTagDraft }}" style="cursor:pointer; font-size:12px; font-weight:700; background:transparent; color:#232326; padding:7px 14px; border:1px solid #232326; border-radius:2px; user-select:none">create &amp; add</div>
+                  <div onClick="{{ closeTagCreator }}" style="cursor:pointer; font-size:12px; color:#9B9793; padding:7px 10px; border-radius:2px; user-select:none" style-hover="background:#EAE8E4">cancel</div>
                 </div>
               </div>
             </sc-if>
           </div>
           <div style="display:flex; flex-direction:column; gap:6px; flex:1">
-            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#b3a294">NOTES · ONLY VISIBLE HERE</span>
-            <textarea value="{{ viewNotes }}" onChange="{{ viewSetNotes }}" placeholder="size, dupes to compare, where it'd go…" style="font-family:'Karla',sans-serif; font-size:13px; line-height:1.55; color:#4a3f38; background:#f9f3ec; border:none; outline:none; border-radius:12px; padding:12px 14px; resize:none; min-height:130px; flex:1"></textarea>
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">NOTES · ONLY VISIBLE HERE</span>
+            <textarea value="{{ viewNotes }}" onChange="{{ viewSetNotes }}" placeholder="size, dupes to compare, where it'd go…" style="font-family:'Inter',sans-serif; font-size:13px; line-height:1.55; color:#232326; background:#F7F7F5; border:none; outline:none; border-radius:12px; padding:12px 14px; resize:none; min-height:130px; flex:1"></textarea>
           </div>
-          <div onClick="{{ viewArchive }}" style="cursor:pointer; text-align:center; font-size:12px; font-weight:600; color:#c17a5f; padding:9px 0; border-radius:999px; user-select:none" style-hover="background:#f9f3ec">remove from library</div>
+          <div onClick="{{ viewArchive }}" onMouseEnter="{{ archiveHoverOn }}" onMouseLeave="{{ archiveHoverOff }}" style="cursor:pointer; text-align:center; font-size:11px; font-weight:{{ archiveWeight }}; font-family:{{ archiveFont }}; font-style:{{ archiveStyle }}; letter-spacing:.06em; text-transform:uppercase; color:{{ archiveColor }}; background:{{ archiveBg }}; padding:9px 0; border:1px solid {{ viewAccent }}; border-radius:2px; user-select:none">remove from library</div>
         </div>
       </div>
     </div>
@@ -287,18 +295,24 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
   <!-- header -->
   <div class="wr-header" style="display:flex; align-items:center; justify-content:space-between; gap:20px">
     <div style="display:flex; align-items:center; gap:12px; flex:none">
-      <div style="font-family:'DM Serif Display',serif; font-size:27px; color:#3d332c">wishroom <span style="color:{{ accent }}">✿</span></div>
+      <div style="position:relative; width:fit-content; padding:12px 14px 30px 12px; transform:scale(1.18); transform-origin:left center">
+        <div style="position:relative; z-index:1; font-family:'Fraunces',serif; font-weight:250; font-size:30px; color:#232326; font-variation-settings:'opsz' 90; display:flex; align-items:baseline"><span style="font-weight:400; font-size:37px; font-variation-settings:'opsz' 144; margin-right:-3px">V</span><span style="position:relative; top:-1px">ignette</span></div>
+        <svg width="214" height="78" viewBox="0 0 214 78" style="position:absolute; inset:0; overflow:visible; z-index:0">
+          <path d="M4 34 V64 H36" fill="none" stroke="#232326" stroke-width="1"></path>
+          <path d="M10 43 V58 H60" fill="none" stroke="#9B9793" stroke-width="1"></path>
+        </svg>
+      </div>
       <sc-if value="{{ syncing }}" hint-placeholder-val="{{ false }}">
-        <span style="font-size:11px; color:#b3a294; font-style:italic">saving…</span>
+        <span style="font-size:11px; color:#9B9793; font-style:italic">saving…</span>
       </sc-if>
       <sc-if value="{{ saveErrorMsg }}" hint-placeholder-val="{{ false }}">
-        <span style="font-size:11px; color:#c0392b; font-style:italic">{{ saveErrorMsg }}</span>
+        <span style="font-size:11px; color:#9A6B72; font-style:italic">{{ saveErrorMsg }}</span>
       </sc-if>
     </div>
     <div class="wr-actions" style="display:flex; gap:10px; align-items:center">
-      <input value="{{ link }}" onChange="{{ onLinkChange }}" onKeyDown="{{ onLinkKey }}" placeholder="Paste a shop link…" class="wr-link-input" style="font-family:'Karla',sans-serif; font-size:13px; color:#4a3f38; background:#fff; border:none; outline:none; border-radius:999px; padding:11px 18px; width:250px; min-width:120px; flex-shrink:1; box-shadow:0 1px 3px rgba(90,70,50,.07)">
-      <div onClick="{{ saveLink }}" style="cursor:pointer; font-size:13px; font-weight:700; background:{{ accent }}; color:#fff; padding:11px 20px; border-radius:999px; user-select:none" style-hover="filter:brightness(1.06)">Save it</div>
-      <div onClick="{{ openCustom }}" title="add anything — including things you already own, no link needed" style="cursor:pointer; white-space:nowrap; flex:none; font-size:13px; font-weight:700; background:#fff; color:#7d6f63; padding:11px 18px; border-radius:999px; user-select:none; box-shadow:0 1px 3px rgba(90,70,50,.07)" style-hover="color:#4a3f38">+ custom tile</div>
+      <input value="{{ link }}" onChange="{{ onLinkChange }}" onKeyDown="{{ onLinkKey }}" placeholder="Paste a shop link…" class="wr-link-input" style="font-family:'Inter',sans-serif; font-style:italic; font-size:13px; color:#232326; background:#fff; border:none; outline:none; border-radius:999px; padding:11px 18px; width:250px; min-width:120px; flex-shrink:1; box-shadow:0 1px 3px rgba(35,35,38,.07)">
+      <div onClick="{{ saveLink }}" style="cursor:pointer; box-sizing:border-box; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:#fff; color:#232326; padding:11px 20px; border:1px solid #232326; border-radius:2px; user-select:none" style-hover="background:#232326; color:#fff; outline:1px solid #DBD8D3; outline-offset:-5px; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">Save it</div>
+      <div onClick="{{ openCustom }}" title="add anything — including things you already own, no link needed" style="cursor:pointer; box-sizing:border-box; white-space:nowrap; flex:none; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:#232326; color:#fff; padding:11px 18px; border:1.5px solid #fff; border-radius:2px; user-select:none" style-hover="outline:1px solid #fff; outline-offset:-5px; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">+ custom tile</div>
     </div>
   </div>
 
@@ -306,51 +320,96 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
   <sc-if value="{{ inLibrary }}" hint-placeholder-val="{{ true }}">
   <div style="display:flex; flex-direction:column; gap:24px; animation:wrFade .25s ease">
 
-    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+    <div style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#AFAAA5">YOUR SCENES</div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:-16px">
       <sc-for list="{{ folders }}" as="f" hint-placeholder-count="4">
-        <div onClick="{{ f.pick }}" style="cursor:pointer; font-size:12.5px; font-weight:{{ f.weight }}; background:{{ f.bg }}; color:{{ f.color }}; padding:9px 17px; border-radius:999px; user-select:none; box-shadow:0 1px 3px rgba(90,70,50,.05)" style-hover="transform:translateY(-1px)">{{ f.label }}</div>
+        <sc-if value="{{ f.active }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ f.pick }}" style="cursor:pointer; box-sizing:border-box; display:flex; align-items:center; gap:8px; font-family:'Fraunces',serif; font-style:italic; font-size:11.5px; font-weight:400; letter-spacing:.06em; text-transform:uppercase; background:{{ f.bg }}; color:{{ f.color }}; padding:9px 17px; border-radius:2px; user-select:none; box-shadow:0 1px 3px rgba(35,35,38,.05)">
+            {{ f.label }}
+            <sc-if value="{{ f.isAll }}" hint-placeholder-val="{{ false }}"><span></span></sc-if>
+            <sc-if value="{{ f.notAll }}" hint-placeholder-val="{{ true }}">
+              <span onClick="{{ f.remove }}" title="remove scene" style="cursor:pointer; opacity:.65" style-hover="opacity:1">×</span>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ f.inactive }}" hint-placeholder-val="{{ true }}">
+          <div onClick="{{ f.pick }}" style="cursor:pointer; box-sizing:border-box; display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:{{ f.weight }}; letter-spacing:.06em; text-transform:uppercase; background:{{ f.bg }}; color:{{ f.color }}; padding:9px 17px; border:1px solid #232326; border-radius:2px; user-select:none; box-shadow:0 1px 3px rgba(35,35,38,.05)" style-hover="transform:translateY(-1px); outline:1px solid #DBD8D3; outline-offset:-4px; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">
+            {{ f.label }}
+            <sc-if value="{{ f.isAll }}" hint-placeholder-val="{{ false }}"><span></span></sc-if>
+            <sc-if value="{{ f.notAll }}" hint-placeholder-val="{{ true }}">
+              <span onClick="{{ f.remove }}" title="remove scene" style="cursor:pointer; opacity:.5; color:#9B9793" style-hover="opacity:1; color:#232326">×</span>
+            </sc-if>
+          </div>
+        </sc-if>
       </sc-for>
+      <sc-if value="{{ sceneCreatorOpen }}" hint-placeholder-val="{{ false }}">
+        <input value="{{ sceneDraftName }}" onChange="{{ sceneDraftSetName }}" onKeyDown="{{ sceneDraftKey }}" onBlur="{{ saveSceneDraft }}" autoFocus="{{ true }}" placeholder="scene name…" style="font-family:'Inter',sans-serif; font-size:11.5px; letter-spacing:.02em; color:#232326; background:#fff; border:1px solid #232326; border-radius:2px; padding:9px 14px; outline:none; width:120px">
+      </sc-if>
+      <sc-if value="{{ sceneCreatorClosed }}" hint-placeholder-val="{{ true }}">
+        <div onClick="{{ openSceneCreator }}" style="cursor:pointer; font-size:11.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:#9B9793; padding:9px 17px; border:1px dashed #DBD8D3; border-radius:2px; user-select:none" style-hover="box-shadow:inset 0 0 0 1px #DBD8D3; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">+ scene</div>
+      </sc-if>
       <div style="margin-left:auto; display:flex; align-items:center; gap:16px">
         <sc-if value="{{ hasArchived }}" hint-placeholder-val="{{ false }}">
-          <div onClick="{{ openArchive }}" style="cursor:pointer; font-size:12px; color:#b3a294; user-select:none" style-hover="color:#7d6f63">archive ({{ archivedCount }})</div>
+          <div onClick="{{ openArchive }}" onMouseEnter="{{ archiveUtilHoverOn }}" onMouseLeave="{{ utilHoverOff }}" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:{{ archiveUtilColor }}; user-select:none">archive ({{ archivedCount }})</div>
         </sc-if>
-        <div onClick="{{ exportData }}" title="download all your data as a file" style="cursor:pointer; font-size:12px; color:#b3a294; user-select:none" style-hover="color:#7d6f63">export</div>
-        <div onClick="{{ startImport }}" title="load a previously exported file" style="cursor:pointer; font-size:12px; color:#b3a294; user-select:none" style-hover="color:#7d6f63">import</div>
-        <div onClick="{{ signOut }}" style="cursor:pointer; font-size:12px; color:#b3a294; user-select:none" style-hover="color:#c17a5f">sign out</div>
-        <div style="font-size:12px; color:#b3a294">{{ folderTotal }} in open wishes</div>
+        <div onClick="{{ exportData }}" onMouseEnter="{{ exportUtilHoverOn }}" onMouseLeave="{{ utilHoverOff }}" title="download all your data as a file" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:{{ exportUtilColor }}; user-select:none">export</div>
+        <div onClick="{{ startImport }}" onMouseEnter="{{ importUtilHoverOn }}" onMouseLeave="{{ utilHoverOff }}" title="load a previously exported file" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:{{ importUtilColor }}; user-select:none">import</div>
+        <div onClick="{{ signOut }}" title="sign out" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#AFAAA5; user-select:none" style-hover="color:#9A6B72">sign out</div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px">
+      <div style="display:flex; align-items:baseline; gap:10px">
+        <span style="font-family:'Fraunces',serif; font-style:italic; font-weight:400; font-size:22px; letter-spacing:-0.005em; color:#232326">Your vignettes</span>
+      </div>
+      <div class="wr-board-list" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px">
+        <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
+          <div onClick="{{ b.open }}" style="cursor:pointer; background:#fff; border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; user-select:none" style-hover="box-shadow:0 6px 18px rgba(35,35,38,.10); transform:translateY(-2px)">
+            <div style="display:flex; flex-direction:column; gap:2px; min-width:0">
+              <span style="font-family:'Fraunces',serif; font-style:normal; font-weight:300; font-size:14px; letter-spacing:-0.005em; color:#232326">{{ b.name }}</span>
+              <span style="font-size:11px; color:#9B9793">{{ b.meta }}</span>
+            </div>
+            <div style="display:flex; height:8px; width:100%; border-radius:99px; overflow:hidden">
+              <sc-for list="{{ b.palette }}" as="p" hint-placeholder-count="4">
+                <div style="flex:{{ p.flex }}; background:{{ p.color }}"></div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <div onClick="{{ newBoard }}" style="cursor:pointer; background:rgba(255,255,255,.55); border:1px dashed #DBD8D3; border-radius:2px; min-height:64px; display:flex; align-items:center; justify-content:center; font-size:12px; color:#726F6C; font-weight:500; letter-spacing:.06em; text-transform:uppercase; user-select:none" style-hover="border-color:#232326; color:#232326; font-family:'Fraunces',serif; font-style:italic">+ new vignette</div>
       </div>
     </div>
 
     <sc-if value="{{ hasTags }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex; gap:7px; align-items:center; flex-wrap:wrap; margin-top:-12px">
-        <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#c4b5a5">FILTER BY TAG</span>
+        <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#AFAAA5">FILTER BY TAG</span>
         <sc-for list="{{ tagFilters }}" as="tf" hint-placeholder-count="3">
           <div onClick="{{ tf.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:{{ tf.weight }}; background:{{ tf.bg }}; color:{{ tf.color }}; padding:5px 11px; border-radius:999px; user-select:none">
             <span style="width:8px; height:8px; border-radius:99px; background:{{ tf.dot }}"></span>{{ tf.label }}
           </div>
         </sc-for>
         <sc-if value="{{ hasActiveTagFilter }}" hint-placeholder-val="{{ false }}">
-          <div onClick="{{ clearTagFilters }}" style="cursor:pointer; font-size:11.5px; color:#b3a294; padding:5px 8px; user-select:none" style-hover="color:#7d6f63">clear</div>
+          <div onClick="{{ clearTagFilters }}" style="cursor:pointer; font-size:11.5px; color:#9B9793; padding:5px 8px; user-select:none" style-hover="color:#726F6C">clear</div>
         </sc-if>
       </div>
     </sc-if>
 
     <div class="wr-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; align-items:start">
       <sc-for list="{{ items }}" as="item" hint-placeholder-count="8">
-        <div style="background:#fff; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:7px; animation:wrFade .25s ease" style-hover="box-shadow:0 6px 18px rgba(90,70,50,.10); transform:translateY(-2px)">
+        <div style="background:#fff; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:7px; animation:wrFade .25s ease" style-hover="box-shadow:0 6px 18px rgba(35,35,38,.10); transform:translateY(-2px)">
           <div onClick="{{ item.pickImage }}" onDragOver="{{ dragOver }}" onDrop="{{ item.drop }}" onMouseEnter="{{ item.hover }}" title="drop, paste, or click to add a photo" style="cursor:pointer; height:{{ item.photoH }}; aspect-ratio:{{ item.photoAr }}; border-radius:12px; background:{{ item.photoBg }}; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden">
             <sc-if value="{{ item.hasImg }}" hint-placeholder-val="{{ false }}">
               <div style="{{ item.imgCss }}"></div>
             </sc-if>
             <sc-if value="{{ item.noImg }}" hint-placeholder-val="{{ true }}">
-              <span style="font-family:ui-monospace,monospace; font-size:10px; color:#a4917f; text-align:center; padding:0 14px">{{ item.photoLabel }}</span>
+              <span style="font-family:ui-monospace,monospace; font-size:10px; color:#9B9793; text-align:center; padding:0 14px">{{ item.photoLabel }}</span>
             </sc-if>
             <sc-if value="{{ item.sale }}" hint-placeholder-val="{{ false }}">
-              <span style="position:absolute; bottom:8px; left:8px; font-size:10px; font-weight:700; background:{{ accent }}; color:#fff; padding:3px 9px; border-radius:999px">on sale ↓</span>
+              <span style="position:absolute; bottom:8px; left:8px; font-size:10px; font-weight:700; background:#232326; color:#fff; padding:3px 9px; border-radius:999px">on sale ↓</span>
             </sc-if>
-            <div onClick="{{ item.inspect }}" title="inspect item" style="cursor:pointer; position:absolute; top:8px; left:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">🔍</div>
+            <div onClick="{{ item.inspect }}" title="inspect item" style="cursor:pointer; position:absolute; top:8px; left:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; user-select:none" style-hover="background:#fff; transform:scale(1.12)"><svg width="13" height="13" viewBox="0 0 24 16" fill="none"><path d="M1 8C1 8 5 1 12 1C19 1 23 8 23 8C23 8 19 15 12 15C5 15 1 8 1 8Z" stroke="#8A8681" stroke-width="1.4"></path><circle cx="12" cy="8" r="3.2" fill="#232326"></circle><path d="M3 4L1 1.5M8 1.8L7 -0.5M16 1.8L17 -0.5M21 4L23 1.5" stroke="#232326" stroke-width="1.2" stroke-linecap="round"></path></svg></div>
             <sc-if value="{{ item.hasUrl }}" hint-placeholder-val="{{ false }}">
-              <a href="{{ item.urlHref }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#4a3f38; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
+              <a href="{{ item.urlHref }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#232326; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
             </sc-if>
           </div>
           <div style="display:flex; align-items:center; gap:8px; padding:0 3px 2px">
@@ -361,40 +420,17 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
                 </sc-for>
               </div>
             </sc-if>
-            <span style="flex:1; min-width:0; font-family:ui-monospace,monospace; font-size:9.5px; color:#7d6f63">{{ item.chip }}</span>
-            <div onClick="{{ item.toggle }}" title="i own this — click to toggle" style="cursor:pointer; flex:none; width:17px; height:17px; border-radius:99px; background:{{ item.ownBg }}; color:#f9f3ec; box-shadow:inset 0 0 0 1.5px {{ item.ownRing }}; font-size:10px; display:flex; align-items:center; justify-content:center; user-select:none" style-hover="transform:scale(1.15)">{{ item.ownLabel }}</div>
+            <span style="flex:1; min-width:0; font-family:'Inter',sans-serif; font-size:9.5px; font-weight:300; letter-spacing:.015em; color:#9C98A2">{{ item.chip }}</span>
+            <div onClick="{{ item.toggle }}" title="i own this — click to toggle" style="cursor:pointer; flex:none; width:11px; height:11px; border-radius:0px; background:#fff; box-shadow:inset 0 0 0 1px {{ item.ownRing }}; display:flex; align-items:center; justify-content:center; user-select:none" style-hover="transform:scale(1.15)">
+              <sc-if value="{{ item.owned }}" hint-placeholder-val="{{ false }}">
+                <svg width="9" height="9" viewBox="0 0 12 10" fill="none" style="transform:rotate(-3deg)"><path d="M1.5 4.6C2.3 5.6 3.2 7 3.7 9.5C4.9 6.9 7.8 2.4 10.5 0.8" stroke="#8A8681" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </sc-if>
+            </div>
           </div>
         </div>
       </sc-for>
     </div>
 
-    <div style="display:flex; flex-direction:column; gap:12px; margin-top:6px">
-      <div style="display:flex; align-items:baseline; gap:10px">
-        <span style="font-family:'DM Serif Display',serif; font-size:20px; color:#3d332c">Your boards</span>
-        <span style="font-size:11.5px; color:#b3a294">mix items into a vibe — each board keeps its own palette</span>
-      </div>
-      <div class="wr-board-list" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px">
-        <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
-          <div onClick="{{ b.open }}" style="cursor:pointer; background:#fff; border-radius:18px; padding:12px; display:flex; gap:12px; align-items:center; user-select:none" style-hover="box-shadow:0 6px 18px rgba(90,70,50,.10); transform:translateY(-2px)">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; width:84px; flex:none">
-              <sc-for list="{{ b.cover }}" as="c" hint-placeholder-count="4">
-                <div style="height:40px; border-radius:6px; background:{{ c }}"></div>
-              </sc-for>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:4px; min-width:0">
-              <span style="font-size:13.5px; font-weight:700">{{ b.name }}</span>
-              <span style="font-size:11px; color:#b3a294">{{ b.meta }}</span>
-              <div style="display:flex; height:8px; width:110px; border-radius:99px; overflow:hidden; margin-top:2px">
-                <sc-for list="{{ b.palette }}" as="p" hint-placeholder-count="4">
-                  <div style="flex:{{ p.flex }}; background:{{ p.color }}"></div>
-                </sc-for>
-              </div>
-            </div>
-          </div>
-        </sc-for>
-        <div onClick="{{ newBoard }}" style="cursor:pointer; background:rgba(255,255,255,.55); border:1.5px dashed #dcc9bd; border-radius:18px; min-height:96px; display:flex; align-items:center; justify-content:center; font-size:13px; color:{{ accentDeep }}; font-weight:700; user-select:none" style-hover="background:#fff">+ new board</div>
-      </div>
-    </div>
   </div>
   </sc-if>
 
@@ -403,34 +439,50 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
   <div style="display:flex; flex-direction:column; gap:16px; animation:wrFade .25s ease">
 
     <div class="wr-board-head" style="display:flex; align-items:center; gap:14px">
-      <div onClick="{{ closeBoard }}" style="cursor:pointer; font-size:13px; font-weight:700; background:#fff; padding:9px 15px; border-radius:999px; user-select:none; box-shadow:0 1px 3px rgba(90,70,50,.07)" style-hover="transform:translateX(-2px)">← library</div>
-      <input value="{{ boardName }}" onChange="{{ renameBoard }}" title="click to rename" class="wr-board-name" style="font-family:'DM Serif Display',serif; font-size:24px; color:#3d332c; background:transparent; border:none; outline:none; border-bottom:1.5px dashed transparent; padding:0 2px; min-width:60px; width:320px" style-focus="border-bottom:1.5px dashed #dcc9bd">
-      <div style="font-size:12px; color:#b3a294">{{ boardMeta }}</div>
+      <div onClick="{{ closeBoard }}" style="cursor:pointer; font-size:11.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; padding:9px 15px; border:1px solid #DBD8D3; border-radius:2px; user-select:none" style-hover="border-color:#232326; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0">← library</div>
       <div style="margin-left:auto; display:flex; align-items:center; gap:8px">
-        <div onClick="{{ toggleGridEdit }}" title="drag to reorder tiles, drag corner handle to resize" style="cursor:pointer; font-size:12.5px; font-weight:700; background:{{ gridEditBg }}; color:{{ gridEditColor }}; padding:10px 16px; border-radius:999px; user-select:none">{{ gridEditLabel }}</div>
-        <div onClick="{{ toggleTray }}" style="cursor:pointer; font-size:12.5px; font-weight:700; background:{{ accent }}; color:#fff; padding:10px 18px; border-radius:999px; user-select:none" style-hover="filter:brightness(1.06)">{{ trayLabel }}</div>
+        <div onClick="{{ toggleGridEdit }}" title="drag to reorder tiles, drag corner handle to resize" style="cursor:pointer; font-size:11.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:{{ gridEditBg }}; color:{{ gridEditColor }}; padding:10px 16px; border:1px dashed #DBD8D3; border-radius:2px; user-select:none" style-hover="box-shadow:inset 0 0 0 1px #232326; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">{{ gridEditLabel }}</div>
+        <div onClick="{{ toggleTray }}" style="cursor:pointer; font-size:11.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:{{ trayBg }}; color:{{ trayColor }}; padding:10px 18px; border:1px dashed #DBD8D3; border-radius:2px; user-select:none" style-hover="background:#232326; color:#fff; box-shadow:inset 0 0 0 1px #232326; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">{{ trayLabel }}</div>
       </div>
     </div>
 
+    <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; position:relative; top:5px">
+      <span style="font-family:ui-monospace,monospace; font-size:9px; letter-spacing:.1em; color:#AFAAA5; position:relative; top:2px">SCENE :</span>
+      <sc-if value="{{ gridEditOpen }}" hint-placeholder-val="{{ false }}">
+        <select value="{{ boardSceneValue }}" onChange="{{ boardSceneChange }}" style="cursor:pointer; font-family:'Inter',sans-serif; font-size:11.5px; font-weight:500; color:#232326; background:#fff; padding:6px 10px; border:1px solid #232326; border-radius:2px">
+          <sc-for list="{{ boardSceneOptions }}" as="so" hint-placeholder-count="3">
+            <option value="{{ so.value }}">{{ so.label }}</option>
+          </sc-for>
+        </select>
+      </sc-if>
+      <sc-if value="{{ gridEditClosed }}" hint-placeholder-val="{{ true }}">
+        <span style="font-family:'Fraunces',serif; font-style:italic; font-weight:400; letter-spacing:.06em; text-transform:uppercase; font-size:18px; color:#57534F">{{ boardSceneLabel }}</span>
+      </sc-if>
+    </div>
+
+    <input value="{{ boardName }}" onChange="{{ renameBoard }}" title="click to rename" class="wr-board-name" style="font-family:'Fraunces',serif; font-size:34px; color:#232326; background:transparent; border:none; outline:none; border-bottom:1.5px dashed transparent; padding:0 2px; min-width:60px; width:100%; max-width:520px" style-focus="border-bottom:1.5px dashed #DBD8D3">
+
     <div style="display:flex; align-items:center; gap:12px">
-      <div onClick="{{ togglePaletteEditor }}" title="click to edit palette" style="cursor:pointer; display:flex; height:30px; flex:1; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(90,70,50,.07)" style-hover="box-shadow:0 2px 8px rgba(90,70,50,.18)">
+      <div onClick="{{ togglePaletteEditor }}" title="click to edit palette" style="cursor:pointer; display:flex; height:30px; flex:1; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(35,35,38,.07)" style-hover="box-shadow:0 2px 8px rgba(35,35,38,.18)">
         <sc-for list="{{ boardPalette }}" as="p" hint-placeholder-count="5">
           <div title="{{ p.color }}" style="flex:{{ p.flex }}; background:{{ p.color }}; transition:flex .3s ease"></div>
         </sc-for>
       </div>
-      <span style="font-family:ui-monospace,monospace; font-size:10px; color:#b3a294; flex:none">{{ paletteHint }}</span>
+      <span style="font-family:ui-monospace,monospace; font-size:10px; color:#9B9793; flex:none">{{ paletteHint }}</span>
     </div>
+
+    <div style="font-family:'Inter',sans-serif; font-style:italic; font-size:10.5px; font-weight:300; letter-spacing:.03em; text-transform:uppercase; color:#9C98A2">{{ boardMeta }}</div>
 
     <sc-if value="{{ hasTags }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex; gap:7px; align-items:center; flex-wrap:wrap">
-        <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#c4b5a5">FILTER BY TAG</span>
+        <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#AFAAA5">FILTER BY TAG</span>
         <sc-for list="{{ tagFilters }}" as="tf" hint-placeholder-count="3">
           <div onClick="{{ tf.toggle }}" style="cursor:pointer; display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:{{ tf.weight }}; background:{{ tf.bg }}; color:{{ tf.color }}; padding:5px 11px; border-radius:999px; user-select:none">
             <span style="width:8px; height:8px; border-radius:99px; background:{{ tf.dot }}"></span>{{ tf.label }}
           </div>
         </sc-for>
         <sc-if value="{{ hasActiveTagFilter }}" hint-placeholder-val="{{ false }}">
-          <div onClick="{{ clearTagFilters }}" style="cursor:pointer; font-size:11.5px; color:#b3a294; padding:5px 8px; user-select:none" style-hover="color:#7d6f63">clear</div>
+          <div onClick="{{ clearTagFilters }}" style="cursor:pointer; font-size:11.5px; color:#9B9793; padding:5px 8px; user-select:none" style-hover="color:#726F6C">clear</div>
         </sc-if>
       </div>
     </sc-if>
@@ -438,40 +490,40 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
     <sc-if value="{{ paletteOpen }}" hint-placeholder-val="{{ false }}">
       <div style="background:#fff; border-radius:16px; padding:14px 18px; display:flex; flex-direction:column; gap:14px; animation:wrFade .2s ease">
         <div style="display:flex; align-items:center; gap:12px">
-          <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#b3a294">EDIT PALETTE — CLICK A DOT TO INCLUDE/EXCLUDE · DRAG DOTS TO REORDER · % TOTALS 100</span>
-          <div onClick="{{ resetPalette }}" style="cursor:pointer; margin-left:auto; font-size:11.5px; font-weight:700; color:#b3a294; padding:6px 10px; border-radius:999px; user-select:none" style-hover="background:#f9f3ec; color:#7d6f63">reset to auto</div>
-          <div onClick="{{ togglePaletteEditor }}" style="cursor:pointer; font-size:11.5px; font-weight:700; background:#4a3f38; color:#f9f3ec; padding:6px 14px; border-radius:999px; user-select:none">done</div>
+          <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#9B9793">EDIT PALETTE — CLICK A DOT TO INCLUDE/EXCLUDE · DRAG DOTS TO REORDER · % TOTALS 100</span>
+          <div onClick="{{ resetPalette }}" style="cursor:pointer; margin-left:auto; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:#9B9793; padding:6px 10px; border-radius:2px; user-select:none" style-hover="background:#F7F7F5; color:#726F6C">reset to auto</div>
+          <div onClick="{{ togglePaletteEditor }}" style="cursor:pointer; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#232326; padding:6px 14px; border:1px solid #232326; border-radius:2px; user-select:none">done</div>
         </div>
         <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start">
           <sc-for list="{{ includedSwatches }}" as="sw" hint-placeholder-count="4">
             <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
               <div onClick="{{ sw.toggle }}" onPointerDown="{{ sw.ptrDown }}" data-swatch="{{ sw.idx }}" title="{{ sw.color }} — tap to toggle, drag to reorder" style="cursor:grab; width:36px; height:36px; border-radius:99px; background:{{ sw.color }}; box-shadow:0 0 0 2px #fff, 0 0 0 3.5px {{ sw.ring }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; text-shadow:0 1px 2px rgba(0,0,0,.5); user-select:none; touch-action:none">{{ sw.mark }}</div>
               <div style="display:flex; align-items:center; gap:2px">
-                <input value="{{ sw.pct }}" onChange="{{ sw.onPct }}" style="width:34px; text-align:center; font-size:11px; font-family:'Karla',sans-serif; color:#4a3f38; border:1px solid #eee5da; border-radius:6px; padding:3px 2px; outline:none; background:{{ sw.inputBg }}">
-                <span style="font-size:10px; color:#b3a294">%</span>
+                <input value="{{ sw.pct }}" onChange="{{ sw.onPct }}" style="width:34px; text-align:center; font-size:11px; font-family:'Inter',sans-serif; color:#232326; border:1px solid #EAE8E4; border-radius:6px; padding:3px 2px; outline:none; background:{{ sw.inputBg }}">
+                <span style="font-size:10px; color:#9B9793">%</span>
               </div>
             </div>
           </sc-for>
           <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
-            <div onClick="{{ pickColor }}" title="add a color" style="cursor:pointer; width:36px; height:36px; border-radius:99px; border:1.5px dashed #dcc9bd; color:#c99f8d; display:flex; align-items:center; justify-content:center; font-size:16px; user-select:none" style-hover="background:#f9f3ec">+</div>
-            <span style="font-size:10px; color:#b3a294">add</span>
+            <div onClick="{{ pickColor }}" title="add a color" style="cursor:pointer; width:36px; height:36px; border-radius:99px; border:1.5px dashed #DBD8D3; color:#c99f8d; display:flex; align-items:center; justify-content:center; font-size:16px; user-select:none" style-hover="background:#F7F7F5">+</div>
+            <span style="font-size:10px; color:#9B9793">add</span>
           </div>
           <sc-if value="{{ hasEyeDropper }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
-              <div onClick="{{ eyeDrop }}" title="pick a color from anywhere on screen (e.g. your photo)" style="cursor:pointer; width:36px; height:36px; border-radius:99px; border:1.5px solid #eee5da; color:#7d6f63; display:flex; align-items:center; justify-content:center; font-size:15px; user-select:none" style-hover="background:#f9f3ec">⌖</div>
-              <span style="font-size:10px; color:#b3a294">eyedrop</span>
+              <div onClick="{{ eyeDrop }}" title="pick a color from anywhere on screen (e.g. your photo)" style="cursor:pointer; width:36px; height:36px; border-radius:99px; border:1.5px solid #EAE8E4; color:#726F6C; display:flex; align-items:center; justify-content:center; font-size:15px; user-select:none" style-hover="background:#F7F7F5">⌖</div>
+              <span style="font-size:10px; color:#9B9793">eyedrop</span>
             </div>
           </sc-if>
           <input type="color" ref="{{ colorRef }}" onChange="{{ onColorPicked }}" style="position:absolute; width:0; height:0; opacity:0; border:none; padding:0">
         </div>
         <sc-if value="{{ hasExcluded }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex; flex-direction:column; gap:10px; padding-top:10px; border-top:1px solid #f2ede4">
-            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#c4b5a5">EXCLUDED</span>
+          <div style="display:flex; flex-direction:column; gap:10px; padding-top:10px; border-top:1px solid #EAE8E4">
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#AFAAA5">EXCLUDED</span>
             <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start">
               <sc-for list="{{ excludedSwatches }}" as="sw" hint-placeholder-count="2">
                 <div style="display:flex; flex-direction:column; align-items:center; gap:7px">
                   <div onClick="{{ sw.toggle }}" onPointerDown="{{ sw.ptrDown }}" data-swatch="{{ sw.idx }}" title="{{ sw.color }} — tap to include, drag to reorder" style="cursor:grab; width:36px; height:36px; border-radius:99px; background:{{ sw.color }}; box-shadow:0 0 0 2px #fff, 0 0 0 3.5px {{ sw.ring }}; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; user-select:none; touch-action:none"></div>
-                  <span style="font-size:10px; color:#c4b5a5">off</span>
+                  <span style="font-size:10px; color:#AFAAA5">off</span>
                 </div>
               </sc-for>
             </div>
@@ -482,37 +534,37 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 
     <sc-if value="{{ trayOpen }}" hint-placeholder-val="{{ false }}">
       <div style="background:#fff; border-radius:16px; padding:14px 16px; display:flex; flex-direction:column; gap:10px; animation:wrFade .2s ease">
-        <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#b3a294">FROM YOUR LIBRARY — CLICK TO ADD</span>
+        <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#9B9793">FROM YOUR LIBRARY — CLICK TO ADD</span>
         <div style="display:flex; gap:10px; flex-wrap:wrap">
           <sc-for list="{{ trayItems }}" as="t" hint-placeholder-count="4">
-            <div onClick="{{ t.add }}" style="cursor:pointer; display:flex; align-items:center; gap:8px; background:#f9f3ec; border-radius:999px; padding:6px 13px 6px 6px; user-select:none" style-hover="background:{{ accentSoft }}">
+            <div onClick="{{ t.add }}" style="cursor:pointer; display:flex; align-items:center; gap:8px; background:#F7F7F5; border-radius:999px; padding:6px 13px 6px 6px; user-select:none" style-hover="background:{{ accentSoft }}">
               <div style="width:26px; height:26px; border-radius:99px; background:{{ t.stripe }}; overflow:hidden; position:relative; flex:none">
                 <sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ false }}">
                   <div style="{{ t.imgCss }}"></div>
                 </sc-if>
               </div>
               <span style="font-size:12px; font-weight:600">{{ t.name }}</span>
-              <span style="font-size:11px; color:{{ accentDeep }}; font-weight:700">+</span>
+              <span style="font-size:11px; color:#232326; font-weight:700">+</span>
             </div>
           </sc-for>
           <sc-if value="{{ trayEmpty }}" hint-placeholder-val="{{ false }}">
-            <span style="font-size:12px; color:#b3a294; padding:6px 4px">everything you've saved is already here ✓</span>
+            <span style="font-size:12px; color:#9B9793; padding:6px 4px">everything you've saved is already here ✓</span>
           </sc-if>
         </div>
       </div>
     </sc-if>
 
     <sc-if value="{{ boardEmpty }}" hint-placeholder-val="{{ false }}">
-      <div onClick="{{ openTray }}" style="cursor:pointer; border:1.5px dashed #dcc9bd; border-radius:18px; min-height:220px; display:flex; align-items:center; justify-content:center; font-size:13.5px; color:{{ accentDeep }}; font-weight:700; user-select:none" style-hover="background:rgba(255,255,255,.6)">+ add your first items</div>
+      <div onClick="{{ openTray }}" style="cursor:pointer; border:1px dashed #DBD8D3; border-radius:2px; min-height:220px; display:flex; align-items:center; justify-content:center; font-size:13.5px; color:#726F6C; font-weight:500; letter-spacing:.04em; user-select:none" style-hover="border-color:#232326; color:#232326">+ add your first items</div>
     </sc-if>
 
     <sc-if value="{{ gridEditOpen }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex; align-items:center; gap:9px">
-        <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#b3a294">ZOOM</span>
-        <div onClick="{{ zoomOut }}" title="zoom out" style="cursor:pointer; width:30px; height:30px; border-radius:99px; background:#fff; box-shadow:0 1px 3px rgba(90,70,50,.1); display:flex; align-items:center; justify-content:center; font-size:19px; color:#7d6f63; user-select:none" style-hover="background:#f9f3ec">−</div>
-        <span style="font-size:12px; font-weight:700; color:#7d6f63; min-width:42px; text-align:center">{{ boardZoomPct }}</span>
-        <div onClick="{{ zoomIn }}" title="zoom in" style="cursor:pointer; width:30px; height:30px; border-radius:99px; background:#fff; box-shadow:0 1px 3px rgba(90,70,50,.1); display:flex; align-items:center; justify-content:center; font-size:17px; color:#7d6f63; user-select:none" style-hover="background:#f9f3ec">+</div>
-        <div onClick="{{ fitBoard }}" title="fit the whole board to the screen" style="cursor:pointer; font-size:11.5px; font-weight:700; background:#fff; color:#7d6f63; padding:7px 13px; border-radius:999px; box-shadow:0 1px 3px rgba(90,70,50,.1); user-select:none" style-hover="background:#f9f3ec">fit</div>
+        <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#9B9793">ZOOM</span>
+        <div onClick="{{ zoomOut }}" title="zoom out" style="cursor:pointer; width:30px; height:30px; border-radius:99px; background:#fff; box-shadow:0 1px 3px rgba(90,70,50,.1); display:flex; align-items:center; justify-content:center; font-size:19px; color:#726F6C; user-select:none" style-hover="background:#F7F7F5">−</div>
+        <span style="font-size:12px; font-weight:700; color:#726F6C; min-width:42px; text-align:center">{{ boardZoomPct }}</span>
+        <div onClick="{{ zoomIn }}" title="zoom in" style="cursor:pointer; width:30px; height:30px; border-radius:99px; background:#fff; box-shadow:0 1px 3px rgba(90,70,50,.1); display:flex; align-items:center; justify-content:center; font-size:17px; color:#726F6C; user-select:none" style-hover="background:#F7F7F5">+</div>
+        <div onClick="{{ fitBoard }}" title="fit the whole vignette to the screen" style="cursor:pointer; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#726F6C; padding:7px 13px; border:1px solid #DBD8D3; border-radius:2px; user-select:none" style-hover="border-color:#232326; color:#232326">fit</div>
       </div>
     </sc-if>
 
@@ -520,53 +572,57 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
       <div style="position:relative; width:{{ boardScaledW }}px; height:{{ boardScaledH }}px">
         <div class="wr-board-canvas" style="position:absolute; top:0; left:0; width:{{ boardCanvasW }}px; height:{{ canvasHeight }}px; min-height:220px; transform:scale({{ boardZoom }}); transform-origin:top left">
           <sc-for list="{{ boardItems }}" as="it" hint-placeholder-count="5">
-        <div data-tile="{{ it.id }}" style="position:absolute; left:{{ it.xPx }}px; top:{{ it.yPx }}px; width:{{ it.wPx }}px; background:#fff; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:7px; box-shadow:{{ it.shadow }}; z-index:{{ it.z }}; transition:box-shadow .15s ease">
-          <div style="width:100%; height:{{ it.hPx }}px; border-radius:9px; background:{{ it.photoBg }}; position:relative; overflow:hidden; outline:{{ it.editOutline }}; outline-offset:-2px">
-            <sc-if value="{{ it.hasImg }}" hint-placeholder-val="{{ false }}">
-              <div style="{{ it.imgCss }}"></div>
-            </sc-if>
-            <sc-if value="{{ it.showViewControls }}" hint-placeholder-val="{{ true }}">
-              <div onClick="{{ it.inspect }}" title="inspect item" style="cursor:pointer; position:absolute; top:8px; left:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">🔍</div>
-              <sc-if value="{{ it.hasUrl }}" hint-placeholder-val="{{ false }}">
-                <a href="{{ it.urlHref }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#4a3f38; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
-              </sc-if>
-            </sc-if>
-            <sc-if value="{{ it.editing }}" hint-placeholder-val="{{ false }}">
-              <div onPointerDown="{{ it.moveStart }}" title="drag to move" style="position:absolute; top:8px; left:8px; width:28px; height:28px; border-radius:99px; background:rgba(74,63,56,.85); color:#f9f3ec; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:grab; user-select:none; touch-action:none">⠿</div>
-              <div onPointerDown="{{ it.resizeStart }}" title="drag to resize" style="cursor:nwse-resize; position:absolute; bottom:0; right:0; width:28px; height:28px; border-radius:9px 0 9px 0; background:rgba(74,63,56,.85); display:flex; align-items:flex-end; justify-content:flex-end; padding:4px; user-select:none; touch-action:none">
-                <svg width="10" height="10" viewBox="0 0 10 10"><path d="M9 1L1 9M9 5L5 9" stroke="#f9f3ec" stroke-width="1.4" stroke-linecap="round"></path></svg>
+            <div data-tile="{{ it.id }}" style="position:absolute; left:{{ it.xPx }}px; top:{{ it.yPx }}px; width:{{ it.wPx }}px; background:#fff; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:7px; box-shadow:{{ it.shadow }}; z-index:{{ it.z }}; transition:box-shadow .15s ease">
+              <div style="width:100%; height:{{ it.hPx }}px; border-radius:9px; background:{{ it.photoBg }}; position:relative; overflow:hidden; outline:{{ it.editOutline }}; outline-offset:-2px">
+                <sc-if value="{{ it.hasImg }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ it.imgCss }}"></div>
+                </sc-if>
+                <sc-if value="{{ it.showViewControls }}" hint-placeholder-val="{{ true }}">
+                  <div onClick="{{ it.inspect }}" title="inspect item" style="cursor:pointer; position:absolute; top:8px; left:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; user-select:none" style-hover="background:#fff; transform:scale(1.12)"><svg width="13" height="13" viewBox="0 0 24 16" fill="none"><path d="M1 8C1 8 5 1 12 1C19 1 23 8 23 8C23 8 19 15 12 15C5 15 1 8 1 8Z" stroke="#8A8681" stroke-width="1.4"></path><circle cx="12" cy="8" r="3.2" fill="#232326"></circle><path d="M3 4L1 1.5M8 1.8L7 -0.5M16 1.8L17 -0.5M21 4L23 1.5" stroke="#232326" stroke-width="1.2" stroke-linecap="round"></path></svg></div>
+                  <sc-if value="{{ it.hasUrl }}" hint-placeholder-val="{{ false }}">
+                    <a href="{{ it.urlHref }}" target="_blank" rel="noopener" title="open original link" style="text-decoration:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:99px; background:rgba(255,255,255,.9); color:#232326; display:flex; align-items:center; justify-content:center; font-size:11px; user-select:none" style-hover="background:#fff; transform:scale(1.12)">↗</a>
+                  </sc-if>
+                </sc-if>
+                <sc-if value="{{ it.editing }}" hint-placeholder-val="{{ false }}">
+                  <div onPointerDown="{{ it.moveStart }}" title="drag to move" style="position:absolute; top:8px; left:8px; width:28px; height:28px; border-radius:99px; background:rgba(35,35,38,.85); color:#f9f3ec; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:grab; user-select:none; touch-action:none">⠿</div>
+                  <div onPointerDown="{{ it.resizeStart }}" title="drag to resize" style="cursor:nwse-resize; position:absolute; bottom:0; right:0; width:28px; height:28px; border-radius:9px 0 9px 0; background:rgba(35,35,38,.85); display:flex; align-items:flex-end; justify-content:flex-end; padding:4px; user-select:none; touch-action:none">
+                    <svg width="10" height="10" viewBox="0 0 10 10"><path d="M9 1L1 9M9 5L5 9" stroke="#f9f3ec" stroke-width="1.4" stroke-linecap="round"></path></svg>
+                  </div>
+                </sc-if>
               </div>
-            </sc-if>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px; padding:0 3px 2px">
-            <sc-if value="{{ it.hasTags }}" hint-placeholder-val="{{ false }}">
-              <div style="display:flex; gap:3px; flex:none">
-                <sc-for list="{{ it.tagDots }}" as="td" hint-placeholder-count="2">
-                  <span style="width:7px; height:7px; border-radius:99px; background:{{ td }}"></span>
-                </sc-for>
+              <div style="display:flex; align-items:center; gap:8px; padding:0 3px 2px">
+                <sc-if value="{{ it.hasTags }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; gap:3px; flex:none">
+                    <sc-for list="{{ it.tagDots }}" as="td" hint-placeholder-count="2">
+                      <span style="width:7px; height:7px; border-radius:99px; background:{{ td }}"></span>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <span style="flex:1; min-width:0; font-family:'Inter',sans-serif; font-size:9.5px; font-weight:300; letter-spacing:.015em; color:#9C98A2">{{ it.chip }}</span>
+                <div onClick="{{ it.toggle }}" title="i own this — click to toggle" style="cursor:pointer; flex:none; width:11px; height:11px; border-radius:0px; background:#fff; box-shadow:inset 0 0 0 1px {{ it.ownRing }}; display:flex; align-items:center; justify-content:center; user-select:none" style-hover="transform:scale(1.15)">
+                  <sc-if value="{{ it.owned }}" hint-placeholder-val="{{ false }}">
+                    <svg width="9" height="9" viewBox="0 0 12 10" fill="none" style="transform:rotate(-3deg)"><path d="M1.5 4.6C2.3 5.6 3.2 7 3.7 9.5C4.9 6.9 7.8 2.4 10.5 0.8" stroke="#8A8681" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </sc-if>
+                </div>
               </div>
-            </sc-if>
-            <span style="flex:1; min-width:0; font-family:ui-monospace,monospace; font-size:9.5px; color:#7d6f63">{{ it.chip }}</span>
-            <div onClick="{{ it.toggle }}" title="i own this — click to toggle" style="cursor:pointer; flex:none; width:17px; height:17px; border-radius:99px; background:{{ it.ownBg }}; color:#f9f3ec; box-shadow:inset 0 0 0 1.5px {{ it.ownRing }}; font-size:10px; display:flex; align-items:center; justify-content:center; user-select:none" style-hover="transform:scale(1.15)">{{ it.ownLabel }}</div>
-          </div>
-        </div>
+            </div>
           </sc-for>
         </div>
       </div>
     </div>
 
-    <div style="font-family:ui-monospace,monospace; font-size:10px; color:#c4b5a5">{{ gridHint }}</div>
+    <div style="font-family:ui-monospace,monospace; font-size:10px; color:#AFAAA5">{{ gridHint }}</div>
 
     <div style="display:flex; justify-content:center; padding-top:24px; border-top:1px solid rgba(0,0,0,.06); margin-top:8px">
       <sc-if value="{{ confirmingDelete }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex; align-items:center; gap:10px">
-          <span style="font-size:12px; color:#c17a5f">delete "{{ boardName }}"? items stay in your library.</span>
-          <div onClick="{{ confirmDeleteBoard }}" style="cursor:pointer; font-size:12px; font-weight:700; background:#c17a5f; color:#fff; padding:8px 14px; border-radius:999px; user-select:none">delete</div>
-          <div onClick="{{ cancelDeleteBoard }}" style="cursor:pointer; font-size:12px; font-weight:700; color:#b3a294; padding:8px 12px; border-radius:999px; user-select:none" style-hover="background:#f9f3ec">cancel</div>
+          <span style="font-size:12px; color:#9A6B72">delete "{{ boardName }}"? items stay in your library.</span>
+          <div onClick="{{ confirmDeleteBoard }}" style="cursor:pointer; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#9A6B72; padding:8px 14px; border:1px solid #9A6B72; border-radius:2px; user-select:none">delete</div>
+          <div onClick="{{ cancelDeleteBoard }}" style="cursor:pointer; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:#9B9793; padding:8px 12px; border-radius:2px; user-select:none" style-hover="background:#F7F7F5">cancel</div>
         </div>
       </sc-if>
       <sc-if value="{{ notConfirmingDelete }}" hint-placeholder-val="{{ true }}">
-        <div onClick="{{ askDeleteBoard }}" title="delete this board — items stay in your library" style="cursor:pointer; font-size:12px; font-weight:600; color:#c4b5a5; padding:8px 14px; border-radius:999px; user-select:none" style-hover="background:#f9f3ec; color:#c17a5f">delete board</div>
+        <div onClick="{{ askDeleteBoard }}" title="delete this vignette — items stay in your library" style="cursor:pointer; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:#AFAAA5; padding:8px 14px; border-radius:2px; user-select:none" style-hover="background:#F7F7F5; color:#9A6B72">delete vignette</div>
       </sc-if>
     </div>
   </div>
@@ -578,18 +634,20 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{
-  &quot;accent&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#d9917f&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#d9917f&quot;, &quot;#c8a96a&quot;, &quot;#a8b0a4&quot;, &quot;#b08ba6&quot;], &quot;section&quot;: &quot;Look&quot; },
   &quot;showPrices&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Look&quot; }
 }">
 class Component extends DCLogic {
   state = {
+    syncing: false,
+    saveError: null,
     pat: null,
     patError: null,
     authLoading: false,
     ghSha: null,
-    syncing: false,
-    saveError: null,
-    folder: 'Home',
+    scene: 'Home',
+    scenes: ['Home', 'Clothing', 'Tech'],
+    sceneCreatorOpen: false,
+    sceneDraftName: '',
     boardId: null,
     trayOpen: false,
     paletteOpen: false,
@@ -600,38 +658,40 @@ class Component extends DCLogic {
     tags: [],
     activeTagFilters: [],
     tagCreatorOpen: false,
-    tagDraft: { name: '', color: '#d9917f' },
+    tagDraft: { name: '', color: '#9CAE9F' },
     confirmingDeleteBoard: false,
     gridEditOpen: false,
     boardZoom: 1,
     link: '',
     nextId: 100,
     items: [
-      { id: 1, name: 'Linen duvet cover', store: 'Parachute', price: 140, folder: 'Home', tones: ['#e8e3d8', '#ded8ca'], span: 3, photo: 'duvet photo' },
-      { id: 2, name: 'Sage table lamp', store: 'Ferm Living', price: 89, folder: 'Home', tones: ['#dfe3dc', '#c8d1c4'], span: 2, photo: 'lamp photo' },
-      { id: 3, name: 'Oak side table', store: 'Hay', price: 210, folder: 'Home', tones: ['#e6e0d4', '#d5c9b4'], span: 2, photo: 'side table photo' },
-      { id: 4, name: 'Wool throw blanket', store: 'Tekla', price: 75, folder: 'Home', tones: ['#e2ddd3', '#cfc7b8'], span: 3, photo: 'throw photo' },
-      { id: 5, name: 'Pillar candle set', store: 'Areaware', price: 38, folder: 'Home', tones: ['#efe9df', '#e0d5c2'], span: 1, photo: 'candles photo' },
-      { id: 6, name: 'Stoneware vase', store: 'Toast', price: 32, folder: 'Home', tones: ['#ded9cf', '#c2b9a8'], span: 1, photo: 'vase photo' },
-      { id: 7, name: 'Dinner plates ×4', store: 'Our Place', price: 95, folder: 'Home', tones: ['#e9e2da', '#d8c8ba'], span: 2, photo: 'plates photo', sale: true },
-      { id: 8, name: 'Arched floor mirror', store: 'Urban Outfitters', price: 229, folder: 'Home', tones: ['#e4e1da', '#c9c4b8'], span: 3, photo: 'mirror photo' },
-      { id: 9, name: 'Mohair cardigan', store: '&amp; Other Stories', price: 129, folder: 'Clothing', tones: ['#f2e4dc', '#e3c6b8'], span: 2, photo: 'cardigan photo' },
-      { id: 10, name: 'Satin midi skirt', store: 'Aritzia', price: 68, folder: 'Clothing', tones: ['#e9e9e2', '#d3d3c4'], span: 2, photo: 'skirt photo', sale: true },
-      { id: 11, name: 'Mary-jane flats', store: 'Repetto', price: 295, folder: 'Clothing', tones: ['#eee7de', '#dbc9ae'], span: 2, photo: 'flats photo', owned: true },
-      { id: 12, name: 'E-reader', store: 'Kobo', price: 139, folder: 'Tech', tones: ['#e3e3e0', '#c6c6c0'], span: 1, photo: 'e-reader photo' },
-      { id: 13, name: 'Bookshelf speaker', store: 'Audioengine', price: 249, folder: 'Tech', tones: ['#e6e1d8', '#bdb2a0'], span: 2, photo: 'speaker photo' },
-      { id: 14, name: 'Point-and-shoot camera', store: 'Pentax', price: 179, folder: 'Tech', tones: ['#e8e5de', '#cac4b6'], span: 2, photo: 'camera photo' },
-      { id: 20, name: 'Maxwell sectional, right chaise 98"', store: 'Interior Define', price: 3495, folder: 'Home', tones: ['#ded6c8', '#c3b8a3'], span: 3, photo: 'your couch — send a screenshot', owned: true }
+      { id: 1, name: 'Linen duvet cover', store: 'Parachute', price: 140, scene: 'Home', tones: ['#e8e3d8', '#ded8ca'], span: 3, photo: 'duvet photo' },
+      { id: 2, name: 'Sage table lamp', store: 'Ferm Living', price: 89, scene: 'Home', tones: ['#dfe3dc', '#c8d1c4'], span: 2, photo: 'lamp photo' },
+      { id: 3, name: 'Oak side table', store: 'Hay', price: 210, scene: 'Home', tones: ['#e6e0d4', '#d5c9b4'], span: 2, photo: 'side table photo' },
+      { id: 4, name: 'Wool throw blanket', store: 'Tekla', price: 75, scene: 'Home', tones: ['#e2ddd3', '#cfc7b8'], span: 3, photo: 'throw photo' },
+      { id: 5, name: 'Pillar candle set', store: 'Areaware', price: 38, scene: 'Home', tones: ['#efe9df', '#e0d5c2'], span: 1, photo: 'candles photo' },
+      { id: 6, name: 'Stoneware vase', store: 'Toast', price: 32, scene: 'Home', tones: ['#ded9cf', '#c2b9a8'], span: 1, photo: 'vase photo' },
+      { id: 7, name: 'Dinner plates ×4', store: 'Our Place', price: 95, scene: 'Home', tones: ['#e9e2da', '#d8c8ba'], span: 2, photo: 'plates photo', sale: true },
+      { id: 8, name: 'Arched floor mirror', store: 'Urban Outfitters', price: 229, scene: 'Home', tones: ['#e4e1da', '#c9c4b8'], span: 3, photo: 'mirror photo' },
+      { id: 9, name: 'Mohair cardigan', store: '& Other Stories', price: 129, scene: 'Clothing', tones: ['#f2e4dc', '#e3c6b8'], span: 2, photo: 'cardigan photo' },
+      { id: 10, name: 'Satin midi skirt', store: 'Aritzia', price: 68, scene: 'Clothing', tones: ['#e9e9e2', '#d3d3c4'], span: 2, photo: 'skirt photo', sale: true },
+      { id: 11, name: 'Mary-jane flats', store: 'Repetto', price: 295, scene: 'Clothing', tones: ['#eee7de', '#dbc9ae'], span: 2, photo: 'flats photo', owned: true },
+      { id: 12, name: 'E-reader', store: 'Kobo', price: 139, scene: 'Tech', tones: ['#e3e3e0', '#c6c6c0'], span: 1, photo: 'e-reader photo' },
+      { id: 13, name: 'Bookshelf speaker', store: 'Audioengine', price: 249, scene: 'Tech', tones: ['#e6e1d8', '#bdb2a0'], span: 2, photo: 'speaker photo' },
+      { id: 14, name: 'Point-and-shoot camera', store: 'Pentax', price: 179, scene: 'Tech', tones: ['#e8e5de', '#cac4b6'], span: 2, photo: 'camera photo' },
+      { id: 20, name: 'Maxwell sectional, right chaise 98"', store: 'Interior Define', price: 3495, scene: 'Home', tones: ['#ded6c8', '#c3b8a3'], span: 3, photo: 'your couch — send a screenshot', owned: true }
     ],
     boards: [
-      { id: 'b1', name: 'quiet bedroom reset', itemIds: [1, 2, 4, 5, 6] },
-      { id: 'b2', name: 'warm minimal desk', itemIds: [3, 12, 13] },
-      { id: 'b3', name: 'living room', itemIds: [20] }
+      { id: 'b1', name: 'quiet bedroom reset', itemIds: [1, 2, 4, 5, 6], scene: 'Home' },
+      { id: 'b2', name: 'warm minimal desk', itemIds: [3, 12, 13], scene: 'Tech' },
+      { id: 'b3', name: 'living room', itemIds: [20], scene: 'Home' }
     ]
   };
 
   fileRef = React.createRef();
   colorRef = React.createRef();
+  importRef = React.createRef();
+  tagColorRef = React.createRef();
   boardViewportRef = React.createRef();
   activeTileId = null;
   CANVAS_W = 1040;
@@ -640,8 +700,8 @@ class Component extends DCLogic {
   MIN_ZOOM = 0.3;
   MAX_ZOOM = 1;
   ZOOM_STEP = 0.1;
-  // cap how far tiles can spread vertically so a board can cluster but never
-  // becomes a giant sparse canvas — grows with the number of tiles
+  TAG_PRESET_COLORS = ['#9CAE9F', '#B7ACD6', '#232326', '#A9A5D8', '#7E9184', '#9A9791'];
+
   boardMaxH(board) {
     const n = board ? board.itemIds.length : 0;
     return Math.max(700, n * 190);
@@ -670,9 +730,8 @@ class Component extends DCLogic {
       const h = num(lay && lay.h, Math.round(260 / ar));
       let x, y;
       if (lay && typeof lay.x === 'number' && typeof lay.y === 'number') {
-        x = lay.x; y = lay.y; // explicitly placed by the user
+        x = lay.x; y = lay.y;
       } else {
-        // flow into place, reserving this tile's real size so nothing overlaps
         if (cx + w > this.CANVAS_W) { cx = 0; cy += rowH + this.GAP; rowH = 0; }
         x = cx; y = cy;
         cx += w + this.GAP;
@@ -683,7 +742,6 @@ class Component extends DCLogic {
     return out;
   }
 
-  // true if the candidate rect (photo + caption) overlaps any other tile
   overlapsOther(rect, itemId, rects) {
     const a = { x: rect.x, y: rect.y, w: rect.w, h: rect.h + this.CAP_H };
     for (const id in rects) {
@@ -703,10 +761,9 @@ class Component extends DCLogic {
     }));
   }
 
-  // Drag via Pointer Events. We update the tile's DOM directly during the drag
-  // (NO setState) so the element is never re-rendered mid-gesture — that would
-  // break the pointer's implicit touch capture and freeze the drag on mobile.
-  // A single commitLayout on release settles the final position into state.
+  // Drag via Pointer Events. Updates the tile's DOM directly during the drag
+  // (no setState) so the element is never re-rendered mid-gesture — that would
+  // break the pointer's implicit capture and freeze the drag on mobile.
   startMove(boardId, itemId, e) {
     e.preventDefault();
     e.stopPropagation();
@@ -720,10 +777,9 @@ class Component extends DCLogic {
     const maxX = Math.max(0, this.CANVAS_W - start.w);
     const maxY = Math.max(0, this.boardMaxH(board) - start.h);
     let lastGood = { ...start };
-    if (tile) { tile.style.zIndex = '30'; tile.style.transition = 'none'; tile.style.boxShadow = '0 12px 30px rgba(40,30,20,.28)'; }
-    try { handle.setPointerCapture(pointerId); } catch {}
+    if (tile) { tile.style.zIndex = '30'; tile.style.transition = 'none'; tile.style.boxShadow = '0 12px 30px rgba(35,35,38,.28)'; }
+    try { handle.setPointerCapture(pointerId); } catch (e2) {}
     const onMove = (ev) => {
-      // divide the screen-space delta by zoom to get canvas-space movement
       const nx = Math.min(maxX, Math.max(0, Math.round(start.x + (ev.clientX - sx) / zoom)));
       const ny = Math.min(maxY, Math.max(0, Math.round(start.y + (ev.clientY - sy) / zoom)));
       if (tile) { tile.style.left = nx + 'px'; tile.style.top = ny + 'px'; }
@@ -734,8 +790,8 @@ class Component extends DCLogic {
       handle.removeEventListener('pointermove', onMove);
       handle.removeEventListener('pointerup', onUp);
       handle.removeEventListener('pointercancel', onUp);
-      try { handle.releasePointerCapture(pointerId); } catch {}
-      this.commitLayout(boardId, itemId, lastGood); // settle at last non-overlapping spot
+      try { handle.releasePointerCapture(pointerId); } catch (e2) {}
+      this.commitLayout(boardId, itemId, lastGood);
     };
     handle.addEventListener('pointermove', onMove);
     handle.addEventListener('pointerup', onUp);
@@ -755,8 +811,8 @@ class Component extends DCLogic {
     const zoom = this.state.boardZoom || 1;
     const maxW = Math.min(640, this.CANVAS_W - start.x);
     let lastGood = { ...start };
-    if (tile) { tile.style.zIndex = '30'; tile.style.transition = 'none'; tile.style.boxShadow = '0 12px 30px rgba(40,30,20,.28)'; }
-    try { handle.setPointerCapture(pointerId); } catch {}
+    if (tile) { tile.style.zIndex = '30'; tile.style.transition = 'none'; tile.style.boxShadow = '0 12px 30px rgba(35,35,38,.28)'; }
+    try { handle.setPointerCapture(pointerId); } catch (e2) {}
     const onMove = (ev) => {
       const w = Math.min(maxW, Math.max(110, Math.round(start.w + (ev.clientX - sx) / zoom)));
       const h = Math.min(640, Math.max(90, Math.round(start.h + (ev.clientY - sy) / zoom)));
@@ -769,7 +825,7 @@ class Component extends DCLogic {
       handle.removeEventListener('pointermove', onMove);
       handle.removeEventListener('pointerup', onUp);
       handle.removeEventListener('pointercancel', onUp);
-      try { handle.releasePointerCapture(pointerId); } catch {}
+      try { handle.releasePointerCapture(pointerId); } catch (e2) {}
       this.commitLayout(boardId, itemId, lastGood);
     };
     handle.addEventListener('pointermove', onMove);
@@ -777,10 +833,8 @@ class Component extends DCLogic {
     handle.addEventListener('pointercancel', onUp);
   }
 
-  // Palette swatch reordering via Pointer Events (works on touch + mouse).
-  // Listeners live on window so they survive the re-render each reorder causes;
-  // elementFromPoint locates the swatch under the finger by its data-swatch idx.
-  // A tap (no movement) falls through to onClick -> toggle.
+  // Palette swatch reordering via Pointer Events (mouse + touch). A tap with
+  // no movement falls through to the swatch's onClick -> toggle.
   startSwatchDrag(boardId, idx, e) {
     const sx = e.clientX, sy = e.clientY;
     this.dragSwatchIdx = idx;
@@ -794,7 +848,7 @@ class Component extends DCLogic {
       const overIdx = parseInt(target.getAttribute('data-swatch'), 10);
       const from = this.dragSwatchIdx;
       if (isNaN(overIdx) || from == null || from === overIdx) return;
-      this.dragSwatchIdx = overIdx; // track the dot's new slot as it moves
+      this.dragSwatchIdx = overIdx;
       this.editBoardPalette(boardId, pal => {
         const out = [...pal];
         const [moved] = out.splice(from, 1);
@@ -805,27 +859,25 @@ class Component extends DCLogic {
     const onUp = () => {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onUp);
+      if (dragging) {
+        this._suppressSwatchClick = true;
+        setTimeout(() => { this._suppressSwatchClick = false; }, 0);
+      }
       this.dragSwatchIdx = null;
-      // suppress the click that follows a drag so it doesn't also toggle
-      if (dragging) { this._suppressSwatchClick = true; setTimeout(() => { this._suppressSwatchClick = false; }, 60); }
     };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
   }
 
   effPalette(board, its) {
     if (board && board.palette) {
       const on = board.palette.filter(p => p.on);
-      if (!on.length) return [{ color: '#eceae5', flex: 1 }];
+      if (!on.length) return [{ color: '#EAE8E4', flex: 1 }];
       return on.map(p => ({ color: p.c, flex: Math.max(1, p.pct) }));
     }
     return this.palette(its);
   }
 
-  // scale the enabled colors so their percentages sum to exactly 100.
-  // if fixedIdx is given, that entry keeps its value and the others share the rest.
   normalizePal(pal, fixedIdx, fixedVal) {
     const on = pal.map((p, i) => ({ p, i })).filter(x => x.p.on);
     if (!on.length) return pal;
@@ -887,9 +939,6 @@ class Component extends DCLogic {
     reader.readAsDataURL(file);
   }
 
-  // Loads an image src (data: URL only — never a cross-origin URL, which would
-  // taint the canvas), resizes it, extracts tones/aspect, uploads the JPEG to
-  // GitHub Releases, and resolves with the hosted URL (or base64 if upload fails).
   _processImageSrc(src) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -937,11 +986,7 @@ class Component extends DCLogic {
     const name = `img-${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
     const res = await fetch(`https://uploads.github.com/repos/pliggity/wishroom/releases/${releaseId}/assets?name=${encodeURIComponent(name)}`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.state.pat}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'image/jpeg'
-      },
+      headers: { Authorization: `Bearer ${this.state.pat}`, Accept: 'application/vnd.github+json', 'Content-Type': 'image/jpeg' },
       body: blob
     });
     if (!res.ok) throw new Error('upload failed');
@@ -961,8 +1006,6 @@ class Component extends DCLogic {
     }
   }
 
-  // finds the bounding box of "content" pixels vs. a plain studio backdrop,
-  // so tiles size to the actual product instead of the photo's padding
   contentBBox(ctx, w, h) {
     try {
       const d = ctx.getImageData(0, 0, w, h).data;
@@ -989,9 +1032,7 @@ class Component extends DCLogic {
       minX = Math.max(0, minX - mx); minY = Math.max(0, minY - my);
       maxX = Math.min(w, maxX + mx); maxY = Math.min(h, maxY + my);
       const bw = maxX - minX, bh = maxY - minY;
-      if (bw < w * 0.2 || bh < h * 0.2) return null; // guard against cropping to a speck
-      // only trust the crop when the backdrop padding was substantial — avoids
-      // nibbling real edges (e.g. a rug's border pattern) on already-tight photos
+      if (bw < w * 0.2 || bh < h * 0.2) return null;
       if ((bw * bh) / (w * h) > 0.78) return null;
       return { w: bw, h: bh };
     } catch (e) { return null; }
@@ -1003,12 +1044,11 @@ class Component extends DCLogic {
       const buckets = {};
       for (let i = 0; i < d.length; i += 16) {
         const p = i / 4, px = p % w, py = Math.floor(p / w);
-        // weight the image center; studio backdrops live at the edges
         const centerWt = (px > w * 0.2 && px < w * 0.8 && py > h * 0.2 && py < h * 0.8) ? 1.6 : 0.5;
         const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
         const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
         const l = (mx + mn) / 2;
-        if (l > 0.93 || l < 0.10) continue; // skip white backgrounds & deep shadows
+        if (l > 0.93 || l < 0.10) continue;
         const dl = mx - mn;
         const sat = dl === 0 ? 0 : dl / (1 - Math.abs(2 * l - 1));
         let hue = 0;
@@ -1020,18 +1060,15 @@ class Component extends DCLogic {
         }
         const key = Math.round(hue / 30) + ',' + Math.round(l * 5) + ',' + Math.round(sat * 3);
         const bk = buckets[key] || (buckets[key] = { n: 0, w: 0, r: 0, g: 0, b: 0, hue, l, sat });
-        // near-gray pixels (backdrops, shadows) barely count; saturated color dominates
         const wt = (sat < 0.12 ? 0.05 : 0.4 + sat) * centerWt;
         bk.n += wt; bk.w++;
         bk.r += d[i]; bk.g += d[i + 1]; bk.b += d[i + 2];
       }
       const sorted = Object.values(buckets).sort((a, b) => b.n - a.n);
       if (!sorted.length) return null;
-      // never let a near-gray bucket lead when real color exists
       const colored = sorted.filter(bk => bk.sat > 0.15);
       const pool = colored.length >= 2 ? colored : sorted;
       const first = pool[0];
-      // second color must be visibly different in hue or lightness — and colored, if possible
       const differs = bk => {
         const dh = Math.abs(bk.hue - first.hue);
         return Math.min(dh, 360 - dh) > 40 || Math.abs(bk.l - first.l) > 0.22;
@@ -1070,6 +1107,17 @@ class Component extends DCLogic {
   componentWillUnmount() {
     document.removeEventListener('paste', this.onPaste);
     window.removeEventListener('beforeunload', this.flushSave);
+    clearTimeout(this._syncTimer);
+  }
+
+  _saveTimer = null;
+  _loaded = false;
+  _saving = false;
+  _saveDirty = false;
+
+  _saveData() {
+    const s = this.state;
+    return { items: s.items, boards: s.boards, scenes: s.scenes, nextId: s.nextId, archived: s.archived, tags: s.tags };
   }
 
   flushSave = () => {
@@ -1078,39 +1126,29 @@ class Component extends DCLogic {
     this._saveTimer = null;
     const { pat, ghSha } = this.state;
     if (!pat || !ghSha) return;
-    const data = { items: this.state.items, boards: this.state.boards, nextId: this.state.nextId, archived: this.state.archived, tags: this.state.tags };
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-    // keepalive lets the request outlive the page unload (best-effort; may fail if body > 64KB)
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(this._saveData()))));
     fetch('https://api.github.com/repos/pliggity/wishroom/contents/data.json', {
       method: 'PUT', keepalive: true,
       headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'update wishroom', content: encoded, sha: ghSha })
+      body: JSON.stringify({ message: 'update vignette', content: encoded, sha: ghSha })
     }).catch(() => {});
   };
-
-  _saveTimer = null;
-  _loaded = false;
 
   componentDidMount() {
     document.addEventListener('paste', this.onPaste);
     window.addEventListener('beforeunload', this.flushSave);
     const params = new URLSearchParams(window.location.search);
-    // Share-sheet / shortcut entry: ?add=<encoded url>. Stash it (survives the
-    // OAuth round-trip if we're logged out) and fire it once data has loaded.
     const add = params.get('add');
     if (add) {
       sessionStorage.setItem('wishroom-pending-add', add);
       history.replaceState({}, '', window.location.pathname);
     }
-    // A fresh OAuth redirect (?code=) always wins over a stored token — a
-    // stale/expired token must never block re-authentication.
     const code = params.get('code');
     if (code) {
       const returnedState = params.get('state');
       const savedState = sessionStorage.getItem('wishroom-oauth-state');
       sessionStorage.removeItem('wishroom-oauth-state');
       history.replaceState({}, '', window.location.pathname);
-      // Verify the CSRF state GitHub echoed back matches the one we issued.
       if (!savedState || returnedState !== savedState) {
         this.setState({ patError: 'Sign-in could not be verified — please try again.' });
         return;
@@ -1122,7 +1160,6 @@ class Component extends DCLogic {
     if (stored) this.loadFromGitHub(stored);
   }
 
-  // Lazily mint + persist a per-session CSRF state token for the OAuth redirect.
   _oauthState() {
     let s = sessionStorage.getItem('wishroom-oauth-state');
     if (!s) {
@@ -1137,50 +1174,38 @@ class Component extends DCLogic {
     this.setState({ authLoading: true, patError: null });
     try {
       const res = await fetch('https://wishroom-oauth.pliggity.workers.dev', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code })
       });
       const data = await res.json();
-      if (!data.access_token) {
-        this.setState({ authLoading: false, patError: 'Sign-in failed — try again.' });
-        return;
-      }
-      const userRes = await fetch('https://api.github.com/user', {
-        headers: { Authorization: `Bearer ${data.access_token}` }
-      });
+      if (!data.access_token) { this.setState({ authLoading: false, patError: 'Sign-in failed — try again.' }); return; }
+      const userRes = await fetch('https://api.github.com/user', { headers: { Authorization: `Bearer ${data.access_token}` } });
       const user = await userRes.json();
-      if (user.login !== 'pliggity') {
-        this.setState({ authLoading: false, patError: 'This app is private.' });
-        return;
-      }
+      if (user.login !== 'pliggity') { this.setState({ authLoading: false, patError: 'This app is private.' }); return; }
       this.loadFromGitHub(data.access_token);
     } catch {
       this.setState({ authLoading: false, patError: 'Sign-in failed — try again.' });
     }
   }
 
-  // NOTE: the Claude Design runtime calls componentDidUpdate with prevProps
-  // only — there is NO prevState argument. We track the last-saved data
-  // snapshot on the instance instead and diff against that.
+  // Runtime calls componentDidUpdate with prevProps only — no prevState. We
+  // diff against a snapshot kept on the instance instead.
   componentDidUpdate() {
     if (!this._loaded || !this.state.pat || !this._prevData) return;
     const s = this.state;
     const changed =
       this._prevData.items !== s.items ||
       this._prevData.boards !== s.boards ||
+      this._prevData.scenes !== s.scenes ||
       this._prevData.nextId !== s.nextId ||
       this._prevData.archived !== s.archived ||
       this._prevData.tags !== s.tags;
-    if (changed) {
-      this._prevData = { items: s.items, boards: s.boards, nextId: s.nextId, archived: s.archived, tags: s.tags };
-      this.scheduleGithubSave();
-    }
+    if (changed) { this._snapshotData(); this.scheduleGithubSave(); }
   }
 
   _snapshotData() {
     const s = this.state;
-    this._prevData = { items: s.items, boards: s.boards, nextId: s.nextId, archived: s.archived, tags: s.tags };
+    this._prevData = { items: s.items, boards: s.boards, scenes: s.scenes, nextId: s.nextId, archived: s.archived, tags: s.tags };
   }
 
   async loadFromGitHub(pat) {
@@ -1190,13 +1215,8 @@ class Component extends DCLogic {
         headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json' }
       });
       if (!res.ok) {
-        // Clear a rejected token so it can't get stuck blocking re-login.
         if (res.status === 401 || res.status === 403) localStorage.removeItem('wishroom-pat');
-        this.setState({
-          pat: null,
-          authLoading: false,
-          patError: res.status === 401 ? 'Session expired — sign in again.' : `GitHub error ${res.status}.`
-        });
+        this.setState({ pat: null, authLoading: false, patError: res.status === 401 ? 'Session expired — sign in again.' : `GitHub error ${res.status}.` });
         return;
       }
       const file = await res.json();
@@ -1205,8 +1225,14 @@ class Component extends DCLogic {
       localStorage.setItem('wishroom-pat', pat);
       const patch = { pat, ghSha: file.sha, patError: null };
       if (data && Array.isArray(data.items) && Array.isArray(data.boards)) {
-        patch.items = data.items;
-        patch.boards = data.boards;
+        // migrate legacy folder -> scene
+        const items = data.items.map(i => ({ ...i, scene: i.scene || i.folder || 'Home' }));
+        const boards = data.boards.map(b => ({ ...b, scene: b.scene !== undefined ? b.scene : null }));
+        patch.items = items;
+        patch.boards = boards;
+        patch.scenes = (Array.isArray(data.scenes) && data.scenes.length)
+          ? data.scenes
+          : Array.from(new Set([...this.state.scenes, ...items.map(i => i.scene).filter(Boolean)]));
         patch.nextId = data.nextId || this.state.nextId;
         patch.archived = data.archived || [];
         patch.tags = data.tags || [];
@@ -1221,61 +1247,43 @@ class Component extends DCLogic {
     }
   }
 
-  _saving = false;
-  _saveDirty = false;
-
   scheduleGithubSave() {
     clearTimeout(this._saveTimer);
     this.setState({ syncing: true });
     this._saveTimer = setTimeout(() => this.doGithubSave(), 1500);
   }
 
-  // Serialize saves: only one PUT in flight at a time. Changes made during a
-  // save set a dirty flag that triggers a follow-up, so nothing is lost and
-  // two overlapping PUTs can't race to a 409.
   async doGithubSave() {
     if (!this.state.pat || !this.state.ghSha) { this.setState({ syncing: false, saveError: null }); return; }
     if (this._saving) { this._saveDirty = true; return; }
     this._saving = true;
-    try {
-      await this._putData(false);
-    } catch (e) {
-      console.error('wishroom save error', e);
-      this.setState({ syncing: false, saveError: 'save failed' });
-    } finally {
-      this._saving = false;
-      if (this._saveDirty) { this._saveDirty = false; this.scheduleGithubSave(); }
-    }
+    try { await this._putData(false); }
+    catch (e) { console.error('vignette save error', e); this.setState({ syncing: false, saveError: 'save failed' }); }
+    finally { this._saving = false; if (this._saveDirty) { this._saveDirty = false; this.scheduleGithubSave(); } }
   }
 
   async _putData(isRetry) {
     const pat = this.state.pat;
-    const data = { items: this.state.items, boards: this.state.boards, nextId: this.state.nextId, archived: this.state.archived, tags: this.state.tags };
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(this._saveData()))));
     this.setState({ syncing: true });
     const res = await fetch('https://api.github.com/repos/pliggity/wishroom/contents/data.json', {
       method: 'PUT',
       headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'update wishroom', content: encoded, sha: this.state.ghSha })
+      body: JSON.stringify({ message: 'update vignette', content: encoded, sha: this.state.ghSha })
     });
     if (res.ok) {
       const result = await res.json();
       this.setState({ syncing: false, saveError: null, ghSha: result.content.sha });
       return;
     }
-    // 409 = our sha is stale (another device/tab wrote). Refetch the latest sha
-    // and retry once — last write wins, which is fine for a single user.
     if (res.status === 409 && !isRetry) {
       const fresh = await fetch(`https://api.github.com/repos/pliggity/wishroom/contents/data.json?t=${Date.now()}`, {
         headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json' }
       }).then(r => r.ok ? r.json() : null).catch(() => null);
-      if (fresh && fresh.sha) {
-        this.setState({ ghSha: fresh.sha });
-        return this._putData(true);
-      }
+      if (fresh && fresh.sha) { this.setState({ ghSha: fresh.sha }); return this._putData(true); }
     }
     const errBody = await res.json().catch(() => ({}));
-    console.error('wishroom save failed', res.status, errBody);
+    console.error('vignette save failed', res.status, errBody);
     this.setState({ syncing: false, saveError: `save failed (${res.status})` });
   }
 
@@ -1286,8 +1294,6 @@ class Component extends DCLogic {
 
   imgCss(item, fit) {
     if (!item.img) return {};
-    // strip anything that could break out of the url("...") wrapper and inject
-    // extra CSS — quotes, parens, backslashes, whitespace/newlines
     const safe = String(item.img).replace(/["'()\\\s]/g, '');
     if (!safe) return {};
     return {
@@ -1296,13 +1302,13 @@ class Component extends DCLogic {
     };
   }
 
-  // Returns a safe href, or '' — blocks javascript:/data:/etc. so a saved link
+  // Returns a safe href, or '' — blocks javascript:/data:/etc so a saved link
   // can never execute script when clicked. Bare domains get https:// prepended.
   _safeLink(u) {
     if (!u) return '';
     const s = String(u).trim();
     if (/^https?:\/\//i.test(s)) return s;
-    if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return ''; // any other scheme -> reject
+    if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return '';
     return s ? 'https://' + s : '';
   }
 
@@ -1310,8 +1316,6 @@ class Component extends DCLogic {
     return s.replace(/\S+/g, w => w.charAt(0).toUpperCase() + w.slice(1));
   }
 
-  // Best-guess a product name from the URL's path slug, e.g.
-  // /shop/sam-edelman-marcie-woven-ballet-flats -> "Sam Edelman Marcie Woven Ballet Flats"
   _guessNameFromUrl(url) {
     try {
       const parts = new URL(url).pathname.split('/').filter(Boolean).map(p => decodeURIComponent(p));
@@ -1319,15 +1323,14 @@ class Component extends DCLogic {
       for (const seg of parts) {
         if (/^(shop|products?|p|dp|item|items|c|category|categories|collections?|browse|en|us|intl|pd)$/i.test(seg)) continue;
         const words = seg.split(/[-_]/).filter(Boolean);
-        if (words.length < 2) continue; // skip ids / skus / single tokens
+        if (words.length < 2) continue;
         const cleaned = words.filter(w => !/^\d{3,}$/.test(w) && !/^[a-z0-9]{10,}$/i.test(w));
         if (cleaned.length >= 2 && cleaned.length > best.split(' ').filter(Boolean).length) best = cleaned.join(' ');
       }
       return best ? this._titleCase(best) : '';
-    } catch { return ''; }
+    } catch (e) { return ''; }
   }
 
-  // Pull human-readable size/color/qty from the query string (skips opaque codes)
   _guessAttrsFromUrl(url) {
     try {
       const q = new URL(url).searchParams;
@@ -1339,34 +1342,20 @@ class Component extends DCLogic {
       const qty = q.get('quantity') || q.get('qty');
       if (qty && /^\d{1,2}$/.test(qty) && qty !== '1') bits.push('qty ' + qty);
       return bits.join(' · ');
-    } catch { return ''; }
+    } catch (e) { return ''; }
   }
-
-  // Prefer a real fetched title; fall back to the URL guess when the fetch was
-  // blocked and returned nothing or just a bare domain.
-  _betterTitle(fetched, current) {
-    const f = (fetched || '').trim();
-    if (!f) return current;
-    if (/^[a-z0-9.-]+\.(com|co|net|org|shop|store|io|us|uk)$/i.test(f)) return current;
-    return f;
-  }
-
-  importRef = React.createRef();
 
   exportData() {
     const data = {
-      items: this.state.items,
-      boards: this.state.boards,
-      nextId: this.state.nextId,
-      archived: this.state.archived,
-      tags: this.state.tags
+      items: this.state.items, boards: this.state.boards, nextId: this.state.nextId,
+      archived: this.state.archived, tags: this.state.tags
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     const date = new Date().toISOString().slice(0, 10);
-    a.download = 'wishroom-export-' + date + '.json';
+    a.download = 'vignette-export-' + date + '.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1381,23 +1370,20 @@ class Component extends DCLogic {
         const data = JSON.parse(reader.result);
         if (!Array.isArray(data.items) || !Array.isArray(data.boards)) throw new Error('missing items/boards');
         this.setState({
-          items: data.items,
-          boards: data.boards,
-          nextId: data.nextId || 100,
-          archived: data.archived || [],
-          tags: data.tags || []
+          items: data.items, boards: data.boards, nextId: data.nextId || 100,
+          archived: data.archived || [], tags: data.tags || []
         }, () => this.reprocessImages());
       } catch (e) {
-        window.alert('That file doesn\u2019t look like a wishroom export.');
+        window.alert('That file doesn\u2019t look like a vignette export.');
       }
     };
     reader.readAsText(file);
   }
 
-  tagColorRef = React.createRef();
-  TAG_PRESET_COLORS = ['#d9917f', '#c8a96a', '#a8b0a4', '#b08ba6', '#7d9bb0', '#4a3f38'];
   isPresetTagColor(c) { return this.TAG_PRESET_COLORS.includes(c); }
 
+  // adds the freshly created tag to whichever context is open — the
+  // add/link draft, or an inspected item
   saveTagDraft() {
     const name = this.state.tagDraft.name.trim();
     if (!name) return;
@@ -1405,7 +1391,6 @@ class Component extends DCLogic {
     const color = this.state.tagDraft.color;
     this.setState(st => {
       const patch = { tags: [...st.tags, { id, name, color }], tagCreatorOpen: false };
-      // add the new tag to whichever context is open — the add/link draft or an inspected item
       if (st.custom) {
         patch.custom = { ...st.custom, tagIds: [...(st.custom.tagIds || []), id] };
       } else if (st.viewId != null) {
@@ -1415,8 +1400,12 @@ class Component extends DCLogic {
     });
   }
 
-  // the single source of truth for an item's tile shape — computed once from
-  // its stored aspect ratio and used identically in the library, boards, and tray
+  saveSceneDraft() {
+    const name = this.state.sceneDraftName.trim();
+    if (!name || this.state.scenes.includes(name)) { this.setState({ sceneCreatorOpen: false }); return; }
+    this.setState(st => ({ scenes: [...st.scenes, name], scene: name, sceneCreatorOpen: false }));
+  }
+
   tileAr(item) {
     return item.img && item.ar ? String(Math.min(1.8, Math.max(0.5, item.ar))) : 'auto';
   }
@@ -1433,7 +1422,6 @@ class Component extends DCLogic {
     const seen = new Set();
     const colors = [];
     boardItems.forEach(i => {
-      // items with a real photo contribute both extracted colors
       (i.img ? [i.tones[1], i.tones[0]] : [i.tones[1]]).forEach(c => {
         if (!seen.has(c)) { seen.add(c); colors.push(c); }
       });
@@ -1441,8 +1429,8 @@ class Component extends DCLogic {
     colors.sort((a, b) => this.lightness(b) - this.lightness(a));
     const weights = [3, 2.4, 2, 1.6, 1.3, 1, 1, 1];
     const out = colors.slice(0, 7).map((c, i) => ({ color: c, flex: weights[i] || 1 }));
-    if (out.length) out.push({ color: '#4a3f38', flex: 0.7 });
-    else out.push({ color: '#eceae5', flex: 1 });
+    if (out.length) out.push({ color: '#232326', flex: 0.7 });
+    else out.push({ color: '#EAE8E4', flex: 1 });
     return out;
   }
 
@@ -1450,20 +1438,20 @@ class Component extends DCLogic {
     this.addFromLink(this.state.link);
   }
 
-  // Opens the add modal pre-filled from a shop link. Shared by the header
-  // input and the share-sheet/shortcut entry (?add=).
+  // Opens the add modal pre-filled from a shop link, guessing a name from the
+  // URL slug client-side (no metadata-fetch service in this prototype).
   addFromLink(raw) {
     const url = this._safeLink(String(raw || '').trim());
     if (!url) { this.setState({ link: '' }); return; }
     const m = url.match(/([a-z0-9-]+)\.(com|co|net|org|shop|store|io|us|uk)/i);
     const store = m ? m[1].charAt(0).toUpperCase() + m[1].slice(1) : '';
-    const folder = this.state.folder === 'All' ? 'Home' : this.state.folder;
+    const folder = this.state.scene === 'All' ? (this.state.scenes[0] || 'Home') : this.state.scene;
     const name = this._guessNameFromUrl(url);
     const notes = this._guessAttrsFromUrl(url);
     this.setState({
       link: '',
       tagCreatorOpen: false,
-      custom: { name, store, price: '', owned: false, folder, img: null, ar: null, tones: ['#eceae5', '#dcd8ce'], url, notes, tagIds: [], boardIds: [], fetching: true }
+      custom: { name, store, price: '', owned: false, scene: folder, img: null, ar: null, tones: ['#EAE8E4', '#DBD8D3'], url, notes, tagIds: [], boardIds: [], fetching: true }
     });
     this.fetchLinkMeta(url);
   }
@@ -1476,8 +1464,6 @@ class Component extends DCLogic {
         body: JSON.stringify({ url })
       });
       const data = await res.json();
-      // set the title immediately; the image is re-hosted (not hot-linked).
-      // Keep the URL-guessed name when the fetch was blocked / returned junk.
       this.setState(st => {
         if (!st.custom || st.custom.url !== url) return null;
         return { custom: { ...st.custom, fetching: !!data.imageData, name: this._betterTitle(data.title, st.custom.name) } };
@@ -1497,25 +1483,43 @@ class Component extends DCLogic {
     }
   }
 
+  _betterTitle(fetched, current) {
+    const f = (fetched || '').trim();
+    if (!f) return current;
+    if (/^[a-z0-9.-]+\.(com|co|net|org|shop|store|io|us|uk)$/i.test(f)) return current;
+    return f;
+  }
+
   renderVals() {
-    const accent = this.props.accent ?? '#d9917f';
+    const accent = this.props.accent ?? '#9CAE9F';
     const showPrices = this.props.showPrices ?? true;
     const s = this.state;
     const board = s.boards.find(b => b.id === s.boardId) || null;
 
-    const folders = ['All', 'Home', 'Clothing', 'Tech'].map(f => {
-      const n = f === 'All' ? s.items.length : s.items.filter(i => i.folder === f).length;
-      const active = s.folder === f;
+    const folders = ['All', ...s.scenes].map(f => {
+      const n = f === 'All' ? s.items.length : s.items.filter(i => i.scene === f).length;
+      const active = s.scene === f;
       return {
         label: f + ' · ' + n,
-        bg: active ? '#4a3f38' : '#fff',
-        color: active ? '#f9f3ec' : '#7d6f63',
-        weight: active ? 700 : 500,
-        pick: () => this.setState({ folder: f })
+        bg: active ? '#232326' : '#fff',
+        color: active ? '#fff' : '#726F6C',
+        weight: active ? 600 : 400,
+        active,
+        inactive: !active,
+        isAll: f === 'All',
+        notAll: f !== 'All',
+        pick: () => this.setState({ scene: f }),
+        remove: e => {
+          e.stopPropagation();
+          this.setState(st => ({
+            scenes: st.scenes.filter(x => x !== f),
+            scene: st.scene === f ? 'All' : st.scene
+          }));
+        }
       };
     });
 
-    const byFolder = s.folder === 'All' ? s.items : s.items.filter(i => i.folder === s.folder);
+    const byFolder = s.scene === 'All' ? s.items : s.items.filter(i => i.scene === s.scene);
     const filtered = s.activeTagFilters.length
       ? byFolder.filter(i => (i.tagIds || []).some(tid => s.activeTagFilters.includes(tid)))
       : byFolder;
@@ -1528,7 +1532,7 @@ class Component extends DCLogic {
       hasUrl: !!i.url,
       url: i.url || '',
       urlHref: this._safeLink(i.url),
-      chip: i.name.toLowerCase() + ' · ' + i.store.toLowerCase() + (showPrices && i.price != null ? ' · $' + i.price : ''),
+      chip: (i.name + ' · ' + i.store + (showPrices && i.price != null ? ' · $' + i.price : '')).toUpperCase(),
       photoBg: i.img ? i.tones[0] : this.stripe(i.tones),
       photoH: i.img && i.ar ? 'auto' : '168px',
       photoAr: this.tileAr(i),
@@ -1546,21 +1550,23 @@ class Component extends DCLogic {
       sale: !!i.sale,
       owned: !!i.owned,
       ownLabel: i.owned ? '✓' : '',
-      ownBg: i.owned ? '#4a3f38' : 'rgba(255,255,255,.92)',
-      ownColor: '#f9f3ec',
-      ownRing: i.owned ? '#4a3f38' : '#c9b8a4',
+      ownBg: i.owned ? '#232326' : 'rgba(255,255,255,.92)',
+      ownColor: '#fff',
+      ownRing: i.owned ? '#8A8681' : '#DBD8D3',
       toggle: e => { e.stopPropagation(); this.setState(st => ({ items: st.items.map(x => x.id === i.id ? { ...x, owned: !x.owned } : x) })); },
       inspect: e => { e.stopPropagation(); this.setState({ viewId: i.id }); }
     }));
 
     const openTotal = filtered.filter(i => !i.owned && i.price != null).reduce((a, i) => a + i.price, 0);
 
-    const boards = s.boards.map(b => {
+    const boardsInScene = s.scene === 'All' ? s.boards : s.boards.filter(b => b.scene == null || b.scene === s.scene);
+    const boards = boardsInScene.map(b => {
       const its = b.itemIds.map(id => s.items.find(i => i.id === id)).filter(Boolean);
       const total = its.reduce((a, i) => a + (i.price || 0), 0);
       const cover = [0, 1, 2, 3].map(k => its[k] ? its[k].tones[k % 2] : '#f0ebe2');
       return {
         name: b.name,
+        nameParts: b.name.split(' ').map(w => ({ first: w.slice(0, 1), rest: w.slice(1) + ' ' })),
         meta: its.length + ' items · $' + total.toLocaleString(),
         cover,
         palette: this.effPalette(b, its),
@@ -1587,7 +1593,7 @@ class Component extends DCLogic {
         pct: p.on ? String(p.pct) : '–',
         inputBg: p.on ? '#fff' : '#f6f2ec',
         toggle: () => {
-          if (this._suppressSwatchClick) return; // a drag just ended — not a tap
+          if (this._suppressSwatchClick) return;
           this.editBoardPalette(board.id, pal =>
             this.normalizePal(pal.map((x, i) => i === idx ? { ...x, on: !x.on } : x)));
         },
@@ -1613,7 +1619,7 @@ class Component extends DCLogic {
           wPx: r.w,
           hPx: r.h,
           z: this.activeTileId === i.id ? 20 : (s.gridEditOpen ? 2 : 1),
-          shadow: this.activeTileId === i.id ? '0 12px 30px rgba(40,30,20,.28)' : '0 1px 3px rgba(90,70,50,.07)',
+          shadow: this.activeTileId === i.id ? '0 12px 30px rgba(35,35,38,.28)' : '0 1px 3px rgba(35,35,38,.07)',
           photoBg: i.img ? i.tones[0] : this.stripe(i.tones),
           hasTags: (i.tagIds || []).length > 0,
           tagDots: (i.tagIds || []).map(tid => tagById[tid] && tagById[tid].color).filter(Boolean),
@@ -1627,10 +1633,10 @@ class Component extends DCLogic {
           hasUrl: !!i.url,
           url: i.url || '',
           urlHref: this._safeLink(i.url),
-          chip: i.name.toLowerCase() + (i.price != null ? ' · $' + i.price : ''),
+          chip: (i.name + (i.price != null ? ' · $' + i.price : '')).toUpperCase(),
           ownLabel: i.owned ? '✓' : '',
-          ownBg: i.owned ? '#4a3f38' : '#fff',
-          ownRing: i.owned ? '#4a3f38' : '#c9b8a4',
+          ownBg: i.owned ? '#232326' : '#fff',
+          ownRing: i.owned ? '#8A8681' : '#DBD8D3',
           toggle: e => { e.stopPropagation(); this.setState(st => ({ items: st.items.map(x => x.id === i.id ? { ...x, owned: !x.owned } : x) })); },
           inspect: e => { e.stopPropagation(); this.setState({ viewId: i.id }); },
           remove: () => this.setState(st => ({ boards: st.boards.map(b => b.id === board.id ? { ...b, itemIds: b.itemIds.filter(x => x !== i.id) } : b) }))
@@ -1654,21 +1660,31 @@ class Component extends DCLogic {
       viewNoImg: !!(vi && !vi.img),
       viewImgCss: vi ? this.imgCss(vi, 'contain') : {},
       viewBg: vi ? (vi.img ? vi.tones[0] : this.stripe(vi.tones)) : '#fff',
+      viewAccent: vi ? vi.tones[0] : '#9A6B72',
+      archiveWeight: s.archiveHover ? 400 : 500,
+      archiveFont: s.archiveHover ? "'Fraunces',serif" : "'Inter',sans-serif",
+      archiveStyle: s.archiveHover ? 'italic' : 'normal',
+      archiveColor: s.archiveHover ? '#fff' : (vi ? vi.tones[0] : '#9A6B72'),
+      archiveBg: s.archiveHover ? (vi ? vi.tones[0] : '#9A6B72') : 'transparent',
+      archiveHoverOn: () => this.setState({ archiveHover: true }),
+      archiveHoverOff: () => this.setState({ archiveHover: false }),
       viewName: vi ? vi.name : '',
       viewRename: e => vi && editItem(vi.id, { name: e.target.value }),
       viewStore: vi ? vi.store : '',
       viewSetStore: e => vi && editItem(vi.id, { store: e.target.value }),
       viewPriceRaw: vi ? (vi.price == null ? '' : String(vi.price)) : '',
       viewSetPrice: e => { const n = parseFloat(String(e.target.value).replace(/[^0-9.]/g, '')); vi && editItem(vi.id, { price: isNaN(n) ? null : n }); },
-      viewPrice: vi ? (vi.price == null ? (vi.owned ? '—' : 'price?') : '$' + vi.price) : '',
       viewHasUrl: !!(vi && vi.url),
       viewUrl: vi && vi.url ? vi.url : '',
       viewUrlHref: vi ? this._safeLink(vi.url) : '',
       viewSetUrl: e => vi && editItem(vi.id, { url: e.target.value }),
       viewNotes: vi ? (vi.notes || '') : '',
       viewSetNotes: e => vi && editItem(vi.id, { notes: e.target.value }),
-      viewOwnBg: vi && vi.owned ? '#4a3f38' : '#fff',
-      viewOwnRing: vi && vi.owned ? '#4a3f38' : '#c9b8a4',
+      viewOwnBg: vi && vi.owned ? '#232326' : '#fff',
+      viewOwnRing: vi && vi.owned ? '#8A8681' : '#DBD8D3',
+      viewOwned: !!(vi && vi.owned),
+      viewOwnFont: vi && vi.owned ? "'Fraunces',serif" : "'Inter',sans-serif",
+      viewOwnStyle: vi && vi.owned ? 'italic' : 'normal',
       viewOwnMark: vi && vi.owned ? '✓' : '',
       viewToggleOwned: () => vi && editItem(vi.id, { owned: !vi.owned }),
       viewTags: vi ? s.tags.map(t => {
@@ -1677,41 +1693,43 @@ class Component extends DCLogic {
           label: t.name,
           dot: t.color,
           weight: on ? 700 : 500,
-          bg: on ? t.color : '#f9f3ec',
-          color: on ? '#fff' : '#7d6f63',
+          bg: on ? t.color : '#fff',
+          color: on ? '#fff' : '#726F6C',
           toggle: () => editItem(vi.id, {
             tagIds: on ? (vi.tagIds || []).filter(id => id !== t.id) : [...(vi.tagIds || []), t.id]
           })
         };
       }) : [],
-      openTagCreator: () => this.setState({ tagCreatorOpen: true, tagDraft: { name: '', color: '#d9917f' } }),
+      openTagCreator: () => this.setState({ tagCreatorOpen: true, tagDraft: { name: '', color: '#9CAE9F' } }),
       closeTagCreator: () => this.setState({ tagCreatorOpen: false }),
       tagCreatorOpen: s.tagCreatorOpen,
       tagDraftName: s.tagDraft.name,
       tagDraftSetName: e => this.setState(st => ({ tagDraft: { ...st.tagDraft, name: e.target.value } })),
-      tagDraftKey: e => { if (e.key === 'Enter') this.saveTagDraft(vi); },
-      tagColorOptions: ['#d9917f', '#c8a96a', '#a8b0a4', '#b08ba6', '#7d9bb0', '#4a3f38'].map(c => ({
+      tagDraftKey: e => { if (e.key === 'Enter') this.saveTagDraft(); },
+      tagColorOptions: ['#9CAE9F', '#B7ACD6', '#232326', '#A9A5D8', '#7E9184', '#9A9791'].map(c => ({
         color: c,
         ring: s.tagDraft.color === c ? c : 'transparent',
         pick: () => this.setState(st => ({ tagDraft: { ...st.tagDraft, color: c } }))
       })),
       tagDraftColor: s.tagDraft.color,
       customColorRing: this.isPresetTagColor(s.tagDraft.color) ? 'transparent' : s.tagDraft.color,
-      tagDraftColorSwatch: this.isPresetTagColor(s.tagDraft.color) ? 'conic-gradient(from 0deg, #d9917f, #c8a96a, #a8b0a4, #b08ba6, #7d9bb0, #4a3f38, #d9917f)' : s.tagDraft.color,
+      tagDraftColorSwatch: this.isPresetTagColor(s.tagDraft.color) ? 'conic-gradient(from 0deg, #9CAE9F, #B7ACD6, #232326, #A9A5D8, #7E9184, #9A9791, #9CAE9F)' : s.tagDraft.color,
       customColorMark: this.isPresetTagColor(s.tagDraft.color) ? '+' : '',
       tagColorRef: this.tagColorRef,
       pickCustomTagColor: () => this.tagColorRef.current && this.tagColorRef.current.click(),
       onTagColorPicked: e => this.setState(st => ({ tagDraft: { ...st.tagDraft, color: e.target.value } })),
-      saveTagDraft: () => this.saveTagDraft(vi),
+      saveTagDraft: () => this.saveTagDraft(),
       viewBoards: vi ? s.boards.map(b => {
         const on = b.itemIds.includes(vi.id);
         return {
           name: b.name,
-          weight: on ? 700 : 500,
-          bg: on ? '#4a3f38' : '#fff',
-          color: on ? '#f9f3ec' : '#7d6f63',
+          weight: on ? 400 : 500,
+          font: on ? "'Fraunces',serif" : "'Inter',sans-serif",
+          fstyle: on ? 'italic' : 'normal',
+          bg: on ? '#232326' : '#fff',
+          color: on ? '#fff' : '#726F6C',
           dotBg: on ? accent : 'transparent',
-          ringColor: on ? accent : '#c9b8a4',
+          ringColor: on ? accent : '#DBD8D3',
           mark: on ? '✓' : '',
           toggle: () => this.setState(st => ({
             boards: st.boards.map(x => x.id === b.id
@@ -1733,6 +1751,14 @@ class Component extends DCLogic {
       closeView: () => this.setState({ viewId: null }),
       hasArchived: s.archived.length > 0,
       archivedCount: s.archived.length,
+      utilColor: k => s.utilHover === k ? '#232326' : '#AFAAA5',
+      utilHoverOff: () => this.setState({ utilHover: null }),
+      archiveUtilColor: s.utilHover === 'archive' ? '#232326' : '#AFAAA5',
+      archiveUtilHoverOn: () => this.setState({ utilHover: 'archive' }),
+      exportUtilColor: s.utilHover === 'export' ? '#232326' : '#AFAAA5',
+      exportUtilHoverOn: () => this.setState({ utilHover: 'export' }),
+      importUtilColor: s.utilHover === 'import' ? '#232326' : '#AFAAA5',
+      importUtilHoverOn: () => this.setState({ utilHover: 'import' }),
       archiveOpen: s.archiveOpen,
       openArchive: () => this.setState({ archiveOpen: true }),
       closeArchive: () => this.setState({ archiveOpen: false }),
@@ -1746,7 +1772,11 @@ class Component extends DCLogic {
         restore: () => this.setState(st => ({
           archived: st.archived.filter(x => x.id !== a.id),
           items: [a, ...st.items]
-        }))
+        })),
+        destroy: () => {
+          if (!window.confirm('Permanently delete "' + a.name + '"? This can\'t be undone.')) return;
+          this.setState(st => ({ archived: st.archived.filter(x => x.id !== a.id) }));
+        }
       })),
       stopClick: e => e.stopPropagation(),
       fileRef: this.fileRef,
@@ -1767,8 +1797,8 @@ class Component extends DCLogic {
       },
       customOpen: !!s.custom,
       draftTitle: s.custom && s.custom.url ? 'add from link' : 'new custom tile',
-      draftImgHint: s.custom && s.custom.fetching ? 'fetching image…' : 'click, drop, or paste (⌘V) a photo here',
-      openCustom: () => this.setState({ tagCreatorOpen: false, custom: { name: '', store: '', price: '', owned: true, folder: s.folder === 'All' ? 'Home' : s.folder, img: null, ar: null, tones: ['#eceae5', '#dcd8ce'], tagIds: [], boardIds: [], notes: '' } }),
+      draftImgHint: 'click, drop, or paste (⌘V) a photo here',
+      openCustom: () => this.setState({ tagCreatorOpen: false, custom: { name: '', store: '', price: '', owned: true, scene: s.scene === 'All' ? (s.scenes[0] || 'Home') : s.scene, img: null, ar: null, tones: ['#EAE8E4', '#DBD8D3'], tagIds: [], boardIds: [], notes: '' } }),
       cancelCustom: () => this.setState({ custom: null, tagCreatorOpen: false }),
       pickDraftImage: () => { this.pendingImageItem = 'draft'; this.fileRef.current && this.fileRef.current.click(); },
       dropDraftImage: e => {
@@ -1776,7 +1806,7 @@ class Component extends DCLogic {
         const f = [...(e.dataTransfer?.files || [])].find(x => x.type.startsWith('image/'));
         this.applyImage('draft', f);
       },
-      draftBg: s.custom ? (s.custom.img ? s.custom.tones[0] : this.stripe(s.custom.tones)) : '#f9f3ec',
+      draftBg: s.custom ? (s.custom.img ? s.custom.tones[0] : this.stripe(s.custom.tones)) : '#fff',
       draftHasImg: !!(s.custom && s.custom.img),
       draftNoImg: !!(s.custom && !s.custom.img),
       draftImgCss: s.custom && s.custom.img ? this.imgCss(s.custom, 'contain') : {},
@@ -1786,16 +1816,17 @@ class Component extends DCLogic {
       draftSetStore: e => this.setState(st => ({ custom: { ...st.custom, store: e.target.value } })),
       draftPrice: s.custom ? s.custom.price : '',
       draftSetPrice: e => this.setState(st => ({ custom: { ...st.custom, price: e.target.value } })),
-      draftOwnBg: s.custom && s.custom.owned ? '#4a3f38' : '#fff',
-      draftOwnRing: s.custom && s.custom.owned ? '#4a3f38' : '#c9b8a4',
+      draftOwnBg: s.custom && s.custom.owned ? '#232326' : '#fff',
+      draftOwnRing: s.custom && s.custom.owned ? '#8A8681' : '#DBD8D3',
+      draftOwned: !!(s.custom && s.custom.owned),
       draftOwnMark: s.custom && s.custom.owned ? '✓' : '',
       draftToggleOwned: () => this.setState(st => ({ custom: { ...st.custom, owned: !st.custom.owned } })),
-      draftFolders: ['Home', 'Clothing', 'Tech'].map(f => ({
+      draftFolders: s.scenes.map(f => ({
         label: f,
-        weight: s.custom && s.custom.folder === f ? 700 : 500,
-        bg: s.custom && s.custom.folder === f ? '#4a3f38' : '#f9f3ec',
-        color: s.custom && s.custom.folder === f ? '#f9f3ec' : '#7d6f63',
-        pick: () => this.setState(st => ({ custom: { ...st.custom, folder: f } }))
+        weight: s.custom && s.custom.scene === f ? 700 : 500,
+        bg: s.custom && s.custom.scene === f ? '#232326' : '#fff',
+        color: s.custom && s.custom.scene === f ? '#fff' : '#726F6C',
+        pick: () => this.setState(st => ({ custom: { ...st.custom, scene: f } }))
       })),
       draftNotes: s.custom ? (s.custom.notes || '') : '',
       draftSetNotes: e => this.setState(st => ({ custom: { ...st.custom, notes: e.target.value } })),
@@ -1805,10 +1836,10 @@ class Component extends DCLogic {
         return {
           name: b.name,
           weight: on ? 700 : 500,
-          bg: on ? '#4a3f38' : '#f9f3ec',
-          color: on ? '#f9f3ec' : '#7d6f63',
+          bg: on ? '#232326' : '#fff',
+          color: on ? '#fff' : '#726F6C',
           dotBg: on ? accent : 'transparent',
-          ringColor: on ? accent : '#c9b8a4',
+          ringColor: on ? accent : '#DBD8D3',
           mark: on ? '✓' : '',
           toggle: () => this.setState(st => ({ custom: { ...st.custom, boardIds: on ? (st.custom.boardIds || []).filter(id => id !== b.id) : [...(st.custom.boardIds || []), b.id] } }))
         };
@@ -1818,8 +1849,8 @@ class Component extends DCLogic {
         return {
           label: t.name, dot: t.color,
           weight: on ? 700 : 500,
-          bg: on ? t.color : '#f9f3ec',
-          color: on ? '#fff' : '#7d6f63',
+          bg: on ? t.color : '#fff',
+          color: on ? '#fff' : '#726F6C',
           toggle: () => this.setState(st => ({ custom: { ...st.custom, tagIds: on ? (st.custom.tagIds || []).filter(id => id !== t.id) : [...(st.custom.tagIds || []), t.id] } }))
         };
       }) : [],
@@ -1839,7 +1870,7 @@ class Component extends DCLogic {
               name: c.name.trim() || 'untitled',
               store: c.store.trim() || (c.owned ? 'already mine' : ''),
               price: isNaN(price) ? null : price,
-              folder: c.folder, tones: c.tones, ar: c.ar, img: c.img,
+              scene: c.scene, tones: c.tones, ar: c.ar, img: c.img,
               span: 2, photo: 'add a photo', owned: c.owned,
               tagIds: c.tagIds || [],
               ...(c.notes && c.notes.trim() ? { notes: c.notes.trim() } : {}),
@@ -1862,6 +1893,15 @@ class Component extends DCLogic {
       folders,
       items,
       folderTotal: '$' + openTotal.toLocaleString(),
+      hasScenes: s.scenes.length > 0,
+      sceneCreatorOpen: s.sceneCreatorOpen,
+      sceneCreatorClosed: !s.sceneCreatorOpen,
+      openSceneCreator: () => this.setState({ sceneCreatorOpen: true, sceneDraftName: '' }),
+      closeSceneCreator: () => this.setState({ sceneCreatorOpen: false }),
+      sceneDraftName: s.sceneDraftName,
+      sceneDraftSetName: e => this.setState({ sceneDraftName: e.target.value }),
+      sceneDraftKey: e => { if (e.key === 'Enter') this.saveSceneDraft(); },
+      saveSceneDraft: () => this.saveSceneDraft(),
       hasTags: s.tags.length > 0,
       hasActiveTagFilter: s.activeTagFilters.length > 0,
       clearTagFilters: () => this.setState({ activeTagFilters: [] }),
@@ -1871,8 +1911,8 @@ class Component extends DCLogic {
           label: t.name,
           dot: t.color,
           weight: active ? 700 : 500,
-          bg: active ? '#4a3f38' : '#fff',
-          color: active ? '#f9f3ec' : '#7d6f63',
+          bg: active ? '#232326' : '#fff',
+          color: active ? '#fff' : '#726F6C',
           toggle: () => this.setState(st => ({
             activeTagFilters: st.activeTagFilters.includes(t.id)
               ? st.activeTagFilters.filter(id => id !== t.id)
@@ -1883,9 +1923,17 @@ class Component extends DCLogic {
       boards,
       newBoard: () => {
         const id = 'b' + Date.now();
-        this.setState(st => ({ boards: [...st.boards, { id, name: 'untitled board', itemIds: [] }], boardId: id, trayOpen: true }));
+        this.setState(st => ({ boards: [...st.boards, { id, name: 'untitled vignette', itemIds: [], scene: st.scene === 'All' ? null : st.scene }], boardId: id, trayOpen: true }));
       },
       boardName, boardMeta, boardPalette, boardItems, boardEmpty, swatches,
+      gridEditClosed: !s.gridEditOpen,
+      boardSceneLabel: board ? (board.scene || 'All scenes') : '',
+      boardSceneValue: board ? (board.scene || 'All scenes') : '',
+      boardSceneChange: e => {
+        const val = e.target.value;
+        this.setState(st => ({ boards: st.boards.map(b => b.id === st.boardId ? { ...b, scene: val === 'All scenes' ? null : val } : b) }));
+      },
+      boardSceneOptions: ['All scenes', ...s.scenes].map(opt => ({ value: opt, label: opt })),
       includedSwatches: swatches.filter(sw => sw.on),
       excludedSwatches: swatches.filter(sw => !sw.on),
       hasExcluded: swatches.some(sw => !sw.on),
@@ -1894,7 +1942,6 @@ class Component extends DCLogic {
       togglePaletteEditor: () => {
         if (!board) return;
         if (!s.paletteOpen && !board.palette) {
-          // seed the editor with the current auto palette, normalized to 100%
           const auto = this.palette(board.itemIds.map(id => s.items.find(i => i.id === id)).filter(Boolean));
           const tot = auto.reduce((a, p) => a + p.flex, 0);
           const seeded = auto.map(p => ({ c: p.color, pct: Math.max(1, Math.round((p.flex / tot) * 100)), on: true }));
@@ -1918,6 +1965,8 @@ class Component extends DCLogic {
       trayEmpty: board ? trayItems.length === 0 : false,
       trayItems,
       trayLabel: s.trayOpen ? 'done adding' : '+ add items',
+      trayBg: s.trayOpen ? '#232326' : 'transparent',
+      trayColor: s.trayOpen ? '#fff' : '#232326',
       toggleTray: () => this.setState(st => ({ trayOpen: !st.trayOpen })),
       openTray: () => this.setState({ trayOpen: true }),
       closeBoard: () => this.setState({ boardId: null, trayOpen: false, paletteOpen: false, gridEditOpen: false, boardZoom: 1 }),
@@ -1930,9 +1979,9 @@ class Component extends DCLogic {
         boardId: null, trayOpen: false, paletteOpen: false, confirmingDeleteBoard: false
       })),
       gridEditOpen: s.gridEditOpen,
-      gridEditLabel: s.gridEditOpen ? 'done editing' : 'edit grid',
-      gridEditBg: s.gridEditOpen ? '#4a3f38' : '#fff',
-      gridEditColor: s.gridEditOpen ? '#f9f3ec' : '#7d6f63',
+      gridEditLabel: s.gridEditOpen ? 'done editing' : 'edit',
+      gridEditBg: s.gridEditOpen ? '#232326' : 'transparent',
+      gridEditColor: s.gridEditOpen ? '#fff' : '#232326',
       toggleGridEdit: () => {
         const opening = !this.state.gridEditOpen;
         this.setState({ gridEditOpen: opening, ...(opening ? {} : { boardZoom: 1 }) }, () => {
@@ -1950,11 +1999,11 @@ class Component extends DCLogic {
       zoomOut: () => this.zoomBoardBy(-this.ZOOM_STEP),
       fitBoard: () => this.fitBoard(),
       gridHint: s.gridEditOpen ? 'drag ⠿ to move a tile anywhere · drag the corner to resize · tiles won\u2019t overlap' : 'the palette strip re-mixes as you add and remove items',
+      syncing: s.syncing,
+      saveErrorMsg: s.saveError || '',
       pat: s.pat,
       patError: s.patError,
       authLoading: s.authLoading,
-      syncing: s.syncing,
-      saveErrorMsg: s.saveError || '',
       githubAuthUrl: 'https://github.com/login/oauth/authorize?client_id=Ov23lijpZJuBnpW8mbVl&scope=public_repo&state=' + this._oauthState(),
       signOut: () => this.signOut()
     };
@@ -1962,6 +2011,5 @@ class Component extends DCLogic {
 }
 
 </script>
-<div id="dc-loading">loading wishroom…</div>
 </body>
 </html>
