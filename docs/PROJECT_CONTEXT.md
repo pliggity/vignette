@@ -7,9 +7,12 @@ the things you can't infer by reading the code alone._
 Last updated: 2026-07-12
 
 > **Naming note:** the app was originally **Wishroom** and was rebranded to
-> **Vignette** on 2026-07-12 (editorial redesign from a Claude Design prototype +
-> full repo/URL rename). Some *internal, invisible* identifiers deliberately still
-> say `wishroom` — see "The rename" below. Don't "fix" them blindly.
+> **Vignette** on 2026-07-12 — editorial redesign from a Claude Design prototype,
+> full repo/URL rename, and a follow-up sweep that renamed the worker, localStorage
+> keys, and local folders too. The name `wishroom` should no longer appear anywhere
+> live. A one-time localStorage-token migration in `componentDidMount` carried the
+> old session across the key rename (`wishroom-pat`→`vignette-pat`); it can be
+> deleted after everyone's re-loaded once.
 
 ---
 
@@ -23,8 +26,8 @@ owner is GitHub user **`pliggity`**.
 
 - **Live app:** https://pliggity.github.io/vignette/
 - **App repo:** `pliggity/vignette` (public; renamed from `pliggity/wishroom`)
-- **OAuth/proxy worker:** `wishroom-oauth.pliggity.workers.dev` (Cloudflare; name kept as-is — it's an invisible endpoint. Source in the separate `wishroom-oauth` project, not committed to the app repo)
-- **Local clone:** still `~/wishroom` on the owner's machine (just a folder name)
+- **OAuth/proxy worker:** `vignette-oauth.pliggity.workers.dev` (Cloudflare; source in the separate `~/vignette-oauth` project, not committed to the app repo)
+- **Local clone:** `~/vignette` on the owner's machine (worker source in `~/vignette-oauth`)
 
 It started as a Claude Design prototype and was turned into a real, persistent,
 auth-gated, mobile-installable app; then a second Claude Design pass produced the
@@ -47,7 +50,7 @@ Fraunces "V" wordmark + matching app icon.
 Browser (GitHub Pages static site)
   │
   │  OAuth login ("Sign in with GitHub")
-  ├──────────────► wishroom-oauth Worker ──► GitHub OAuth (holds client_secret)
+  ├──────────────► vignette-oauth Worker ──► GitHub OAuth (holds client_secret)
   │                        │
   │                        └─ /fetch-meta: scrape og:title/og:image for link-adds
   │
@@ -68,7 +71,7 @@ client and (b) act as an authenticated scraping proxy for link metadata.
 |---|---|
 | **Hosting** | GitHub Pages, static. `.nojekyll` present so Jekyll doesn't choke on `{{ }}` template syntax. |
 | **Runtime** | Claude Design runtime (`support.js`) — loads React 18 + Babel from unpkg (with SRI hashes + `crossOrigin`), then mounts a `DCLogic`/`StreamableLogic` React class component defined inline in `index.html`. |
-| **Auth** | GitHub OAuth web flow. Redirect → `?code=` → Worker exchanges for token → app verifies `login === 'pliggity'` → token stored in `localStorage['wishroom-pat']` (key deliberately kept through the rename — see below). The OAuth App's **Authorization callback URL** must equal the live app URL (`https://pliggity.github.io/vignette/`). |
+| **Auth** | GitHub OAuth web flow. Redirect → `?code=` → Worker exchanges for token → app verifies `login === 'pliggity'` → token stored in `localStorage['vignette-pat']`. The OAuth App's **Authorization callback URL** must equal the live app URL (`https://pliggity.github.io/vignette/`). |
 | **Data** | Entire state (items, boards, **scenes**, tags, archived, nextId) is one JSON blob committed to `data.json` via the Contents API. Debounced 1.5s; SHA-tracked with 409-retry. `_saveData()` is the single source of the payload shape. |
 | **Images** | Resized to ≤640px JPEG client-side, uploaded to the repo's "images" Release, stored as URLs (not base64) to keep `data.json` small. |
 | **Install** | PWA (manifest + service worker + apple-touch-icon). Installable to iOS home screen **via Safari only**. |
@@ -164,13 +167,15 @@ and git remotes auto-redirect. What that touched — and what was intentionally 
   The authorize link in code sends **no `redirect_uri`**, so GitHub redirects to
   whatever callback is registered — a stale one 404s after sign-in. (Classic OAuth
   Apps have no management REST API, so this can't be scripted.)
-- **Kept `wishroom` on purpose (do NOT rename):**
-  - `localStorage['wishroom-pat']` (+ `wishroom-oauth-state`, `wishroom-pending-add`)
-    — localStorage is per-*origin*, not per-path, so keeping the key means the
-    existing login survived the URL change. Renaming it would force a re-auth.
-  - The Cloudflare Worker `wishroom-oauth.pliggity.workers.dev` — invisible endpoint;
-    renaming it means redeploying + updating the app URL for zero user-visible gain.
-  - The local clone folder `~/wishroom` — just a directory name.
+- **Also renamed in a follow-up sweep (2026-07-12):**
+  - localStorage/sessionStorage keys `wishroom-*` → `vignette-*`. Because
+    localStorage is per-*origin* (not per-path), a one-time migration in
+    `componentDidMount` copies `wishroom-pat`→`vignette-pat` so the existing login
+    survived. That migration shim can be deleted later.
+  - The Cloudflare Worker → `vignette-oauth.pliggity.workers.dev` (redeployed with
+    the same code + secrets; old `wishroom-oauth` script deleted). ALLOWED_ORIGIN is
+    unchanged (same Pages origin).
+  - Local folders `~/wishroom`→`~/vignette`, `~/wishroom-oauth`→`~/vignette-oauth`.
 - **After a rename, the user must also:** re-add the home-screen PWA at the new URL
   (old `/wishroom/` now 404s) and update the iOS Shortcut's `?add=` URL.
 
@@ -197,7 +202,7 @@ The Vignette redesign renamed concepts *and* changed the data shape:
 - `.nojekyll` — disables Jekyll on Pages.
 - `docs/PROJECT_CONTEXT.md` — this file.
 
-**`wishroom-oauth` (Cloudflare Worker, separate project):**
+**`~/vignette-oauth` (Cloudflare Worker `vignette-oauth`, separate project):**
 - `src/index.js` — OAuth token exchange (`POST /`) + `POST /fetch-meta` (auth-gated scraper that returns title + re-hostable image bytes).
 - `wrangler.toml` — Worker config. Secrets `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` are set in Cloudflare, not in the repo.
 - Deploy with `npx wrangler deploy`.
@@ -229,9 +234,8 @@ Known open items / TODO:
   and shrinks it over time; check it's fully migrated (few KB, image URLs not base64).
 - **"Real" native app (Capacitor)** — deferred option if a true share-sheet entry /
   app-store presence is wanted later. ~1–3 days + $99/yr Apple Developer.
-- **Cosmetic leftovers** — the Worker name (`wishroom-oauth`), the `wishroom-*`
-  localStorage keys, and the local `~/wishroom` folder still say wishroom on purpose
-  (see "The rename"). Only rename them if you accept the tradeoffs noted there.
+- **Migration shim** — the one-time `wishroom-pat`→`vignette-pat` localStorage
+  migration in `componentDidMount` can be removed once all devices have loaded once.
 
 ---
 
