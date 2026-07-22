@@ -641,6 +641,8 @@ class Component extends DCLogic {
     syncing: false,
     saveError: null,
     pat: null,
+    patRefresh: null,
+    patExpiresAt: null,
     patError: null,
     authLoading: false,
     ghSha: null,
@@ -1230,6 +1232,9 @@ class Component extends DCLogic {
   componentWillUnmount() {
     document.removeEventListener('paste', this.onPaste);
     window.removeEventListener('beforeunload', this.flushSave);
+    document.removeEventListener('visibilitychange', this._onVisible);
+    window.removeEventListener('focus', this._onVisible);
+    clearInterval(this._tokenRefreshInterval);
     clearTimeout(this._syncTimer);
   }
 
@@ -1260,6 +1265,16 @@ class Component extends DCLogic {
   componentDidMount() {
     document.addEventListener('paste', this.onPaste);
     window.addEventListener('beforeunload', this.flushSave);
+    // GitHub access tokens can be short-lived (as little as 8h) with a
+    // long-lived refresh_token behind them. Refresh proactively whenever the
+    // app regains focus (the common mobile pattern: backgrounded for hours,
+    // then reopened) plus a periodic backstop for long foreground sessions —
+    // a plain setInterval alone would miss the backgrounded case since timers
+    // are throttled while the tab/PWA isn't visible.
+    this._onVisible = () => { if (document.visibilityState === 'visible') this.ensureFreshToken(); };
+    document.addEventListener('visibilitychange', this._onVisible);
+    window.addEventListener('focus', this._onVisible);
+    this._tokenRefreshInterval = setInterval(() => this.ensureFreshToken(), 15 * 60 * 1000);
     const params = new URLSearchParams(window.location.search);
     const add = params.get('add');
     if (add) {
@@ -1288,7 +1303,12 @@ class Component extends DCLogic {
     }
     localStorage.removeItem('wishroom-state-v1'); // stale prototype cache, unused
     const stored = localStorage.getItem('vignette-pat');
-    if (stored) this.loadFromGitHub(stored);
+    if (stored) {
+      const patRefresh = localStorage.getItem('vignette-pat-refresh') || null;
+      const expRaw = localStorage.getItem('vignette-pat-exp');
+      const patExpiresAt = expRaw ? Number(expRaw) : null;
+      this.setState({ patRefresh, patExpiresAt }, () => this.loadFromGitHub(stored));
+    }
   }
 
   _oauthState() {
@@ -1299,6 +1319,40 @@ class Component extends DCLogic {
       sessionStorage.setItem('vignette-oauth-state', s);
     }
     return s;
+  }
+
+  // Persists an OAuth token response (access_token + optional expires_in /
+  // refresh_token) to both localStorage and state, so a short-lived token can
+  // be silently renewed later without asking for a full re-login.
+  _storeToken(data) {
+    const patExpiresAt = data.expires_in ? Date.now() + data.expires_in * 1000 : null;
+    const patRefresh = data.refresh_token || this.state.patRefresh || null;
+    localStorage.setItem('vignette-pat', data.access_token);
+    if (patRefresh) localStorage.setItem('vignette-pat-refresh', patRefresh); else localStorage.removeItem('vignette-pat-refresh');
+    if (patExpiresAt) localStorage.setItem('vignette-pat-exp', String(patExpiresAt)); else localStorage.removeItem('vignette-pat-exp');
+    this.setState({ pat: data.access_token, patRefresh, patExpiresAt });
+    return data.access_token;
+  }
+
+  // Refreshes the stored token if it's expired or close to it (or always, when
+  // force is set — used for a one-shot retry after an unexpected 401). No-op
+  // if there's no refresh_token to use (classic non-expiring tokens).
+  async ensureFreshToken(currentPat, force) {
+    const pat = currentPat || this.state.pat;
+    const { patExpiresAt, patRefresh } = this.state;
+    if (!pat || !patRefresh) return pat;
+    if (!force && patExpiresAt && Date.now() < patExpiresAt - 5 * 60 * 1000) return pat;
+    try {
+      const res = await fetch('https://vignette-oauth.pliggity.workers.dev', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: patRefresh })
+      });
+      const data = await res.json();
+      if (!data.access_token) return pat;
+      return this._storeToken(data);
+    } catch {
+      return pat;
+    }
   }
 
   async exchangeCode(code) {
@@ -1313,6 +1367,7 @@ class Component extends DCLogic {
       const userRes = await fetch('https://api.github.com/user', { headers: { Authorization: `Bearer ${data.access_token}` } });
       const user = await userRes.json();
       if (user.login !== 'pliggity') { this.setState({ authLoading: false, patError: 'This app is private.' }); return; }
+      this._storeToken(data);
       this.loadFromGitHub(data.access_token);
     } catch {
       this.setState({ authLoading: false, patError: 'Sign-in failed — try again.' });
@@ -1339,14 +1394,22 @@ class Component extends DCLogic {
     this._prevData = { items: s.items, boards: s.boards, scenes: s.scenes, nextId: s.nextId, archived: s.archived, tags: s.tags };
   }
 
-  async loadFromGitHub(pat) {
+  async loadFromGitHub(pat, _retried) {
     this._loaded = false;
     try {
+      pat = await this.ensureFreshToken(pat);
       const res = await fetch(`https://api.github.com/repos/pliggity/vignette/contents/data.json?t=${Date.now()}`, {
         headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json' }
       });
       if (!res.ok) {
-        if (res.status === 401 || res.status === 403) localStorage.removeItem('vignette-pat');
+        // Our client-side expiry estimate could be slightly stale (clock
+        // skew, or the token expired sooner than expected) — force one
+        // refresh + retry before treating this as a real logout.
+        if ((res.status === 401 || res.status === 403) && this.state.patRefresh && !_retried) {
+          const fresh = await this.ensureFreshToken(pat, true);
+          if (fresh && fresh !== pat) return this.loadFromGitHub(fresh, true);
+        }
+        if (res.status === 401 || res.status === 403) { localStorage.removeItem('vignette-pat'); localStorage.removeItem('vignette-pat-refresh'); localStorage.removeItem('vignette-pat-exp'); }
         this.setState({ pat: null, authLoading: false, patError: res.status === 401 ? 'Session expired — sign in again.' : `GitHub error ${res.status}.` });
         return;
       }
@@ -1394,7 +1457,7 @@ class Component extends DCLogic {
   }
 
   async _putData(isRetry) {
-    const pat = this.state.pat;
+    const pat = await this.ensureFreshToken();
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(this._saveData()))));
     this.setState({ syncing: true });
     const res = await fetch('https://api.github.com/repos/pliggity/vignette/contents/data.json', {
@@ -1420,7 +1483,9 @@ class Component extends DCLogic {
 
   signOut() {
     localStorage.removeItem('vignette-pat');
-    this.setState({ pat: null, ghSha: null, patError: null, authLoading: false });
+    localStorage.removeItem('vignette-pat-refresh');
+    localStorage.removeItem('vignette-pat-exp');
+    this.setState({ pat: null, patRefresh: null, patExpiresAt: null, ghSha: null, patError: null, authLoading: false });
   }
 
   imgCss(item, fit) {
