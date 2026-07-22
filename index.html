@@ -558,7 +558,7 @@ body{margin:0;background:#F7F7F5}
       <div onClick="{{ openTray }}" style="cursor:pointer; border:1px dashed #DBD8D3; border-radius:2px; min-height:220px; display:flex; align-items:center; justify-content:center; font-size:13.5px; color:#726F6C; font-weight:500; letter-spacing:.04em; user-select:none" style-hover="border-color:#232326; color:#232326">+ add your first items</div>
     </sc-if>
 
-    <sc-if value="{{ gridEditOpen }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ !boardEmpty }}" hint-placeholder-val="{{ true }}">
       <div style="display:flex; align-items:center; gap:9px">
         <span style="font-family:ui-monospace,monospace; font-size:10px; letter-spacing:.1em; color:#9B9793">ZOOM</span>
         <div onClick="{{ zoomOut }}" title="zoom out" style="cursor:pointer; width:30px; height:30px; border-radius:99px; background:#fff; box-shadow:0 1px 3px rgba(90,70,50,.1); display:flex; align-items:center; justify-content:center; font-size:19px; color:#726F6C; user-select:none" style-hover="background:#F7F7F5">−</div>
@@ -568,7 +568,7 @@ body{margin:0;background:#F7F7F5}
       </div>
     </sc-if>
 
-    <div class="wr-board-viewport" ref="{{ boardViewportRef }}" style="position:relative; overflow:auto; -webkit-overflow-scrolling:touch">
+    <div class="wr-board-viewport" ref="{{ boardViewportRef }}" onPointerDown="{{ startPinch }}" style="position:relative; overflow:auto; -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y">
       <div style="position:relative; width:{{ boardScaledW }}px; height:{{ boardScaledH }}px">
         <div class="wr-board-canvas" style="position:absolute; top:0; left:0; width:{{ boardCanvasW }}px; height:{{ canvasHeight }}px; min-height:220px; transform:scale({{ boardZoom }}); transform-origin:top left">
           <sc-for list="{{ boardItems }}" as="it" hint-placeholder-count="5">
@@ -715,6 +715,57 @@ class Component extends DCLogic {
     if (!w) return;
     const z = Math.min(this.MAX_ZOOM, Math.max(this.MIN_ZOOM, w / this.CANVAS_W));
     this.setState({ boardZoom: Math.round(z * 100) / 100 });
+  }
+
+  // Two-finger pinch-to-zoom on the board viewport, available in both view and
+  // edit mode. Scales the canvas via direct DOM transform during the gesture
+  // (no setState) and only commits boardZoom on release — same reasoning as
+  // startMove/startResize: a mid-gesture re-render breaks implicit touch
+  // pointer capture on mobile. Uses frame-to-frame distance deltas (not a
+  // fixed start distance) so listeners can be attached from the very first
+  // finger down, keeping single-finger taps and drags from leaking state.
+  startPinch(e) {
+    if (e.pointerType !== 'touch') return;
+    const viewport = e.currentTarget;
+    if (!this._pinch) this._pinch = new Map();
+    const firstDown = this._pinch.size === 0;
+    try { viewport.setPointerCapture(e.pointerId); } catch (e2) {}
+    this._pinch.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (this._pinch.size === 2) {
+      const pts = Array.from(this._pinch.values());
+      this._pinchLastDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || null;
+      this._pinchLiveZoom = this.state.boardZoom || 1;
+    }
+    if (!firstDown) return;
+    const canvas = viewport.querySelector('.wr-board-canvas');
+    const onMove = (ev) => {
+      if (!this._pinch.has(ev.pointerId)) return;
+      this._pinch.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      if (this._pinch.size !== 2) return;
+      ev.preventDefault();
+      const p = Array.from(this._pinch.values());
+      const dist = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) || 1;
+      if (this._pinchLastDist) {
+        this._pinchLiveZoom = Math.min(this.MAX_ZOOM, Math.max(this.MIN_ZOOM, this._pinchLiveZoom * (dist / this._pinchLastDist)));
+        if (canvas) canvas.style.transform = 'scale(' + this._pinchLiveZoom + ')';
+      }
+      this._pinchLastDist = dist;
+    };
+    const onEnd = (ev) => {
+      this._pinch.delete(ev.pointerId);
+      try { viewport.releasePointerCapture(ev.pointerId); } catch (e2) {}
+      if (this._pinch.size < 2) this._pinchLastDist = null;
+      if (this._pinch.size === 0) {
+        viewport.removeEventListener('pointermove', onMove);
+        viewport.removeEventListener('pointerup', onEnd);
+        viewport.removeEventListener('pointercancel', onEnd);
+        if (this._pinchLiveZoom) this.setState({ boardZoom: Math.round(this._pinchLiveZoom * 100) / 100 });
+        this._pinchLiveZoom = null;
+      }
+    };
+    viewport.addEventListener('pointermove', onMove);
+    viewport.addEventListener('pointerup', onEnd);
+    viewport.addEventListener('pointercancel', onEnd);
   }
 
   // computes each tile's rect {x,y,w,h(photo)} — stored layout wins, else a tidy default flow
@@ -1578,7 +1629,7 @@ class Component extends DCLogic {
         meta: its.length + ' items · $' + total.toLocaleString(),
         cover,
         palette: this.effPalette(b, its),
-        open: () => this.setState({ boardId: b.id, trayOpen: false, paletteOpen: false, confirmingDeleteBoard: false, gridEditOpen: false, boardZoom: 1 })
+        open: () => this.setState({ boardId: b.id, trayOpen: false, paletteOpen: false, confirmingDeleteBoard: false, gridEditOpen: false }, () => this.fitBoard())
       };
     });
 
@@ -1992,8 +2043,8 @@ class Component extends DCLogic {
       gridEditColor: s.gridEditOpen ? '#fff' : '#232326',
       toggleGridEdit: () => {
         const opening = !this.state.gridEditOpen;
-        this.setState({ gridEditOpen: opening, ...(opening ? {} : { boardZoom: 1 }) }, () => {
-          if (opening && window.innerWidth <= 640) this.fitBoard();
+        this.setState({ gridEditOpen: opening }, () => {
+          if (!opening) this.fitBoard();
         });
       },
       canvasHeight: boardCanvasHeight,
@@ -2003,6 +2054,7 @@ class Component extends DCLogic {
       boardScaledW: Math.round(this.CANVAS_W * (s.boardZoom || 1)),
       boardScaledH: Math.round(boardCanvasHeight * (s.boardZoom || 1)),
       boardViewportRef: this.boardViewportRef,
+      startPinch: e => this.startPinch(e),
       zoomIn: () => this.zoomBoardBy(this.ZOOM_STEP),
       zoomOut: () => this.zoomBoardBy(-this.ZOOM_STEP),
       fitBoard: () => this.fitBoard(),
