@@ -207,6 +207,24 @@ body{margin:0;background:#F7F7F5}
                   <div style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.06em; color:#AFAAA5">{{ cr.attribution }}</div>
                 </sc-if>
                 <textarea value="{{ cr.notes }}" onChange="{{ cr.setNotes }}" placeholder="notes…" style="font-family:'Inter',sans-serif; font-size:11.5px; color:#726F6C; background:#F7F7F5; border:none; outline:none; border-radius:6px; padding:5px 8px; resize:none; min-height:28px; line-height:1.4"></textarea>
+
+                <!-- Comment thread -->
+                <sc-if value="{{ cr.hasComments }}" hint-placeholder-val="{{ false }}">
+                  <div style="border-left:2px solid #EAE8E4; margin-left:4px; padding-left:12px; display:flex; flex-direction:column; gap:8px; margin-top:2px">
+                    <sc-for list="{{ cr.comments }}" as="cmt" hint-placeholder-count="1">
+                      <div style="display:flex; flex-direction:column; gap:2px">
+                        <div style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.04em; color:{{ cmt.authorColor }}">{{ cmt.author }}<sc-if value="{{ cmt.date }}" hint-placeholder-val="{{ false }}"> · {{ cmt.date }}</sc-if></div>
+                        <div style="font-size:12.5px; color:#232326; line-height:1.45">{{ cmt.text }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <!-- Reply -->
+                <div style="display:flex; align-items:center; gap:0; border-bottom:1px solid #DBD8D3; margin-left:4px">
+                  <input value="{{ cr.replyDraft }}" onChange="{{ cr.setReplyDraft }}" onKeyDown="{{ cr.replyKey }}" placeholder="reply…" style="flex:1; font-family:'Inter',sans-serif; font-size:12.5px; color:#232326; background:transparent; border:none; outline:none; padding:5px 2px">
+                  <div onClick="{{ cr.submitReply }}" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#B5603E; padding:0 4px 3px; user-select:none" style-hover="opacity:.6">reply</div>
+                </div>
               </div>
 
               <!-- Remove -->
@@ -228,20 +246,65 @@ body{margin:0;background:#F7F7F5}
     </div>
   </sc-if>
 
-  <!-- Request a Change modal (guests only) -->
-  <sc-if value="{{ changeRequestOpen }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closeChangeRequest }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(35,35,38,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
-      <div onClick="{{ stopClick }}" class="wr-modal" style="background:#fff; border-radius:20px; width:440px; max-height:80vh; overflow:auto; padding:24px; display:flex; flex-direction:column; gap:16px; box-shadow:0 24px 70px rgba(40,30,20,.35)">
-        <div style="display:flex; align-items:center; gap:10px">
-          <div style="font-family:'Fraunces',serif; font-size:21px; color:#232326; flex:1">request a change</div>
-          <div onClick="{{ closeChangeRequest }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#F7F7F5; color:#726F6C; display:flex; align-items:center; justify-content:center; font-size:14px; user-select:none" style-hover="background:#EAE8E4">×</div>
+  <!-- My Requests modal (guests only) — new request form + past requests with threads -->
+  <sc-if value="{{ myRequestsOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeMyRequests }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(35,35,38,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
+      <div onClick="{{ stopClick }}" class="wr-modal" style="background:#fff; border-radius:20px; width:480px; max-height:84vh; overflow:auto; padding:28px 28px 24px; display:flex; flex-direction:column; gap:0; box-shadow:0 24px 70px rgba(40,30,20,.35)">
+
+        <!-- Header -->
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px">
+          <div style="font-family:'Fraunces',serif; font-size:21px; color:#232326; flex:1">my requests</div>
+          <div onClick="{{ closeMyRequests }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#F7F7F5; color:#726F6C; display:flex; align-items:center; justify-content:center; font-size:14px; user-select:none" style-hover="background:#EAE8E4">×</div>
         </div>
-        <div style="font-size:12px; color:#9B9793">describe what you'd like pliggity to add, change, or remove.</div>
-        <textarea value="{{ changeRequestText }}" onChange="{{ changeRequestSetText }}" placeholder="e.g. could we add a Lighting scene? I want to save some lamp ideas…" style="font-family:'Inter',sans-serif; font-size:13px; line-height:1.55; color:#232326; background:#F7F7F5; border:none; outline:none; border-radius:12px; padding:12px 14px; resize:none; min-height:100px"></textarea>
-        <div style="display:flex; gap:10px; margin-top:2px">
-          <div onClick="{{ submitChangeRequest }}" style="cursor:pointer; flex:1; text-align:center; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#232326; padding:12px 0; border:1px solid #232326; border-radius:2px; user-select:none" style-hover="background:#232326; color:#fff">{{ changeRequestSendLabel }}</div>
-          <div onClick="{{ closeChangeRequest }}" style="cursor:pointer; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:#9B9793; padding:12px 18px; border-radius:2px; user-select:none" style-hover="background:#F7F7F5">cancel</div>
+
+        <!-- New request form -->
+        <div style="border:1px solid #EAE8E4; border-radius:12px; padding:14px 16px; display:flex; flex-direction:column; gap:10px; margin-bottom:22px">
+          <div style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#9B9793">NEW REQUEST</div>
+          <textarea value="{{ changeRequestText }}" onChange="{{ changeRequestSetText }}" placeholder="describe what you'd like pliggity to add, change, or remove…" style="font-family:'Inter',sans-serif; font-size:13px; line-height:1.55; color:#232326; background:transparent; border:none; outline:none; resize:none; min-height:62px"></textarea>
+          <div onClick="{{ submitChangeRequest }}" style="cursor:pointer; align-self:flex-end; font-family:ui-monospace,monospace; font-size:9.5px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#B5603E; user-select:none" style-hover="opacity:.6">{{ changeRequestSendLabel }}</div>
         </div>
+
+        <!-- Past requests -->
+        <sc-if value="{{ myRequestsLoading }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family:'Fraunces',serif; font-style:italic; font-size:13px; color:#9B9793; padding:8px 0">loading…</div>
+        </sc-if>
+
+        <sc-if value="{{ myRequestsEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family:'Fraunces',serif; font-style:italic; font-size:12.5px; color:#9B9793">no past requests yet — use the form above to send your first one</div>
+        </sc-if>
+
+        <div style="display:flex; flex-direction:column">
+          <sc-for list="{{ myRequestsList }}" as="req" hint-placeholder-count="2">
+            <div style="display:flex; flex-direction:column; gap:8px; padding:14px 0; border-bottom:1px solid rgba(35,35,38,.08)">
+
+              <!-- Status + text -->
+              <div style="display:flex; align-items:flex-start; gap:9px">
+                <span style="flex:none; font-family:ui-monospace,monospace; font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:{{ req.statusColor }}; background:{{ req.statusBg }}; padding:3px 7px; border-radius:999px; margin-top:2px">{{ req.statusLabel }}</span>
+                <div style="font-size:13px; color:#232326; line-height:1.4">{{ req.text }}</div>
+              </div>
+
+              <!-- Comment thread -->
+              <sc-if value="{{ req.hasComments }}" hint-placeholder-val="{{ false }}">
+                <div style="border-left:2px solid #EAE8E4; margin-left:4px; padding-left:12px; display:flex; flex-direction:column; gap:8px">
+                  <sc-for list="{{ req.comments }}" as="cmt" hint-placeholder-count="1">
+                    <div style="display:flex; flex-direction:column; gap:2px">
+                      <div style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.04em; color:{{ cmt.authorColor }}; font-weight:{{ cmt.authorWeight }}">{{ cmt.author }}<sc-if value="{{ cmt.date }}" hint-placeholder-val="{{ false }}"> · {{ cmt.date }}</sc-if></div>
+                      <div style="font-size:12.5px; color:#232326; line-height:1.45">{{ cmt.text }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <!-- Add comment -->
+              <div style="display:flex; align-items:center; gap:0; border-bottom:1px solid #DBD8D3; margin-left:4px">
+                <input value="{{ req.commentDraft }}" onChange="{{ req.setCommentDraft }}" onKeyDown="{{ req.commentKey }}" placeholder="add a comment…" style="flex:1; font-family:'Inter',sans-serif; font-size:12.5px; color:#232326; background:transparent; border:none; outline:none; padding:5px 2px">
+                <div onClick="{{ req.submitComment }}" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#B5603E; padding:0 4px 3px; user-select:none" style-hover="opacity:.6">send</div>
+              </div>
+
+            </div>
+          </sc-for>
+        </div>
+
       </div>
     </div>
   </sc-if>
@@ -495,7 +558,7 @@ body{margin:0;background:#F7F7F5}
           <div onClick="{{ signOut }}" title="sign out" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#AFAAA5; user-select:none" style-hover="color:#9A6B72">sign out</div>
         </sc-if>
         <sc-if value="{{ isGuest }}" hint-placeholder-val="{{ false }}">
-          <div onClick="{{ openChangeRequest }}" title="send a suggestion or request" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#AFAAA5; user-select:none" style-hover="color:#232326">request a change</div>
+          <div onClick="{{ openMyRequests }}" title="see your requests and leave comments" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#AFAAA5; user-select:none" style-hover="color:#232326">my requests</div>
           <div onClick="{{ signOut }}" title="sign out" style="cursor:pointer; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#AFAAA5; user-select:none" style-hover="color:#9A6B72">sign out</div>
         </sc-if>
       </div>
@@ -804,7 +867,11 @@ class Component extends DCLogic {
     changeRequestsLoading: false,
     crDraft: '',
     crSha: null,
-    changeRequestOpen: false,
+    crReplyDrafts: {},
+    myRequestsOpen: false,
+    myRequestsList: [],
+    myRequestsLoading: false,
+    crCommentDrafts: {},
     changeRequestText: '',
     changeRequestSending: false,
     scene: 'Home',
@@ -1897,10 +1964,52 @@ class Component extends DCLogic {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${googleToken}` },
         body: JSON.stringify({ text: changeRequestText, userName: googleUserName })
       });
-      this.setState({ changeRequestOpen: false, changeRequestText: '', changeRequestSending: false });
+      this.setState({ changeRequestText: '', changeRequestSending: false });
+      this.openMyRequests();
     } catch {
       this.setState({ changeRequestSending: false });
     }
+  }
+
+  async openMyRequests() {
+    this.setState({ myRequestsOpen: true, myRequestsLoading: true, myRequestsList: [] });
+    try {
+      const res = await fetch('https://vignette-oauth.pliggity.workers.dev/my-change-requests', {
+        headers: { Authorization: `Bearer ${this.state.googleToken}` }
+      });
+      const data = await res.json();
+      this.setState({ myRequestsList: data.requests || [], myRequestsLoading: false });
+    } catch {
+      this.setState({ myRequestsLoading: false });
+    }
+  }
+
+  async submitGuestComment(requestId) {
+    const text = (this.state.crCommentDrafts[requestId] || '').trim();
+    if (!text) return;
+    try {
+      await fetch('https://vignette-oauth.pliggity.workers.dev/change-request-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.state.googleToken}` },
+        body: JSON.stringify({ requestId, text, userName: this.state.googleUserName })
+      });
+      this.setState(st => ({ crCommentDrafts: { ...st.crCommentDrafts, [requestId]: '' } }));
+      this.openMyRequests();
+    } catch { /* swallow — draft is preserved so the guest can retry */ }
+  }
+
+  async submitOwnerReply(requestId) {
+    const text = (this.state.crReplyDrafts[requestId] || '').trim();
+    if (!text) return;
+    try {
+      await fetch('https://vignette-oauth.pliggity.workers.dev/change-request-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.state.pat}` },
+        body: JSON.stringify({ requestId, text })
+      });
+      this.setState(st => ({ crReplyDrafts: { ...st.crReplyDrafts, [requestId]: '' } }));
+      this.openChangeRequestsView();
+    } catch { /* swallow — draft is preserved so the owner can retry */ }
   }
 
   imgCss(item, fit) {
@@ -2684,6 +2793,19 @@ class Component extends DCLogic {
         toggle: () => this.toggleChangeRequest(r.id),
         remove: () => this.removeChangeRequest(r.id),
         setNotes: e => this.updateChangeRequestNotes(r.id, e.target.value),
+        hasComments: !!(r.comments && r.comments.length),
+        comments: (r.comments || []).map(c => ({
+          id: c.id,
+          text: c.text,
+          author: c.isOwner ? 'you' : (c.userName || c.userId || 'guest'),
+          isOwner: !!c.isOwner,
+          authorColor: c.isOwner ? '#232326' : '#B5603E',
+          date: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''
+        })),
+        replyDraft: s.crReplyDrafts[r.id] || '',
+        setReplyDraft: e => this.setState(st => ({ crReplyDrafts: { ...st.crReplyDrafts, [r.id]: e.target.value } })),
+        replyKey: e => { if (e.key === 'Enter') this.submitOwnerReply(r.id); },
+        submitReply: () => this.submitOwnerReply(r.id),
       })),
       changeRequestsOpen: s.changeRequestsList.filter(r => !r.done).length,
       changeRequestsDone: s.changeRequestsList.filter(r => r.done).length,
@@ -2693,14 +2815,37 @@ class Component extends DCLogic {
       crDraftSet: e => this.setState({ crDraft: e.target.value }),
       crDraftKey: e => { if (e.key === 'Enter') this.addAdHocChangeRequest(); },
       crAdd: () => this.addAdHocChangeRequest(),
-      changeRequestOpen: s.changeRequestOpen,
-      openChangeRequest: () => this.setState({ changeRequestOpen: true, changeRequestText: '' }),
-      closeChangeRequest: () => this.setState({ changeRequestOpen: false }),
+      myRequestsOpen: s.myRequestsOpen,
+      openMyRequests: () => this.openMyRequests(),
+      closeMyRequests: () => this.setState({ myRequestsOpen: false }),
+      myRequestsLoading: s.myRequestsLoading,
+      myRequestsList: s.myRequestsList.map(r => ({
+        id: r.id,
+        text: r.text || '',
+        done: !!r.done,
+        statusLabel: r.done ? 'done' : 'open',
+        statusColor: r.done ? '#5C6B4F' : '#B5603E',
+        statusBg: r.done ? 'rgba(92,107,79,.12)' : 'rgba(181,96,62,.12)',
+        comments: (r.comments || []).map(c => ({
+          id: c.id,
+          text: c.text,
+          author: c.isOwner ? 'pliggity' : (c.userName || c.userId || 'you'),
+          isOwner: !!c.isOwner,
+          authorColor: c.isOwner ? '#232326' : '#726F6C',
+          authorWeight: c.isOwner ? '600' : '400',
+          date: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''
+        })),
+        hasComments: !!(r.comments && r.comments.length),
+        commentDraft: s.crCommentDrafts[r.id] || '',
+        setCommentDraft: e => this.setState(st => ({ crCommentDrafts: { ...st.crCommentDrafts, [r.id]: e.target.value } })),
+        commentKey: e => { if (e.key === 'Enter') this.submitGuestComment(r.id); },
+        submitComment: () => this.submitGuestComment(r.id),
+      })),
+      myRequestsEmpty: !s.myRequestsLoading && s.myRequestsList.length === 0,
       changeRequestText: s.changeRequestText,
       changeRequestSetText: e => this.setState({ changeRequestText: e.target.value }),
       changeRequestSending: s.changeRequestSending,
       changeRequestSendLabel: s.changeRequestSending ? 'sending…' : 'send request',
-      changeRequestReady: !!s.changeRequestText.trim(),
       submitChangeRequest: () => this.submitChangeRequest(),
       signOut: () => this.signOut()
     };
