@@ -2196,7 +2196,13 @@ class Component extends DCLogic {
       const data = await res.json();
       this.setState(st => {
         if (!st.custom || st.custom.url !== url) return null;
-        return { custom: { ...st.custom, fetching: !!data.imageData, name: this._betterTitle(data.title, st.custom.name) } };
+        return { custom: {
+          ...st.custom,
+          fetching: !!data.imageData,
+          name: this._betterTitle(data.title, st.custom.name),
+          price: st.custom.price || data.price || '',
+          notes: st.custom.notes || data.description || '',
+        } };
       });
       if (data.imageData) {
         try {
