@@ -1679,16 +1679,23 @@ class Component extends DCLogic {
   // discard every upload and start over from scratch on the next load.
   async migrateImages() {
     if (this._migrating) return;
-    const toMigrate = this.state.items.filter(it => it.img && it.img.startsWith('data:'));
+    // Archived pieces are restorable, so their photos matter too — and being
+    // out of sight is exactly how one of them sat inlined at 100KB, dwarfing
+    // the entire live library.
+    const inlined = x => x.img && x.img.startsWith('data:');
+    const toMigrate = [
+      ...this.state.items.filter(inlined).map(item => ({ item, where: 'items' })),
+      ...this.state.archived.filter(inlined).map(item => ({ item, where: 'archived' }))
+    ];
     if (!toMigrate.length) return;
     this._migrating = true;
     console.info('vignette: migrating', toMigrate.length, 'inlined images');
     try {
-      for (const item of toMigrate) {
+      for (const { item, where } of toMigrate) {
         try {
           const blob = await fetch(item.img).then(r => r.blob());
           const url = await this.uploadImage(blob);
-          this.setState(st => ({ items: st.items.map(x => x.id === item.id ? { ...x, img: url } : x) }));
+          this.setState(st => ({ [where]: st[where].map(x => x.id === item.id ? { ...x, img: url } : x) }));
           await this.saveNow();
           console.info('vignette: migrated', item.id);
           // No artificial delay: each pass already costs an upload and a save,
