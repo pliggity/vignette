@@ -105,6 +105,44 @@ body{margin:0;background:#F7F7F5}
   <input type="file" accept="image/*" ref="{{ fileRef }}" onChange="{{ onFilePicked }}" style="display:none">
   <input type="file" accept="application/json" ref="{{ importRef }}" onChange="{{ onImportPicked }}" style="display:none">
 
+  <sc-if value="{{ sceneDeleteOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ sceneDeleteCancel }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(35,35,38,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
+      <div onClick="{{ stopClick }}" class="wr-modal" style="background:#fff; border-radius:20px; width:520px; max-height:80vh; overflow:auto; padding:24px; display:flex; flex-direction:column; gap:14px; box-shadow:0 24px 70px rgba(40,30,20,.35)">
+        <div style="display:flex; align-items:flex-start; gap:10px">
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px">
+            <div style="font-family:'Fraunces',serif; font-size:21px; color:#232326">remove “{{ sceneDeleteName }}”</div>
+            <span style="font-size:12.5px; color:#726F6C; line-height:1.5">A vignette lives in one scene, so these need somewhere to go first. Archiving keeps the arrangement — the pieces stay in your catalogue either way.</span>
+          </div>
+          <div onClick="{{ sceneDeleteCancel }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#F7F7F5; color:#726F6C; display:flex; align-items:center; justify-content:center; font-size:14px; flex:none; user-select:none" style-hover="background:#EAE8E4">×</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <sc-for list="{{ sceneDeleteBoards }}" as="sd" hint-placeholder-count="2">
+            <div style="display:flex; align-items:center; gap:12px; background:#F7F7F5; border-radius:12px; padding:11px 12px">
+              <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:5px">
+                <span style="font-family:'Fraunces',serif; font-weight:300; font-size:14px; color:#232326; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ sd.name }}</span>
+                <span style="font-size:11px; color:#9B9793">{{ sd.meta }}</span>
+                <div style="display:flex; height:6px; width:100%; border-radius:99px; overflow:hidden">
+                  <sc-for list="{{ sd.palette }}" as="p" hint-placeholder-count="4">
+                    <div style="flex:{{ p.flex }}; background:{{ p.color }}"></div>
+                  </sc-for>
+                </div>
+              </div>
+              <select value="{{ sd.value }}" onChange="{{ sd.change }}" style="cursor:pointer; flex:none; font-family:'Inter',sans-serif; font-size:11.5px; font-weight:500; color:#232326; background:#fff; padding:7px 9px; border:1px solid #232326; border-radius:2px">
+                <sc-for list="{{ sd.options }}" as="op" hint-placeholder-count="2">
+                  <option value="{{ op.value }}">{{ op.label }}</option>
+                </sc-for>
+              </select>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:2px">
+          <div onClick="{{ sceneDeleteConfirm }}" style="cursor:pointer; flex:1; text-align:center; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#9A6B72; padding:12px 0; border:1px solid #9A6B72; border-radius:2px; user-select:none" style-hover="background:#9A6B72; color:#fff; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">remove scene</div>
+          <div onClick="{{ sceneDeleteCancel }}" style="cursor:pointer; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:#9B9793; padding:12px 18px; border-radius:2px; user-select:none" style-hover="background:#F7F7F5">cancel</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ archiveOpen }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeArchive }}" class="wr-overlay" style="position:fixed; inset:0; background:rgba(35,35,38,.5); z-index:50; display:flex; align-items:center; justify-content:center; padding:36px; animation:wrFade .18s ease">
       <div onClick="{{ stopClick }}" class="wr-modal" style="background:#fff; border-radius:20px; width:520px; max-height:80vh; overflow:auto; padding:24px; display:flex; flex-direction:column; gap:14px; box-shadow:0 24px 70px rgba(40,30,20,.35)">
@@ -112,7 +150,30 @@ body{margin:0;background:#F7F7F5}
           <div style="font-family:'Fraunces',serif; font-size:21px; color:#232326; flex:1">archive</div>
           <div onClick="{{ closeArchive }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#F7F7F5; color:#726F6C; display:flex; align-items:center; justify-content:center; font-size:14px; user-select:none" style-hover="background:#EAE8E4">×</div>
         </div>
+        <sc-if value="{{ hasArchivedBoards }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">VIGNETTES</span>
+            <sc-for list="{{ archivedBoardList }}" as="ab" hint-placeholder-count="1">
+              <div style="display:flex; align-items:center; gap:12px; background:#F7F7F5; border-radius:12px; padding:11px 12px">
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:5px">
+                  <span style="font-family:'Fraunces',serif; font-weight:300; font-size:14px; color:#232326; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ ab.name }}</span>
+                  <span style="font-size:11px; color:#9B9793">{{ ab.meta }}</span>
+                  <div style="display:flex; height:6px; width:100%; border-radius:99px; overflow:hidden">
+                    <sc-for list="{{ ab.palette }}" as="p" hint-placeholder-count="4">
+                      <div style="flex:{{ p.flex }}; background:{{ p.color }}"></div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div onClick="{{ ab.restore }}" style="cursor:pointer; flex:none; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#232326; padding:7px 13px; border:1px solid #232326; border-radius:2px; user-select:none" style-hover="background:#232326; color:#fff; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">restore</div>
+                <div onClick="{{ ab.destroy }}" title="permanently delete this vignette" style="cursor:pointer; flex:none; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#9A6B72; padding:7px 13px; border:1px solid #9A6B72; border-radius:2px; user-select:none" style-hover="background:#9A6B72; color:#fff; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">delete</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
         <div style="display:flex; flex-direction:column; gap:8px">
+          <sc-if value="{{ showPiecesHeading }}" hint-placeholder-val="{{ false }}">
+            <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">PIECES</span>
+          </sc-if>
           <sc-for list="{{ archivedList }}" as="ar" hint-placeholder-count="2">
             <div style="display:flex; align-items:center; gap:12px; background:#F7F7F5; border-radius:12px; padding:9px">
               <div style="width:52px; height:52px; border-radius:8px; background:{{ ar.photoBg }}; flex:none; position:relative; overflow:hidden">
@@ -900,6 +961,9 @@ class Component extends DCLogic {
     viewId: null,
     custom: null,
     archived: [],
+    archivedBoards: [],
+    sceneDeleteTarget: null,
+    sceneDeletePlan: {},
     archiveOpen: false,
     tags: [],
     activeTagFilters: [],
@@ -1490,7 +1554,7 @@ class Component extends DCLogic {
 
   _saveData() {
     const s = this.state;
-    return { items: s.items, boards: s.boards, scenes: s.scenes, nextId: s.nextId, archived: s.archived, tags: s.tags };
+    return { items: s.items, boards: s.boards, scenes: s.scenes, nextId: s.nextId, archived: s.archived, archivedBoards: s.archivedBoards, tags: s.tags };
   }
 
   flushSave = () => {
@@ -1647,6 +1711,7 @@ class Component extends DCLogic {
       this._prevData.scenes !== s.scenes ||
       this._prevData.nextId !== s.nextId ||
       this._prevData.archived !== s.archived ||
+      this._prevData.archivedBoards !== s.archivedBoards ||
       this._prevData.tags !== s.tags;
     if (!changed) return;
     this._snapshotData();
@@ -1665,7 +1730,7 @@ class Component extends DCLogic {
 
   _snapshotData() {
     const s = this.state;
-    this._prevData = { items: s.items, boards: s.boards, scenes: s.scenes, nextId: s.nextId, archived: s.archived, tags: s.tags };
+    this._prevData = { items: s.items, boards: s.boards, scenes: s.scenes, nextId: s.nextId, archived: s.archived, archivedBoards: s.archivedBoards, tags: s.tags };
   }
 
   async loadFromGitHub(pat, _retried) {
@@ -1703,6 +1768,7 @@ class Component extends DCLogic {
         patch.scenes = scenes;
         patch.nextId = data.nextId || this.state.nextId;
         patch.archived = data.archived || [];
+        patch.archivedBoards = data.archivedBoards || [];
         patch.tags = data.tags || [];
       }
       this.setState(patch, () => {
@@ -1850,6 +1916,7 @@ class Component extends DCLogic {
         patch.scenes = scenes;
         patch.nextId = content.nextId || this.state.nextId;
         patch.archived = content.archived || [];
+        patch.archivedBoards = content.archivedBoards || [];
         patch.tags = content.tags || [];
       } else {
         patch.items = [];
@@ -2093,7 +2160,7 @@ class Component extends DCLogic {
   exportData() {
     const data = {
       items: this.state.items, boards: this.state.boards, nextId: this.state.nextId,
-      archived: this.state.archived, tags: this.state.tags
+      archived: this.state.archived, archivedBoards: this.state.archivedBoards, tags: this.state.tags
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -2116,7 +2183,7 @@ class Component extends DCLogic {
         if (!Array.isArray(data.items) || !Array.isArray(data.boards)) throw new Error('missing items/boards');
         this.setState({
           items: data.items, boards: data.boards, nextId: data.nextId || 100,
-          archived: data.archived || [], tags: data.tags || []
+          archived: data.archived || [], archivedBoards: data.archivedBoards || [], tags: data.tags || []
         }, () => this.reprocessImages());
       } catch (e) {
         window.alert('That file doesn\u2019t look like a vignette export.');
@@ -2274,22 +2341,20 @@ class Component extends DCLogic {
         pick: () => this.setState({ scene: active ? null : f }),
         remove: e => {
           e.stopPropagation();
-          this.setState(st => {
-            const rest = st.scenes.filter(x => x !== f);
-            // Vignettes can't outlive their scene without becoming unreachable, so
-            // removing a scene re-files them instead of stranding them. The last
-            // scene therefore can't be removed while it still holds vignettes.
-            const orphans = st.boards.filter(b => b.scene === f);
-            if (orphans.length && !rest.length) return null;
-            const fallback = rest[0];
-            return {
-              scenes: rest,
-              boards: orphans.length
-                ? st.boards.map(b => b.scene === f ? { ...b, scene: fallback } : b)
-                : st.boards,
+          // A vignette can't outlive its scene without becoming unreachable, so a
+          // scene still holding some asks where each one should go first.
+          const held = this.state.boards.filter(b => b.scene === f);
+          if (!held.length) {
+            this.setState(st => ({
+              scenes: st.scenes.filter(x => x !== f),
               scene: st.scene === f ? null : st.scene
-            };
-          });
+            }));
+            return;
+          }
+          const elsewhere = this.state.scenes.find(x => x !== f);
+          const plan = {};
+          held.forEach(b => { plan[b.id] = elsewhere || '__archive__'; });
+          this.setState({ sceneDeleteTarget: f, sceneDeletePlan: plan });
         }
       };
     });
@@ -2535,12 +2600,84 @@ class Component extends DCLogic {
         }));
       },
       closeView: () => this.setState({ viewId: null }),
-      hasArchived: s.archived.length > 0,
-      archivedCount: s.archived.length,
+      // ── deleting a scene: decide what happens to the vignettes it holds ──
+      sceneDeleteOpen: !!s.sceneDeleteTarget,
+      sceneDeleteName: s.sceneDeleteTarget || '',
+      sceneDeleteCancel: () => this.setState({ sceneDeleteTarget: null, sceneDeletePlan: {} }),
+      sceneDeleteBoards: (s.sceneDeleteTarget
+        ? s.boards.filter(b => b.scene === s.sceneDeleteTarget)
+        : []).map(b => {
+          const its = b.itemIds.map(id => itemById.get(id)).filter(Boolean);
+          return {
+            name: b.name,
+            meta: its.length + (its.length === 1 ? ' item' : ' items'),
+            value: s.sceneDeletePlan[b.id] || '__archive__',
+            palette: this.effPalette(b, its),
+            options: [
+              ...s.scenes.filter(x => x !== s.sceneDeleteTarget).map(x => ({ value: x, label: 'move to ' + x })),
+              { value: '__archive__', label: 'archive it' }
+            ],
+            change: e => {
+              const val = e.target.value;
+              this.setState(st => ({ sceneDeletePlan: { ...st.sceneDeletePlan, [b.id]: val } }));
+            }
+          };
+        }),
+      sceneDeleteConfirm: () => {
+        const target = this.state.sceneDeleteTarget;
+        if (!target) return;
+        this.setState(st => {
+          const plan = st.sceneDeletePlan;
+          const held = st.boards.filter(b => b.scene === target);
+          const toArchive = held.filter(b => (plan[b.id] || '__archive__') === '__archive__');
+          const archivedIds = new Set(toArchive.map(b => b.id));
+          return {
+            scenes: st.scenes.filter(x => x !== target),
+            boards: st.boards
+              .filter(b => !archivedIds.has(b.id))
+              .map(b => b.scene === target ? { ...b, scene: plan[b.id] } : b),
+            // Archiving a vignette puts the arrangement aside; its pieces stay in
+            // the catalogue, exactly as archiving from the board view behaves.
+            archivedBoards: [...st.archivedBoards, ...toArchive],
+            scene: st.scene === target ? null : st.scene,
+            boardId: archivedIds.has(st.boardId) ? null : st.boardId,
+            sceneDeleteTarget: null,
+            sceneDeletePlan: {}
+          };
+        });
+      },
+      hasArchived: s.archived.length > 0 || s.archivedBoards.length > 0,
+      archivedCount: s.archived.length + s.archivedBoards.length,
       archiveOpen: s.archiveOpen,
       openArchive: () => this.setState({ archiveOpen: true }),
       closeArchive: () => this.setState({ archiveOpen: false }),
-      archiveEmpty: s.archived.length === 0,
+      archiveEmpty: s.archived.length === 0 && s.archivedBoards.length === 0,
+      hasArchivedBoards: s.archivedBoards.length > 0,
+      // The two lists only need naming when both are on screen at once.
+      showPiecesHeading: s.archivedBoards.length > 0 && s.archived.length > 0,
+      archivedBoardList: s.archivedBoards.map(ab => {
+        const its = (ab.itemIds || []).map(id => itemById.get(id)).filter(Boolean);
+        return {
+          name: ab.name,
+          meta: its.length + (its.length === 1 ? ' item' : ' items') + ' · from ' + (ab.scene || 'a removed scene'),
+          palette: this.effPalette(ab, its),
+          // Restore lands it back in its own scene when that still exists; otherwise
+          // the first scene, and if there are none left, its scene comes back too.
+          restore: () => this.setState(st => {
+            const stillThere = ab.scene && st.scenes.includes(ab.scene);
+            const home = stillThere ? ab.scene : (st.scenes[0] || ab.scene || 'Home');
+            return {
+              scenes: st.scenes.includes(home) ? st.scenes : [...st.scenes, home],
+              archivedBoards: st.archivedBoards.filter(x => x.id !== ab.id),
+              boards: [...st.boards, { ...ab, scene: home }]
+            };
+          }),
+          destroy: () => {
+            if (!window.confirm('Permanently delete the "' + ab.name + '" vignette? Its pieces stay in your catalogue.')) return;
+            this.setState(st => ({ archivedBoards: st.archivedBoards.filter(x => x.id !== ab.id) }));
+          }
+        };
+      }),
       archivedList: s.archived.map(a => ({
         name: a.name,
         store: a.store,
