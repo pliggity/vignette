@@ -1654,6 +1654,15 @@ class Component extends DCLogic {
     else if (s.pat) this.scheduleGithubSave();
   }
 
+  // A vignette is only reachable through its scene, so one with no scene — or one
+  // pointing at a scene that has since been deleted — would be invisible and
+  // uneditable. File any such stray into the first scene on load.
+  fileLooseBoards(boards, scenes) {
+    if (!Array.isArray(boards)) return [];
+    const home = scenes[0] || null;
+    return boards.map(b => (b.scene && scenes.includes(b.scene)) ? b : { ...b, scene: home });
+  }
+
   _snapshotData() {
     const s = this.state;
     this._prevData = { items: s.items, boards: s.boards, scenes: s.scenes, nextId: s.nextId, archived: s.archived, tags: s.tags };
@@ -1686,12 +1695,12 @@ class Component extends DCLogic {
       if (data && Array.isArray(data.items) && Array.isArray(data.boards)) {
         // migrate legacy folder -> scene
         const items = data.items.map(i => ({ ...i, scene: i.scene || i.folder || 'Home' }));
-        const boards = data.boards.map(b => ({ ...b, scene: b.scene !== undefined ? b.scene : null }));
-        patch.items = items;
-        patch.boards = boards;
-        patch.scenes = (Array.isArray(data.scenes) && data.scenes.length)
+        const scenes = (Array.isArray(data.scenes) && data.scenes.length)
           ? data.scenes
           : Array.from(new Set([...this.state.scenes, ...items.map(i => i.scene).filter(Boolean)]));
+        patch.items = items;
+        patch.boards = this.fileLooseBoards(data.boards, scenes);
+        patch.scenes = scenes;
         patch.nextId = data.nextId || this.state.nextId;
         patch.archived = data.archived || [];
         patch.tags = data.tags || [];
@@ -1835,10 +1844,10 @@ class Component extends DCLogic {
       const patch = { googleSha: sha || null, patError: null };
       if (content && Array.isArray(content.items) && Array.isArray(content.boards)) {
         const items = content.items.map(i => ({ ...i, scene: i.scene || i.folder || 'Home' }));
-        const boards = content.boards.map(b => ({ ...b, scene: b.scene !== undefined ? b.scene : null }));
+        const scenes = (Array.isArray(content.scenes) && content.scenes.length) ? content.scenes : Array.from(new Set([...this.state.scenes, ...items.map(i => i.scene).filter(Boolean)]));
         patch.items = items;
-        patch.boards = boards;
-        patch.scenes = (Array.isArray(content.scenes) && content.scenes.length) ? content.scenes : Array.from(new Set([...this.state.scenes, ...items.map(i => i.scene).filter(Boolean)]));
+        patch.boards = this.fileLooseBoards(content.boards, scenes);
+        patch.scenes = scenes;
         patch.nextId = content.nextId || this.state.nextId;
         patch.archived = content.archived || [];
         patch.tags = content.tags || [];
