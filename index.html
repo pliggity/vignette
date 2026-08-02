@@ -493,7 +493,7 @@ body{margin:0;background:#F7F7F5}
   <!-- header -->
   <div class="wr-header" style="display:flex; align-items:center; justify-content:space-between; gap:20px">
     <div style="display:flex; align-items:center; gap:12px; flex:none">
-      <div style="position:relative; width:fit-content; padding:12px 14px 30px 12px; transform:scale(1.18); transform-origin:left center">
+      <div onClick="{{ goHome }}" title="back to your catalogue" style="cursor:pointer; position:relative; width:fit-content; padding:12px 14px 30px 12px; transform:scale(1.18); transform-origin:left center; user-select:none">
         <div style="position:relative; z-index:1; font-family:'Fraunces',serif; font-weight:250; font-size:30px; color:#232326; font-variation-settings:'opsz' 90; display:flex; align-items:baseline"><span style="font-weight:400; font-size:37px; font-variation-settings:'opsz' 144; margin-right:-3px">V</span><span style="position:relative; top:-1px">ignette</span></div>
         <svg width="214" height="78" viewBox="0 0 214 78" style="position:absolute; inset:0; overflow:visible; z-index:0">
           <path d="M4 34 V64 H36" fill="none" stroke="#232326" stroke-width="1"></path>
@@ -522,21 +522,15 @@ body{margin:0;background:#F7F7F5}
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:-16px">
       <sc-for list="{{ folders }}" as="f" hint-placeholder-count="4">
         <sc-if value="{{ f.active }}" hint-placeholder-val="{{ false }}">
-          <div onClick="{{ f.pick }}" style="cursor:pointer; box-sizing:border-box; display:flex; align-items:center; gap:8px; font-family:'Fraunces',serif; font-style:italic; font-size:11.5px; font-weight:400; letter-spacing:.06em; text-transform:uppercase; background:{{ f.bg }}; color:{{ f.color }}; padding:9px 17px; border-radius:2px; user-select:none; box-shadow:0 1px 3px rgba(35,35,38,.05)">
+          <div onClick="{{ f.pick }}" title="click again to return to your catalogue" style="cursor:pointer; box-sizing:border-box; display:flex; align-items:center; gap:8px; font-family:'Fraunces',serif; font-style:italic; font-size:11.5px; font-weight:400; letter-spacing:.06em; text-transform:uppercase; background:{{ f.bg }}; color:{{ f.color }}; padding:9px 17px; border-radius:2px; user-select:none; box-shadow:0 1px 3px rgba(35,35,38,.05)">
             {{ f.label }}
-            <sc-if value="{{ f.isAll }}" hint-placeholder-val="{{ false }}"><span></span></sc-if>
-            <sc-if value="{{ f.notAll }}" hint-placeholder-val="{{ true }}">
-              <span onClick="{{ f.remove }}" title="remove scene" style="cursor:pointer; opacity:.65" style-hover="opacity:1">×</span>
-            </sc-if>
+            <span onClick="{{ f.remove }}" title="remove scene" style="cursor:pointer; opacity:.65" style-hover="opacity:1">×</span>
           </div>
         </sc-if>
         <sc-if value="{{ f.inactive }}" hint-placeholder-val="{{ true }}">
           <div onClick="{{ f.pick }}" style="cursor:pointer; box-sizing:border-box; display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:{{ f.weight }}; letter-spacing:.06em; text-transform:uppercase; background:{{ f.bg }}; color:{{ f.color }}; padding:9px 17px; border:1px solid #232326; border-radius:2px; user-select:none; box-shadow:0 1px 3px rgba(35,35,38,.05)" style-hover="transform:translateY(-1px); outline:1px solid #DBD8D3; outline-offset:-4px; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">
             {{ f.label }}
-            <sc-if value="{{ f.isAll }}" hint-placeholder-val="{{ false }}"><span></span></sc-if>
-            <sc-if value="{{ f.notAll }}" hint-placeholder-val="{{ true }}">
-              <span onClick="{{ f.remove }}" title="remove scene" style="cursor:pointer; opacity:.5; color:#9B9793" style-hover="opacity:1; color:#232326">×</span>
-            </sc-if>
+            <span onClick="{{ f.remove }}" title="remove scene" style="cursor:pointer; opacity:.5; color:#9B9793" style-hover="opacity:1; color:#232326">×</span>
           </div>
         </sc-if>
       </sc-for>
@@ -564,9 +558,18 @@ body{margin:0;background:#F7F7F5}
       </div>
     </div>
 
-    <div style="display:flex; flex-direction:column; gap:12px">
+    <sc-if value="{{ inScene }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; flex-direction:column; gap:12px; margin-top:-14px">
+      <div onClick="{{ goHome }}" style="cursor:pointer; display:inline-flex; align-items:center; gap:7px; width:fit-content; font-size:11.5px; font-style:italic; color:#AFAAA5; user-select:none" style-hover="color:#726F6C; font-family:'Fraunces',serif">
+        <svg width="17" height="10" viewBox="0 0 17 10" fill="none" style="flex:none; transform:translateY(1px)">
+          <path d="M16 8.6C13.2 2.9 8.2 0.7 2.4 1.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path>
+          <path d="M1.4 1.5L5.2 0.6M1.4 1.5L4.4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        back to catalogue
+      </div>
       <div style="display:flex; align-items:baseline; gap:10px">
-        <span style="font-family:'Fraunces',serif; font-style:italic; font-weight:400; font-size:22px; letter-spacing:-0.005em; color:#232326">Your vignettes</span>
+        <span style="font-family:'Fraunces',serif; font-style:italic; font-weight:400; font-size:22px; letter-spacing:-0.005em; color:#232326">{{ sceneName }}</span>
+        <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#AFAAA5">VIGNETTES</span>
       </div>
       <div class="wr-board-list" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px">
         <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
@@ -583,6 +586,17 @@ body{margin:0;background:#F7F7F5}
           </div>
         </sc-for>
         <div onClick="{{ newBoard }}" style="cursor:pointer; background:rgba(255,255,255,.55); border:1px dashed #DBD8D3; border-radius:2px; min-height:64px; display:flex; align-items:center; justify-content:center; font-size:12px; color:#726F6C; font-weight:500; letter-spacing:.06em; text-transform:uppercase; user-select:none" style-hover="border-color:#232326; color:#232326; font-family:'Fraunces',serif; font-style:italic">+ new vignette</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ inCatalogue }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-top:-8px">
+      <span style="font-family:'Fraunces',serif; font-style:italic; font-weight:400; font-size:22px; letter-spacing:-0.005em; color:#232326">Your catalogue</span>
+      <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; color:#AFAAA5">{{ catalogCount }}</span>
+      <div onClick="{{ toggleCatalogSort }}" title="switch sort order" style="cursor:pointer; margin-left:auto; display:flex; align-items:center; gap:6px; font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#AFAAA5; user-select:none" style-hover="color:#232326">
+        <svg width="9" height="10" viewBox="0 0 9 10" fill="none" style="flex:none"><path d="M4.5 0.8V9.2M4.5 9.2L1.4 6.2M4.5 9.2L7.6 6.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        {{ catalogSortLabel }}
       </div>
     </div>
 
@@ -636,6 +650,7 @@ body{margin:0;background:#F7F7F5}
         </div>
       </sc-for>
     </div>
+    </sc-if>
 
   </div>
   </sc-if>
@@ -874,8 +889,9 @@ class Component extends DCLogic {
     crCommentDrafts: {},
     changeRequestText: '',
     changeRequestSending: false,
-    scene: 'Home',
+    scene: null,
     scenes: ['Home', 'Clothing', 'Tech'],
+    catalogSort: 'newest',
     sceneCreatorOpen: false,
     sceneDraftName: '',
     boardId: null,
@@ -2172,7 +2188,7 @@ class Component extends DCLogic {
     if (!url) { this.setState({ link: '' }); return; }
     const m = url.match(/([a-z0-9-]+)\.(com|co|net|org|shop|store|io|us|uk)/i);
     const store = m ? m[1].charAt(0).toUpperCase() + m[1].slice(1) : '';
-    const folder = this.state.scene === 'All' ? (this.state.scenes[0] || 'Home') : this.state.scene;
+    const folder = this.state.scene || this.state.scenes[0] || 'Home';
     const name = this._guessNameFromUrl(url);
     const notes = this._guessAttrsFromUrl(url);
     this.setState({
@@ -2234,8 +2250,8 @@ class Component extends DCLogic {
     const s = this.state;
     const board = s.boards.find(b => b.id === s.boardId) || null;
 
-    const folders = ['All', ...s.scenes].map(f => {
-      const n = f === 'All' ? s.items.length : s.items.filter(i => i.scene === f).length;
+    const folders = s.scenes.map(f => {
+      const n = s.items.filter(i => i.scene === f).length;
       const active = s.scene === f;
       return {
         label: f + ' · ' + n,
@@ -2244,23 +2260,24 @@ class Component extends DCLogic {
         weight: active ? 600 : 400,
         active,
         inactive: !active,
-        isAll: f === 'All',
-        notAll: f !== 'All',
-        pick: () => this.setState({ scene: f }),
+        // Clicking the open scene closes it, dropping you back to the catalogue.
+        pick: () => this.setState({ scene: active ? null : f }),
         remove: e => {
           e.stopPropagation();
           this.setState(st => ({
             scenes: st.scenes.filter(x => x !== f),
-            scene: st.scene === f ? 'All' : st.scene
+            scene: st.scene === f ? null : st.scene
           }));
         }
       };
     });
 
-    const byFolder = s.scene === 'All' ? s.items : s.items.filter(i => i.scene === s.scene);
+    // The catalogue is every item ever saved, newest first by default. Item ids come
+    // from a monotonic counter (nextId), so they double as insertion order.
+    const sorted = [...s.items].sort((a, b) => s.catalogSort === 'oldest' ? a.id - b.id : b.id - a.id);
     const filtered = s.activeTagFilters.length
-      ? byFolder.filter(i => (i.tagIds || []).some(tid => s.activeTagFilters.includes(tid)))
-      : byFolder;
+      ? sorted.filter(i => (i.tagIds || []).some(tid => s.activeTagFilters.includes(tid)))
+      : sorted;
     const tagById = {};
     s.tags.forEach(t => { tagById[t.id] = t; });
     const itemById = new Map(s.items.map(i => [i.id, i]));
@@ -2298,7 +2315,9 @@ class Component extends DCLogic {
 
     const openTotal = filtered.filter(i => !i.owned && i.price != null).reduce((a, i) => a + i.price, 0);
 
-    const boardsInScene = s.scene === 'All' ? s.boards : s.boards.filter(b => b.scene == null || b.scene === s.scene);
+    // Vignettes with no scene of their own stay visible in every scene rather than
+    // becoming unreachable — the catalogue lists items, not vignettes.
+    const boardsInScene = s.scene == null ? s.boards : s.boards.filter(b => b.scene == null || b.scene === s.scene);
     const boards = boardsInScene.map(b => {
       const its = b.itemIds.map(id => itemById.get(id)).filter(Boolean);
       const total = its.reduce((a, i) => a + (i.price || 0), 0);
@@ -2535,7 +2554,7 @@ class Component extends DCLogic {
       customOpen: !!s.custom,
       draftTitle: s.custom && s.custom.url ? 'add from link' : 'new custom tile',
       draftImgHint: 'click, drop, or paste (⌘V) a photo here',
-      openCustom: () => this.setState({ tagCreatorOpen: false, custom: { name: '', store: '', price: '', owned: true, scene: s.scene === 'All' ? (s.scenes[0] || 'Home') : s.scene, img: null, ar: null, tones: ['#EAE8E4', '#DBD8D3'], tagIds: [], boardIds: [], notes: '' } }),
+      openCustom: () => this.setState({ tagCreatorOpen: false, custom: { name: '', store: '', price: '', owned: true, scene: s.scene || s.scenes[0] || 'Home', img: null, ar: null, tones: ['#EAE8E4', '#DBD8D3'], tagIds: [], boardIds: [], notes: '' } }),
       cancelCustom: () => this.setState({ custom: null, tagCreatorOpen: false }),
       pickDraftImage: () => { this.pendingImageItem = 'draft'; this.fileRef.current && this.fileRef.current.click(); },
       dropDraftImage: e => {
@@ -2627,6 +2646,15 @@ class Component extends DCLogic {
       saveLink: () => this.saveLinkNow(),
       inLibrary: !board,
       inBoard: !!board,
+      // Within the library: no scene picked = the full catalogue; a scene picked =
+      // that scene's vignettes.
+      inCatalogue: !board && s.scene == null,
+      inScene: !board && s.scene != null,
+      sceneName: s.scene || '',
+      goHome: () => this.setState({ scene: null, boardId: null }),
+      catalogSortLabel: s.catalogSort === 'oldest' ? 'oldest first' : 'newest first',
+      toggleCatalogSort: () => this.setState(st => ({ catalogSort: st.catalogSort === 'oldest' ? 'newest' : 'oldest' })),
+      catalogCount: filtered.length + (filtered.length === 1 ? ' piece' : ' pieces'),
       folders,
       items,
       folderTotal: '$' + openTotal.toLocaleString(),
@@ -2660,7 +2688,7 @@ class Component extends DCLogic {
       boards,
       newBoard: () => {
         const id = 'b' + Date.now();
-        this.setState(st => ({ boards: [...st.boards, { id, name: 'untitled vignette', itemIds: [], scene: st.scene === 'All' ? null : st.scene }], boardId: id, trayOpen: true }));
+        this.setState(st => ({ boards: [...st.boards, { id, name: 'untitled vignette', itemIds: [], scene: st.scene || null }], boardId: id, trayOpen: true }));
       },
       boardName, boardMeta, boardPalette, boardItems, boardEmpty, swatches,
       gridEditClosed: !s.gridEditOpen,
