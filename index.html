@@ -1682,6 +1682,7 @@ class Component extends DCLogic {
     const toMigrate = this.state.items.filter(it => it.img && it.img.startsWith('data:'));
     if (!toMigrate.length) return;
     this._migrating = true;
+    console.info('vignette: migrating', toMigrate.length, 'inlined images');
     try {
       for (const item of toMigrate) {
         try {
@@ -1689,10 +1690,18 @@ class Component extends DCLogic {
           const url = await this.uploadImage(blob);
           this.setState(st => ({ items: st.items.map(x => x.id === item.id ? { ...x, img: url } : x) }));
           await this.saveNow();
+          console.info('vignette: migrated', item.id);
           await new Promise(r => setTimeout(r, 250));
-        } catch { /* keep base64 if upload fails */ }
+        } catch (e) {
+          // Keep the base64 and move on, but say so — swallowing this silently
+          // is what let the migration look like it was working for weeks.
+          console.warn('vignette: could not migrate image for item', item.id, e);
+        }
       }
-    } finally { this._migrating = false; }
+    } finally {
+      this._migrating = false;
+      console.info('vignette: migration pass finished');
+    }
   }
 
   contentBBox(ctx, w, h) {
