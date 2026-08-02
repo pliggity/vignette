@@ -29,7 +29,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 
 <helmet data-dc-atomics="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&amp;family=Inter:wght@400;500;600;700&amp;family=Pinyon+Script&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#F7F7F5}
 @keyframes wrFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -60,8 +60,8 @@ body{margin:0;background:#F7F7F5}
 <sc-if value="{{ shareMode }}" hint-placeholder-val="{{ false }}">
   <div style="max-width:1240px; margin:0 auto; padding:26px 30px 90px; display:flex; flex-direction:column; gap:16px">
 
-    <div style="display:flex; align-items:center; gap:12px">
-      <div style="position:relative; width:fit-content; padding:12px 14px 30px 12px; transform:scale(1.18); transform-origin:left center">
+    <div style="display:flex; justify-content:center">
+      <div style="position:relative; width:fit-content; padding:12px 14px 30px 12px; transform:scale(1.7); transform-origin:top center; margin-bottom:52px">
         <div style="position:relative; z-index:1; font-family:'Fraunces',serif; font-weight:250; font-size:30px; color:#232326; font-variation-settings:'opsz' 90; display:flex; align-items:baseline"><span style="font-weight:400; font-size:37px; font-variation-settings:'opsz' 144; margin-right:-3px">V</span><span style="position:relative; top:-1px">ignette</span></div>
         <svg width="214" height="78" viewBox="0 0 214 78" style="position:absolute; inset:0; overflow:visible; z-index:0">
           <path d="M4 34 V64 H36" fill="none" stroke="#232326" stroke-width="1"></path>
@@ -82,9 +82,14 @@ body{margin:0;background:#F7F7F5}
     </sc-if>
 
     <sc-if value="{{ shareVisible }}" hint-placeholder-val="{{ false }}">
-      <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-top:-6px">
+      <div style="display:flex; flex-direction:column; gap:3px; margin-top:-6px">
+        <sc-if value="{{ shareHasSceneLine }}" hint-placeholder-val="{{ false }}">
+          <span style="font-family:'Pinyon Script','Snell Roundhand','Apple Chancery',cursive; font-size:28px; line-height:1.15; color:#726F6C">{{ shareSceneLine }}</span>
+        </sc-if>
         <span style="font-family:'Fraunces',serif; font-size:34px; color:#232326">{{ shareName }}</span>
-        <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#AFAAA5">shared with you · view only</span>
+        <sc-if value="{{ shareHasAuthor }}" hint-placeholder-val="{{ true }}">
+          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#AFAAA5">{{ shareAuthorLine }}</span>
+        </sc-if>
       </div>
 
       <div style="display:flex; height:30px; width:100%; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(35,35,38,.07)">
@@ -238,8 +243,24 @@ body{margin:0;background:#F7F7F5}
           <div onClick="{{ closeShareModal }}" style="cursor:pointer; width:28px; height:28px; border-radius:99px; background:#F7F7F5; color:#726F6C; display:flex; align-items:center; justify-content:center; font-size:14px; flex:none; user-select:none" style-hover="background:#EAE8E4">×</div>
         </div>
 
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">SHOW IT AS</span>
+          <input value="{{ shareDraftTitle }}" onChange="{{ shareSetDraftTitle }}" placeholder="{{ shareTitlePlaceholder }}" style="font-family:'Fraunces',serif; font-size:16px; color:#232326; background:#F7F7F5; border:none; outline:none; border-radius:8px; padding:10px 12px">
+          <span style="font-size:11.5px; color:#9B9793; font-style:italic">Only for people with the link — you'll still see it as “{{ shareTitlePlaceholder }}”.</span>
+        </div>
+
         <div style="display:flex; flex-direction:column; gap:10px; background:#F7F7F5; border-radius:12px; padding:13px 14px">
           <span style="font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; color:#9B9793">ALSO LET THEM SEE</span>
+          <sc-if value="{{ shareHasScene }}" hint-placeholder-val="{{ true }}">
+            <div onClick="{{ toggleShareDraftScene }}" style="cursor:pointer; display:flex; align-items:center; gap:9px; user-select:none">
+              <div style="width:13px; height:13px; background:#fff; box-shadow:inset 0 0 0 1px {{ shareDraftSceneRing }}; display:flex; align-items:center; justify-content:center; flex:none">
+                <sc-if value="{{ shareDraftScene }}" hint-placeholder-val="{{ false }}">
+                  <svg width="9" height="9" viewBox="0 0 12 10" fill="none" style="transform:rotate(-3deg)"><path d="M1.5 4.6C2.3 5.6 3.2 7 3.7 9.5C4.9 6.9 7.8 2.4 10.5 0.8" stroke="#8A8681" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </sc-if>
+              </div>
+              <span style="font-size:12.5px; color:#232326">the scene it's in — {{ shareBoardScene }}</span>
+            </div>
+          </sc-if>
           <div onClick="{{ toggleShareDraftPrices }}" style="cursor:pointer; display:flex; align-items:center; gap:9px; user-select:none">
             <div style="width:13px; height:13px; background:#fff; box-shadow:inset 0 0 0 1px {{ shareDraftPricesRing }}; display:flex; align-items:center; justify-content:center; flex:none">
               <sc-if value="{{ shareDraftPrices }}" hint-placeholder-val="{{ false }}">
@@ -822,9 +843,19 @@ body{margin:0;background:#F7F7F5}
       <div class="wr-board-list" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px">
         <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
           <div onClick="{{ b.open }}" style="cursor:pointer; background:#fff; border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; user-select:none" style-hover="box-shadow:0 6px 18px rgba(35,35,38,.10); transform:translateY(-2px)">
-            <div style="display:flex; flex-direction:column; gap:2px; min-width:0">
-              <span style="font-family:'Fraunces',serif; font-style:normal; font-weight:300; font-size:14px; letter-spacing:-0.005em; color:#232326">{{ b.name }}</span>
-              <span style="font-size:11px; color:#9B9793">{{ b.meta }}</span>
+            <div style="display:flex; align-items:flex-start; gap:10px; min-width:0">
+              <div style="flex:1; display:flex; flex-direction:column; gap:2px; min-width:0">
+                <span style="font-family:'Fraunces',serif; font-style:normal; font-weight:300; font-size:14px; letter-spacing:-0.005em; color:#232326">{{ b.name }}</span>
+                <span style="font-size:11px; color:#9B9793">{{ b.meta }}</span>
+              </div>
+              <div title="{{ b.shareTitle }}" style="flex:none; position:relative; top:2px">
+                <sc-if value="{{ b.isShared }}" hint-placeholder-val="{{ false }}">
+                  <svg width="16" height="11" viewBox="0 0 24 16" fill="none"><path d="M1 8C1 8 5 1 12 1C19 1 23 8 23 8C23 8 19 15 12 15C5 15 1 8 1 8Z" stroke="#8A8681" stroke-width="1.4"></path><circle cx="12" cy="8" r="3.2" fill="#232326"></circle><path d="M3 4L1 1.5M8 1.8L7 -0.5M16 1.8L17 -0.5M21 4L23 1.5" stroke="#232326" stroke-width="1.2" stroke-linecap="round"></path></svg>
+                </sc-if>
+                <sc-if value="{{ b.notShared }}" hint-placeholder-val="{{ true }}">
+                  <svg width="16" height="11" viewBox="0 0 24 16" fill="none"><path d="M1 6C1 6 5 12 12 12C19 12 23 6 23 6" stroke="#DBD8D3" stroke-width="1.4" stroke-linecap="round"></path><path d="M3.4 10.2L1.8 12.8M8.2 12L7.4 14.6M15.8 12L16.6 14.6M20.6 10.2L22.2 12.8" stroke="#DBD8D3" stroke-width="1.2" stroke-linecap="round"></path></svg>
+                </sc-if>
+              </div>
             </div>
             <div style="display:flex; height:8px; width:100%; border-radius:99px; overflow:hidden">
               <sc-for list="{{ b.palette }}" as="p" hint-placeholder-count="4">
@@ -912,7 +943,10 @@ body{margin:0;background:#F7F7F5}
       <div style="margin-left:auto; display:flex; align-items:center; gap:8px">
         <div onClick="{{ openShareModal }}" title="share a read-only view of this vignette" style="cursor:pointer; display:flex; align-items:center; gap:7px; font-size:11.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; background:transparent; color:#232326; padding:10px 16px; border:1px solid #DBD8D3; border-radius:2px; user-select:none" style-hover="border-color:#232326; font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-weight:400">
           <sc-if value="{{ shareIsLive }}" hint-placeholder-val="{{ false }}">
-            <span title="a link is live" style="width:6px; height:6px; border-radius:99px; background:#9CAE9F; flex:none"></span>
+            <svg width="15" height="10" viewBox="0 0 24 16" fill="none" style="flex:none"><path d="M1 8C1 8 5 1 12 1C19 1 23 8 23 8C23 8 19 15 12 15C5 15 1 8 1 8Z" stroke="#8A8681" stroke-width="1.4"></path><circle cx="12" cy="8" r="3.2" fill="#232326"></circle><path d="M3 4L1 1.5M8 1.8L7 -0.5M16 1.8L17 -0.5M21 4L23 1.5" stroke="#232326" stroke-width="1.2" stroke-linecap="round"></path></svg>
+          </sc-if>
+          <sc-if value="{{ shareNotLive }}" hint-placeholder-val="{{ true }}">
+            <svg width="15" height="10" viewBox="0 0 24 16" fill="none" style="flex:none"><path d="M1 6C1 6 5 12 12 12C19 12 23 6 23 6" stroke="#AFAAA5" stroke-width="1.4" stroke-linecap="round"></path><path d="M3.4 10.2L1.8 12.8M8.2 12L7.4 14.6M15.8 12L16.6 14.6M20.6 10.2L22.2 12.8" stroke="#AFAAA5" stroke-width="1.2" stroke-linecap="round"></path></svg>
           </sc-if>
           share
         </div>
@@ -1164,6 +1198,8 @@ class Component extends DCLogic {
     shareCopied: false,
     shareDraftPrices: false,
     shareDraftOwned: false,
+    shareDraftTitle: '',
+    shareDraftScene: false,
     sceneDeleteTarget: null,
     sceneDeletePlan: {},
     archiveOpen: false,
@@ -1931,13 +1967,27 @@ class Component extends DCLogic {
   // only the arrangement and the fields the owner opted into. Tags, notes, scenes
   // and which other vignettes an item belongs to are never written into it, so a
   // share link cannot reveal them however it's poked at.
-  buildShareSnapshot(board, showPrices, showOwned) {
+  // Who the vignette is "from". The owner is the repo owner; guests go by the
+  // slug they picked at sign-in. Baked into the snapshot because the viewer has
+  // no session to look it up from.
+  OWNER_LOGIN = 'pliggity';
+  shareAuthorName() {
+    const s = this.state;
+    return s.pat ? this.OWNER_LOGIN : (s.googleUserId || s.googleUserName || '');
+  }
+
+  buildShareSnapshot(board, opts) {
+    const { showPrices, showOwned, title, includeScene } = opts;
     const itemById = new Map(this.state.items.map(i => [i.id, i]));
     const its = board.itemIds.map(id => itemById.get(id)).filter(Boolean);
     const rects = this.tileRects(board);
     return {
       v: 1,
-      name: board.name,
+      // The shared title is presentation-only — the vignette keeps its own name
+      // in the owner's library whatever this says.
+      name: (title || '').trim() || board.name,
+      author: this.shareAuthorName(),
+      ...(includeScene && board.scene ? { scene: board.scene } : {}),
       showPrices: !!showPrices,
       showOwned: !!showOwned,
       canvasW: this.CANVAS_W,
@@ -1972,20 +2022,28 @@ class Component extends DCLogic {
     return `Bearer ${this.state.googleToken || this.state.pat}`;
   }
 
-  async publishShare(board, showPrices, showOwned) {
+  async publishShare(board, opts) {
     const id = (board.share && board.share.id) || this.newShareId();
+    const title = (opts.title || '').trim();
     this.setState({ shareBusy: true, shareError: '' });
     try {
       const res = await fetch('https://vignette-oauth.pliggity.workers.dev/share', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: this.shareAuthHeader() },
-        body: JSON.stringify({ id, snapshot: this.buildShareSnapshot(board, showPrices, showOwned) })
+        body: JSON.stringify({ id, snapshot: this.buildShareSnapshot(board, opts) })
       });
       if (!res.ok) throw new Error('share failed');
       this.setState(st => ({
         shareBusy: false,
         boards: st.boards.map(b => b.id === board.id
-          ? { ...b, share: { id, showPrices: !!showPrices, showOwned: !!showOwned } }
+          ? { ...b, share: {
+              id,
+              showPrices: !!opts.showPrices,
+              showOwned: !!opts.showOwned,
+              includeScene: !!opts.includeScene,
+              // Only remember an override that actually differs from the name.
+              ...(title && title !== b.name ? { title } : {})
+            } }
           : b)
       }));
     } catch {
@@ -2724,10 +2782,14 @@ class Component extends DCLogic {
       const its = b.itemIds.map(id => itemById.get(id)).filter(Boolean);
       const total = its.reduce((a, i) => a + (i.price || 0), 0);
       const cover = [0, 1, 2, 3].map(k => its[k] ? its[k].tones[k % 2] : '#f0ebe2');
+      const shared = !!(b.share && b.share.id);
       return {
         name: b.name,
         nameParts: b.name.split(' ').map(w => ({ first: w.slice(0, 1), rest: w.slice(1) + ' ' })),
         meta: its.length + ' items · $' + total.toLocaleString(),
+        isShared: shared,
+        notShared: !shared,
+        shareTitle: shared ? 'a share link is live for this vignette' : 'not shared',
         cover,
         palette: this.effPalette(b, its),
         open: () => this.setState({ boardId: b.id, trayOpen: false, paletteOpen: false, confirmingDeleteBoard: false, gridEditOpen: false, activeTileId: null }, () => this.fitBoard())
@@ -2844,6 +2906,10 @@ class Component extends DCLogic {
 
     return {
       shareName: sv ? sv.name : '',
+      shareHasSceneLine: !!(sv && sv.scene),
+      shareSceneLine: sv && sv.scene ? 'Scene: ' + sv.scene : '',
+      shareHasAuthor: !!(sv && sv.author),
+      shareAuthorLine: sv && sv.author ? 'from ' + sv.author + '’s vignettes' : '',
       sharePalette: sv ? (sv.palette || []) : [],
       shareItems: svItems,
       shareMeta: sv
@@ -3276,7 +3342,9 @@ class Component extends DCLogic {
         shareCopied: false,
         shareError: '',
         shareDraftPrices: !!(board && board.share && board.share.showPrices),
-        shareDraftOwned: !!(board && board.share && board.share.showOwned)
+        shareDraftOwned: !!(board && board.share && board.share.showOwned),
+        shareDraftScene: !!(board && board.share && board.share.includeScene),
+        shareDraftTitle: (board && board.share && board.share.title) || ''
       }),
       closeShareModal: () => this.setState({ shareModalOpen: false, shareCopied: false }),
       shareBusy: s.shareBusy,
@@ -3294,8 +3362,21 @@ class Component extends DCLogic {
       shareDraftOwnedRing: s.shareDraftOwned ? '#8A8681' : '#DBD8D3',
       toggleShareDraftPrices: () => this.setState(st => ({ shareDraftPrices: !st.shareDraftPrices })),
       toggleShareDraftOwned: () => this.setState(st => ({ shareDraftOwned: !st.shareDraftOwned })),
+      toggleShareDraftScene: () => this.setState(st => ({ shareDraftScene: !st.shareDraftScene })),
+      shareDraftScene: s.shareDraftScene,
+      shareDraftSceneRing: s.shareDraftScene ? '#8A8681' : '#DBD8D3',
+      shareBoardScene: board ? (board.scene || '') : '',
+      shareHasScene: !!(board && board.scene),
+      shareDraftTitle: s.shareDraftTitle,
+      shareTitlePlaceholder: board ? board.name : '',
+      shareSetDraftTitle: e => { const v = e.target.value; this.setState({ shareDraftTitle: v }); },
       shareCreateLabel: board && board.share && board.share.id ? 'update the link' : 'create the link',
-      shareCreate: () => board && this.publishShare(board, s.shareDraftPrices, s.shareDraftOwned),
+      shareCreate: () => board && this.publishShare(board, {
+        showPrices: s.shareDraftPrices,
+        showOwned: s.shareDraftOwned,
+        includeScene: s.shareDraftScene,
+        title: s.shareDraftTitle
+      }),
       shareStop: () => board && this.revokeShare(board),
       shareCopied: s.shareCopied,
       shareNotCopied: !s.shareCopied,
