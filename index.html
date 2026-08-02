@@ -1652,18 +1652,13 @@ class Component extends DCLogic {
     return rel.id;
   }
 
+  // Always via the worker. uploads.github.com answers preflight with a bare 400
+  // and no CORS headers, so a browser can never POST an asset to it directly —
+  // the owner path used to try, fail, and be swallowed, which is why images
+  // stayed inlined in data.json. The worker uploads server-side, where the
+  // same-origin policy doesn't apply.
   async uploadImage(blob) {
-    if (this.state.googleToken) return this.uploadImageViaWorker(blob);
-    const releaseId = await this.getImagesReleaseId();
-    const name = `img-${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
-    const res = await fetch(`https://uploads.github.com/repos/pliggity/vignette/releases/${releaseId}/assets?name=${encodeURIComponent(name)}`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${this.state.pat}`, Accept: 'application/vnd.github+json', 'Content-Type': 'image/jpeg' },
-      body: blob
-    });
-    if (!res.ok) throw new Error('upload failed');
-    const asset = await res.json();
-    return asset.browser_download_url;
+    return this.uploadImageViaWorker(blob);
   }
 
   // Writes immediately instead of on the 1.5s trailing debounce, and waits for
@@ -2354,13 +2349,13 @@ class Component extends DCLogic {
   }
 
   async uploadImageViaWorker(blob) {
-    const { googleToken } = this.state;
+    const { googleToken, pat } = this.state;
     const res = await fetch('https://vignette-oauth.pliggity.workers.dev/upload-image', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${googleToken}`, 'Content-Type': 'image/jpeg' },
+      headers: { Authorization: `Bearer ${googleToken || pat}`, 'Content-Type': 'image/jpeg' },
       body: blob
     });
-    if (!res.ok) throw new Error('upload failed');
+    if (!res.ok) throw new Error('upload failed: ' + res.status);
     return (await res.json()).url;
   }
 
