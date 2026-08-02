@@ -2251,7 +2251,8 @@ class Component extends DCLogic {
     const board = s.boards.find(b => b.id === s.boardId) || null;
 
     const folders = s.scenes.map(f => {
-      const n = s.items.filter(i => i.scene === f).length;
+      // A scene is a shelf of vignettes, so the chip counts vignettes — not items.
+      const n = s.boards.filter(b => b.scene === f).length;
       const active = s.scene === f;
       return {
         label: f + ' · ' + n,
@@ -2264,10 +2265,22 @@ class Component extends DCLogic {
         pick: () => this.setState({ scene: active ? null : f }),
         remove: e => {
           e.stopPropagation();
-          this.setState(st => ({
-            scenes: st.scenes.filter(x => x !== f),
-            scene: st.scene === f ? null : st.scene
-          }));
+          this.setState(st => {
+            const rest = st.scenes.filter(x => x !== f);
+            // Vignettes can't outlive their scene without becoming unreachable, so
+            // removing a scene re-files them instead of stranding them. The last
+            // scene therefore can't be removed while it still holds vignettes.
+            const orphans = st.boards.filter(b => b.scene === f);
+            if (orphans.length && !rest.length) return null;
+            const fallback = rest[0];
+            return {
+              scenes: rest,
+              boards: orphans.length
+                ? st.boards.map(b => b.scene === f ? { ...b, scene: fallback } : b)
+                : st.boards,
+              scene: st.scene === f ? null : st.scene
+            };
+          });
         }
       };
     });
@@ -2315,9 +2328,9 @@ class Component extends DCLogic {
 
     const openTotal = filtered.filter(i => !i.owned && i.price != null).reduce((a, i) => a + i.price, 0);
 
-    // Vignettes with no scene of their own stay visible in every scene rather than
-    // becoming unreachable — the catalogue lists items, not vignettes.
-    const boardsInScene = s.scene == null ? s.boards : s.boards.filter(b => b.scene == null || b.scene === s.scene);
+    // Every vignette belongs to exactly one scene, and vignettes are only ever
+    // created from inside one — so a scene shows precisely its own.
+    const boardsInScene = s.scene == null ? [] : s.boards.filter(b => b.scene === s.scene);
     const boards = boardsInScene.map(b => {
       const its = b.itemIds.map(id => itemById.get(id)).filter(Boolean);
       const total = its.reduce((a, i) => a + (i.price || 0), 0);
@@ -2687,18 +2700,23 @@ class Component extends DCLogic {
       }),
       boards,
       newBoard: () => {
+        // The button only renders inside a scene; this keeps the invariant honest
+        // if that ever changes — a vignette without a scene is unreachable.
+        if (!this.state.scene) return;
         const id = 'b' + Date.now();
-        this.setState(st => ({ boards: [...st.boards, { id, name: 'untitled vignette', itemIds: [], scene: st.scene || null }], boardId: id, trayOpen: true }));
+        this.setState(st => ({ boards: [...st.boards, { id, name: 'untitled vignette', itemIds: [], scene: st.scene }], boardId: id, trayOpen: true }));
       },
       boardName, boardMeta, boardPalette, boardItems, boardEmpty, swatches,
       gridEditClosed: !s.gridEditOpen,
-      boardSceneLabel: board ? (board.scene || 'All scenes') : '',
-      boardSceneValue: board ? (board.scene || 'All scenes') : '',
+      // A vignette always sits in exactly one scene — moving it re-files it rather
+      // than unassigning it, so there's no "all scenes" escape hatch.
+      boardSceneLabel: board ? (board.scene || s.scenes[0] || '') : '',
+      boardSceneValue: board ? (board.scene || s.scenes[0] || '') : '',
       boardSceneChange: e => {
         const val = e.target.value;
-        this.setState(st => ({ boards: st.boards.map(b => b.id === st.boardId ? { ...b, scene: val === 'All scenes' ? null : val } : b) }));
+        this.setState(st => ({ boards: st.boards.map(b => b.id === st.boardId ? { ...b, scene: val } : b), scene: val }));
       },
-      boardSceneOptions: ['All scenes', ...s.scenes].map(opt => ({ value: opt, label: opt })),
+      boardSceneOptions: s.scenes.map(opt => ({ value: opt, label: opt })),
       includedSwatches: swatches.filter(sw => sw.on),
       excludedSwatches: swatches.filter(sw => !sw.on),
       hasExcluded: swatches.some(sw => !sw.on),
