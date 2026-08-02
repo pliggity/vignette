@@ -1666,16 +1666,38 @@ class Component extends DCLogic {
     return asset.browser_download_url;
   }
 
+  // Writes immediately instead of on the 1.5s trailing debounce, and waits for
+  // it to land. The debounce restarts on every change, so a long run of edits
+  // never persists until it stops — and beforeunload can't rescue it, since
+  // keepalive caps the body at 64KB and data.json is far bigger than that.
+  async saveNow() {
+    clearTimeout(this._saveTimer);
+    this._saveTimer = null;
+    const s = this.state;
+    if (s.googleToken && s.googleUserId) await this.doWorkerSave();
+    else if (s.pat) await this.doGithubSave();
+  }
+
+  // Moves inlined image data out to Release assets so data.json stays small.
+  // Each image is persisted as soon as it uploads: the whole run takes tens of
+  // seconds, and if it only saved at the end, a reload part-way through would
+  // discard every upload and start over from scratch on the next load.
   async migrateImages() {
+    if (this._migrating) return;
     const toMigrate = this.state.items.filter(it => it.img && it.img.startsWith('data:'));
-    for (const item of toMigrate) {
-      try {
-        const blob = await fetch(item.img).then(r => r.blob());
-        const url = await this.uploadImage(blob);
-        this.setState(st => ({ items: st.items.map(x => x.id === item.id ? { ...x, img: url } : x) }));
-        await new Promise(r => setTimeout(r, 600));
-      } catch { /* keep base64 if upload fails */ }
-    }
+    if (!toMigrate.length) return;
+    this._migrating = true;
+    try {
+      for (const item of toMigrate) {
+        try {
+          const blob = await fetch(item.img).then(r => r.blob());
+          const url = await this.uploadImage(blob);
+          this.setState(st => ({ items: st.items.map(x => x.id === item.id ? { ...x, img: url } : x) }));
+          await this.saveNow();
+          await new Promise(r => setTimeout(r, 250));
+        } catch { /* keep base64 if upload fails */ }
+      }
+    } finally { this._migrating = false; }
   }
 
   contentBBox(ctx, w, h) {
@@ -1789,6 +1811,7 @@ class Component extends DCLogic {
   _loaded = false;
   _saving = false;
   _saveDirty = false;
+  _migrating = false;
 
   _saveData() {
     const s = this.state;
