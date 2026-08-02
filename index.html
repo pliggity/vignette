@@ -1691,7 +1691,9 @@ class Component extends DCLogic {
           this.setState(st => ({ items: st.items.map(x => x.id === item.id ? { ...x, img: url } : x) }));
           await this.saveNow();
           console.info('vignette: migrated', item.id);
-          await new Promise(r => setTimeout(r, 250));
+          // No artificial delay: each pass already costs an upload and a save,
+          // which paces it fine, and a timer here would park the whole run
+          // whenever the browser throttles a backgrounded tab.
         } catch (e) {
           // Keep the base64 and move on, but say so — swallowing this silently
           // is what let the migration look like it was working for weeks.
