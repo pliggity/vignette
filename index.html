@@ -1996,6 +1996,9 @@ class Component extends DCLogic {
     this._snapshotData();
     if (s.googleToken && s.googleUserId) this.scheduleWorkerSave();
     else if (s.pat) this.scheduleGithubSave();
+    // A share is a frozen snapshot, so it drifts out of date the moment the owner
+    // rearranges a vignette after sharing. Keep any live share links in sync.
+    this.scheduleShareRefresh();
   }
 
   // ── sharing ──────────────────────────────────────────────────────────────
@@ -2069,6 +2072,9 @@ class Component extends DCLogic {
         body: JSON.stringify({ id, snapshot: this.buildShareSnapshot(board, opts) })
       });
       if (!res.ok) throw new Error('share failed');
+      // Remember exactly what we just published so the auto-refresh below can tell
+      // when the live snapshot has genuinely drifted and skip redundant writes.
+      this._publishedShareCache[id] = JSON.stringify(this.buildShareSnapshot(board, opts));
       this.setState(st => ({
         shareBusy: false,
         boards: st.boards.map(b => b.id === board.id
@@ -2084,6 +2090,50 @@ class Component extends DCLogic {
       }));
     } catch {
       this.setState({ shareBusy: false, shareError: 'Could not update the link. Check your connection and try again.' });
+    }
+  }
+
+  // Re-publish any live share links whose vignette has changed since they were
+  // shared. A share is a standalone snapshot (see buildShareSnapshot), so without
+  // this it would keep showing the arrangement, sizes and items frozen at the
+  // moment the link was created. We rebuild only from the fields already opted
+  // into on board.share, so the privacy model is unchanged — no tags, notes or
+  // other vignettes leak. Debounced, mirroring the data-save cadence, and a
+  // per-share JSON cache means an edit that doesn't touch the shared surface
+  // (e.g. tags, or a different vignette) costs no worker write.
+  _publishedShareCache = {};
+  _shareRefreshTimer = null;
+  scheduleShareRefresh() {
+    clearTimeout(this._shareRefreshTimer);
+    this._shareRefreshTimer = setTimeout(() => this.refreshLiveShares(), 1500);
+  }
+  async refreshLiveShares() {
+    const s = this.state;
+    if (!(s.googleToken || s.pat)) return;
+    for (const board of s.boards) {
+      const share = board.share;
+      if (!share || !share.id) continue;
+      let snapshot;
+      try {
+        snapshot = this.buildShareSnapshot(board, {
+          showPrices: !!share.showPrices,
+          showOwned: !!share.showOwned,
+          includeScene: !!share.includeScene,
+          title: share.title || ''
+        });
+      } catch { continue; }
+      const serialized = JSON.stringify(snapshot);
+      if (this._publishedShareCache[share.id] === serialized) continue;
+      try {
+        const res = await fetch('https://vignette-oauth.pliggity.workers.dev/share', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: this.shareAuthHeader() },
+          body: JSON.stringify({ id: share.id, snapshot })
+        });
+        // Only cache on success; a failed write stays "dirty" so the next change
+        // (or the next session's first edit) retries it.
+        if (res.ok) this._publishedShareCache[share.id] = serialized;
+      } catch { /* offline / transient — retry on the next change */ }
     }
   }
 
