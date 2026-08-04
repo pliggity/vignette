@@ -2056,7 +2056,7 @@ class Component extends DCLogic {
       ...(includeScene && board.scene ? { scene: board.scene } : {}),
       showPrices: !!showPrices,
       showOwned: !!showOwned,
-      canvasW: this.CANVAS_W,
+      canvasW: this.tileRectsRight(board),
       canvasH: this.tileRectsBottom(board) + 24,
       palette: this.effPalette(board, its),
       items: its.map(i => {
