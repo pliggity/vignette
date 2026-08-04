@@ -1265,6 +1265,21 @@ class Component extends DCLogic {
     // or resize a tile further down, not just to the current bottom edge
     return this.tileRectsBottom(board) + 400;
   }
+  // Rightmost current tile edge (canvas-local px), the horizontal twin of
+  // tileRectsBottom. Never reports narrower than the base canvas, so a vignette
+  // that fits within CANVAS_W still fills the width and shows no stray scroll.
+  tileRectsRight(board) {
+    if (!board) return this.CANVAS_W;
+    const rects = this.tileRects(board);
+    let maxRight = this.CANVAS_W;
+    Object.values(rects).forEach(r => { maxRight = Math.max(maxRight, r.x + r.w); });
+    return maxRight;
+  }
+  boardMaxW(board) {
+    // horizontal counterpart to boardMaxH: generous slack to the right of the
+    // current spread so a tile can always be dragged/resized further right
+    return this.tileRectsRight(board) + 400;
+  }
   zoomBoardBy(delta) {
     this.setState(st => ({ boardZoom: Math.round(Math.min(this.MAX_ZOOM, Math.max(this.MIN_ZOOM, (st.boardZoom || 1) + delta)) * 100) / 100 }));
   }
@@ -1385,23 +1400,35 @@ class Component extends DCLogic {
   // where there's no room to also physically drag past the screen edge.
   // Runs as a rAF loop for the whole gesture so it keeps scrolling even if the
   // finger holds still right at the edge, not just when pointermove fires.
-  _autoScrollLoop(getY, onScrolled) {
+  // getPoint() returns the pointer's {x, y} in client coords; onScrolled(dx, dy)
+  // reports how far the viewport actually scrolled so the caller can keep the
+  // dragged tile pinned under the finger on both axes.
+  _autoScrollLoop(getPoint, onScrolled) {
     const viewport = this.boardViewportRef.current;
     const EDGE = 60, MAX_SPEED = 14;
     let rafId = null;
     const tick = () => {
       if (viewport) {
         const vr = viewport.getBoundingClientRect();
-        const y = getY();
-        let speed = 0;
-        if (y < vr.top + EDGE) speed = -MAX_SPEED * (1 - Math.max(0, y - vr.top) / EDGE);
-        else if (y > vr.bottom - EDGE) speed = MAX_SPEED * (1 - Math.max(0, vr.bottom - y) / EDGE);
-        if (speed) {
+        const { x, y } = getPoint();
+        let sy = 0;
+        if (y < vr.top + EDGE) sy = -MAX_SPEED * (1 - Math.max(0, y - vr.top) / EDGE);
+        else if (y > vr.bottom - EDGE) sy = MAX_SPEED * (1 - Math.max(0, vr.bottom - y) / EDGE);
+        let sx = 0;
+        if (x < vr.left + EDGE) sx = -MAX_SPEED * (1 - Math.max(0, x - vr.left) / EDGE);
+        else if (x > vr.right - EDGE) sx = MAX_SPEED * (1 - Math.max(0, vr.right - x) / EDGE);
+        let dy = 0, dx = 0;
+        if (sy) {
           const before = viewport.scrollTop;
-          viewport.scrollTop = Math.max(0, Math.min(viewport.scrollHeight - viewport.clientHeight, before + speed));
-          const applied = viewport.scrollTop - before;
-          if (applied) onScrolled(applied);
+          viewport.scrollTop = Math.max(0, Math.min(viewport.scrollHeight - viewport.clientHeight, before + sy));
+          dy = viewport.scrollTop - before;
         }
+        if (sx) {
+          const before = viewport.scrollLeft;
+          viewport.scrollLeft = Math.max(0, Math.min(viewport.scrollWidth - viewport.clientWidth, before + sx));
+          dx = viewport.scrollLeft - before;
+        }
+        if (dx || dy) onScrolled(dx, dy);
       }
       rafId = requestAnimationFrame(tick);
     };
@@ -1419,10 +1446,10 @@ class Component extends DCLogic {
     const start = rects[itemId];
     const sx = e.clientX, sy = e.clientY, pointerId = e.pointerId;
     const zoom = this.state.boardZoom || 1;
-    const maxX = Math.max(0, this.CANVAS_W - start.w);
+    const maxX = Math.max(0, this.boardMaxW(board) - start.w);
     const maxY = Math.max(0, this.boardMaxH(board) - start.h);
     let lastGood = { ...start };
-    let curY = sy, scrollAdjust = 0;
+    let curY = sy, curX = sx, scrollAdjust = 0, scrollAdjustX = 0;
     // Lift/shadow the tile via real state (not a direct DOM style write) so it
     // renders through React's own diffing — a direct style.boxShadow write here
     // got stuck forever, since React only re-applies a style when its computed
@@ -1430,7 +1457,7 @@ class Component extends DCLogic {
     if (this.state.activeTileId !== itemId) this.setState({ activeTileId: itemId });
     try { handle.setPointerCapture(pointerId); } catch (e2) {}
     const reposition = (clientX, clientY) => {
-      const nx = Math.min(maxX, Math.max(0, Math.round(start.x + (clientX - sx) / zoom)));
+      const nx = Math.min(maxX, Math.max(0, Math.round(start.x + (clientX - sx) / zoom + scrollAdjustX / zoom)));
       const ny = Math.min(maxY, Math.max(0, Math.round(start.y + (clientY - sy) / zoom + scrollAdjust / zoom)));
       if (tile) { tile.style.left = nx + 'px'; tile.style.top = ny + 'px'; }
       const cand = { x: nx, y: ny, w: start.w, h: start.h };
@@ -1438,12 +1465,12 @@ class Component extends DCLogic {
       return { nx, ny };
     };
     let lastClientX = sx;
-    const stopAutoScroll = this._autoScrollLoop(() => curY, applied => {
-      scrollAdjust += applied;
+    const stopAutoScroll = this._autoScrollLoop(() => ({ x: curX, y: curY }), (dx, dy) => {
+      scrollAdjustX += dx; scrollAdjust += dy;
       reposition(lastClientX, curY);
     });
     const onMove = (ev) => {
-      lastClientX = ev.clientX; curY = ev.clientY;
+      lastClientX = ev.clientX; curX = ev.clientX; curY = ev.clientY;
       reposition(ev.clientX, ev.clientY);
     };
     const onUp = () => {
@@ -1470,25 +1497,25 @@ class Component extends DCLogic {
     const start = rects[itemId];
     const sx = e.clientX, sy = e.clientY, pointerId = e.pointerId;
     const zoom = this.state.boardZoom || 1;
-    const maxW = Math.min(640, this.CANVAS_W - start.x);
+    const maxW = Math.min(640, this.boardMaxW(board) - start.x);
     let lastGood = { ...start };
-    let curY = sy, scrollAdjust = 0, lastClientX = sx;
+    let curY = sy, curX = sx, scrollAdjust = 0, scrollAdjustX = 0, lastClientX = sx;
     if (this.state.activeTileId !== itemId) this.setState({ activeTileId: itemId });
     try { handle.setPointerCapture(pointerId); } catch (e2) {}
     const reposition = (clientX, clientY) => {
-      const w = Math.min(maxW, Math.max(110, Math.round(start.w + (clientX - sx) / zoom)));
+      const w = Math.min(maxW, Math.max(110, Math.round(start.w + (clientX - sx) / zoom + scrollAdjustX / zoom)));
       const h = Math.min(640, Math.max(90, Math.round(start.h + (clientY - sy) / zoom + scrollAdjust / zoom)));
       if (tile) tile.style.width = w + 'px';
       if (photo) photo.style.height = h + 'px';
       const cand = { x: start.x, y: start.y, w, h };
       if (!this.overlapsOther(cand, itemId, rects)) lastGood = cand;
     };
-    const stopAutoScroll = this._autoScrollLoop(() => curY, applied => {
-      scrollAdjust += applied;
+    const stopAutoScroll = this._autoScrollLoop(() => ({ x: curX, y: curY }), (dx, dy) => {
+      scrollAdjustX += dx; scrollAdjust += dy;
       reposition(lastClientX, curY);
     });
     const onMove = (ev) => {
-      lastClientX = ev.clientX; curY = ev.clientY;
+      lastClientX = ev.clientX; curX = ev.clientX; curY = ev.clientY;
       reposition(ev.clientX, ev.clientY);
     };
     const onUp = () => {
@@ -2882,7 +2909,7 @@ class Component extends DCLogic {
       };
     });
 
-    let boardName = '', boardMeta = '', boardItems = [], trayItems = [], boardPalette = [], boardEmpty = false, swatches = [], boardCanvasHeight = 220;
+    let boardName = '', boardMeta = '', boardItems = [], trayItems = [], boardPalette = [], boardEmpty = false, swatches = [], boardCanvasHeight = 220, boardCanvasWidth = this.CANVAS_W;
     if (board) {
       const its = board.itemIds.map(id => itemById.get(id)).filter(Boolean);
       const visibleIts = s.activeTagFilters.length
@@ -2920,6 +2947,11 @@ class Component extends DCLogic {
       // bottom edge; view mode stays tight-fit to avoid empty scroll space
       const _maxBottom = Object.values(rects).reduce((m, r) => Math.max(m, r.y + r.h + this.CAP_H), 220);
       boardCanvasHeight = _maxBottom + (s.gridEditOpen ? 400 : 24);
+      // Same idea horizontally: edit mode adds rightward slack (matches boardMaxW)
+      // so a tile can be dragged past the current right edge; view mode fits the
+      // content exactly (never narrower than CANVAS_W, so no stray scroll).
+      const _maxRight = Object.values(rects).reduce((m, r) => Math.max(m, r.x + r.w), this.CANVAS_W);
+      boardCanvasWidth = s.gridEditOpen ? _maxRight + 400 : _maxRight;
       boardItems = visibleIts.map((i, idx) => {
         const r = rects[i.id];
         return {
@@ -3501,8 +3533,8 @@ class Component extends DCLogic {
       canvasHeight: boardCanvasHeight,
       boardZoom: s.boardZoom || 1,
       boardZoomPct: Math.round((s.boardZoom || 1) * 100) + '%',
-      boardCanvasW: this.CANVAS_W,
-      boardScaledW: Math.round(this.CANVAS_W * (s.boardZoom || 1)),
+      boardCanvasW: boardCanvasWidth,
+      boardScaledW: Math.round(boardCanvasWidth * (s.boardZoom || 1)),
       boardScaledH: Math.round(boardCanvasHeight * (s.boardZoom || 1)),
       boardViewportRef: this.boardViewportRef,
       startPinch: e => this.startPinch(e),
