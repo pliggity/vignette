@@ -259,7 +259,7 @@ Repos on disk: **app = `~/vignette`** (GitHub `pliggity/vignette`), **worker =
 **Deploy an app change** (edit `~/vignette/index.html` etc., then):
 ```bash
 cd ~/vignette && git add -A && git commit -m "…"
-TOKEN=$(op read "op://Private/Github_token_pliggity/credential")
+TOKEN=$(op read "op://Vignette/Github_token_pliggity/credential")
 git push "https://pliggity:$TOKEN@github.com/pliggity/vignette.git" main
 # GitHub Pages rebuilds in ~30s; the app auto-commits to data.json a lot, so a
 # pull --rebase before push is often needed:
